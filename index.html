@@ -33,9 +33,56 @@
     letter-spacing: 3px;
     pointer-events: none;
   }
+    /* Center "ENTER" button */
+.gate {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 2;
+}
+
+.enter-btn {
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.9);
+  padding: 14px 28px;
+  font-size: 20px;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  font-family: "Georgia", serif;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+
+.enter-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,0.5);
+  background: rgba(0,0,0,0.65);
+}
+
+.enter-btn:active {
+  transform: translateY(0px);
+}
+
+.hint {
+  position: fixed;
+  bottom: 9vh;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: rgba(255,255,255,0.35);
+  font-size: 12px;
+  letter-spacing: 2px;
+  z-index: 2;
+  pointer-events: none;
+}
  </style>
 </head>
 <body>
   <div class="whisper">something watches back</div>
 </body>
+
 </html>
