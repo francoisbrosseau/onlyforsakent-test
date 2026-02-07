@@ -1,218 +1,252 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>onlyforsaken</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ONLYFORSAKEN</title>
+
   <style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    background: black;
-    font-family: serif;
-  }
+    :root{
+      --text: rgba(255,255,255,0.90);
+      --muted: rgba(255,255,255,0.45);
+      --faint: rgba(255,255,255,0.18);
+      --glow: rgba(255,255,255,0.95);
+      --shadow: rgba(0,0,0,0.55);
+    }
 
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: url("forsaken.jpg") center center / cover no-repeat;
-    z-index: 0;
-  }
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; margin:0; background:#000; font-family: Georgia, "Times New Roman", serif; }
 
-  .whisper {
-    position: fixed;
-    bottom: 5vh;
-    left: 0;
-    right: 0;
-    text-align: center;
-    color: rgba(255,255,255,0.6);
-    font-size: 14px;
-    letter-spacing: 3px;
-    pointer-events: none;
-  }
-    /* Center "ENTER" button */
-.gate {
-  position: fixed;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  z-index: 2;
-}
+    /* HERO BACKGROUND */
+    .hero{
+      min-height: 100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
 
-.enter-btn {
-  background: rgba(0,0,0,0.55);
-  border: 1px solid rgba(255,255,255,0.25);
-  color: rgba(255,255,255,0.9);
-  padding: 14px 28px;
-  font-size: 20px;
-  letter-spacing: 6px;
-  text-transform: uppercase;
-  font-family: "Georgia", serif;
-  cursor: pointer;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
-}
+      /* ✅ Put your image here */
+      background-image: url("YOUR_IMAGE.jpg");
+      background-size: cover;
+      background-position: center 20%;
+      background-repeat: no-repeat;
+    }
 
-.enter-btn:hover {
-  transform: translateY(-1px);
-  border-color: rgba(255,255,255,0.5);
-  background: rgba(0,0,0,0.65);
-}
+    /* Dark overlay so text reads */
+    .hero::before{
+      content:"";
+      position:absolute; inset:0;
+      background: radial-gradient(circle at center, rgba(0,0,0,0.35), rgba(0,0,0,0.75));
+    }
 
-.enter-btn:active {
-  transform: translateY(0px);
-}
+    .wrap{
+      position:relative;
+      width:min(720px, 92vw);
+      padding: 36px 22px;
+      text-align:center;
+      filter: drop-shadow(0 12px 18px var(--shadow));
+    }
 
-.hint {
-  position: fixed;
-  bottom: 9vh;
-  left: 0;
-  right: 0;
-  text-align: center;
-  color: rgba(255,255,255,0.35);
-  font-size: 12px;
-  letter-spacing: 2px;
-  z-index: 2;
-  pointer-events: none;
-}
-/* Desktop framing fix */
-@media (min-width: 900px) {
-  body::before {
-    background-position: center 16%;
-  }
-}
+    .brand{
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-size: clamp(28px, 4vw, 44px);
+      color: var(--text);
+      margin: 0 0 12px 0;
+      user-select:none;
+    }
 
-/* Very wide screens */
-@media (min-width: 1400px) {
-  body::before {
-    background-position: center 12%;
-  }
-}
-/* Dark cinematic overlay (lighter) */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at center, rgba(0,0,0,0.05), rgba(0,0,0,0.35) 70%),
-    linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.25));
-}
-  /* Grim logo/banner */
-.logo {
-  position: fixed;
-  top: 6vh;
-  left: 0;
-  right: 0;
-  text-align: center;
-  z-index: 3;
-  pointer-events: none;
-}
+    .sub{
+      margin: 0 0 26px 0;
+      color: var(--muted);
+      letter-spacing: 0.14em;
+      text-transform: lowercase;
+      font-size: 13px;
+      user-select:none;
+    }
 
-.logo .brand {
-  display: inline-block;
-  font-family: "Times New Roman", serif;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 12px;
-  font-size: clamp(26px, 3.8vw, 52px);
-  color: rgba(255,255,255,0.85);
+    /* RIDDLE LINE */
+    .riddle{
+      margin: 0 auto 22px;
+      display:inline-flex;
+      gap: 14px;
+      padding: 10px 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 999px;
+      backdrop-filter: blur(6px);
+      background: rgba(0,0,0,0.18);
+      user-select:none;
+    }
+    .riddle .hint{
+      color: var(--faint);
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      font-size: 11px;
+      margin-right: 10px;
+      display:flex;
+      align-items:center;
+    }
+    .riddle .letters{
+      display:inline-flex;
+      gap: 10px;
+      align-items:center;
+    }
+    .riddle .ch{
+      font-size: 16px;
+      letter-spacing: 0.12em;
+      color: var(--faint);
+      text-shadow: 0 0 0 rgba(255,255,255,0);
+      transition: opacity 220ms ease, color 220ms ease, text-shadow 220ms ease, transform 220ms ease;
+      opacity: 0.35;
+    }
+    .riddle .ch.on{
+      opacity: 1;
+      color: var(--glow);
+      text-shadow: 0 0 16px rgba(255,255,255,0.22);
+      transform: translateY(-1px);
+    }
 
-  /* cold / grim glow */
-  text-shadow:
-    0 0 6px rgba(255,255,255,0.15),
-    0 0 18px rgba(120,0,0,0.35),
-    0 0 42px rgba(0,0,0,0.9);
+    /* PASSWORD BOX */
+    .gate{
+      display:flex;
+      gap: 10px;
+      justify-content:center;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-top: 10px;
+    }
 
-  opacity: 0.9;
-}
+    input[type="password"]{
+      width: min(320px, 86vw);
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(0,0,0,0.35);
+      color: var(--text);
+      outline: none;
+      letter-spacing: 0.08em;
+      font-size: 14px;
+    }
+    input[type="password"]::placeholder{ color: rgba(255,255,255,0.28); }
 
-.logo .sub {
-  margin-top: 12px;
-  font-size: 11px;
-  letter-spacing: 6px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.25);
-}
+    button{
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor:pointer;
+      transition: transform 120ms ease, background 120ms ease;
+    }
+    button:hover{ background: rgba(255,255,255,0.10); }
+    button:active{ transform: translateY(1px); }
 
-/* Slow, unsettling pulse */
-@keyframes breath {
-  0%, 100% { opacity: 0.9; }
-  50% { opacity: 0.75; }
-}
+    .msg{
+      margin-top: 14px;
+      min-height: 18px;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.08em;
+      font-size: 12px;
+    }
 
-.logo .brand {
-  animation: breath 8s ease-in-out infinite;
-}
+    .wrong{
+      animation: shake 340ms ease;
+    }
+    @keyframes shake{
+      0%{ transform: translateX(0); }
+      20%{ transform: translateX(-6px); }
+      40%{ transform: translateX(6px); }
+      60%{ transform: translateX(-4px); }
+      80%{ transform: translateX(4px); }
+      100%{ transform: translateX(0); }
+    }
 
+    /* Fade out on success */
+    .fadeOut{
+      animation: fade 650ms ease forwards;
+    }
+    @keyframes fade{
+      to{ opacity:0; transform: translateY(6px); }
+    }
 
-/* Slight “flicker” animation (subtle) */
-@keyframes flicker {
-  0%, 100% { opacity: 1; }
-  45% { opacity: 0.92; }
-  50% { opacity: 0.8; }
-  55% { opacity: 0.95; }
-}
-
-.logo .brand {
-  animation: flicker 6.5s infinite;
-}
-.hero {
-  height: 100vh;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center 20%;
-}
-
-@media (min-width: 1200px) {
-  .hero {
-    background-position: center 10%;
-  }
-}
-
-</style>
+    /* Desktop tweak if needed */
+    @media (min-width: 1200px){
+      .hero{ background-position: center 10%; }
+    }
+  </style>
 </head>
+
 <body>
-<div class="logo">
-  <div class="brand">ONLYFORSAKEN</div>
-  <div class="sub">do not look away</div>
-</div>
+  <main class="hero">
+    <section class="wrap" id="wrap">
+      <h1 class="brand">ONLYFORSAKEN</h1>
+      <p class="sub">you already know the password</p>
 
-  <div class="gate">
-    <button class="enter-btn" onclick="enterGate()">ENTER</button>
-  </div>
+      <div class="riddle" aria-label="riddle">
+        <div class="hint">watch the light</div>
+        <div class="letters" id="letters">
+          <span class="ch">H</span>
+          <span class="ch">O</span>
+          <span class="ch">P</span>
+          <span class="ch">I</span>
+          <span class="ch">N</span>
+        </div>
+      </div>
 
-  <div class="hint">restricted access</div>
+      <div class="gate" id="gate">
+        <input id="pw" type="password" placeholder="password…" autocomplete="off" />
+        <button id="btn">Enter</button>
+      </div>
 
-  <div class="whisper">something watches back</div>
+      <div class="msg" id="msg"></div>
+    </section>
+  </main>
 
   <script>
-    function enterGate() {
-      const pass = prompt("Enter the password");
-      if (pass === "forsaken") {
-        alert("You may proceed.");
-        // later we can redirect or unlock content
+    // ✅ Your real password
+    const PASSWORD = "HOPIN";
+
+    // Letter glow loop (H O P I N)
+    const letters = Array.from(document.querySelectorAll("#letters .ch"));
+    let i = 0;
+    setInterval(() => {
+      letters.forEach(el => el.classList.remove("on"));
+      letters[i].classList.add("on");
+      i = (i + 1) % letters.length;
+    }, 1200);
+
+    const wrap = document.getElementById("wrap");
+    const pw = document.getElementById("pw");
+    const btn = document.getElementById("btn");
+    const msg = document.getElementById("msg");
+
+    function check() {
+      const val = (pw.value || "").trim().toUpperCase();
+      if (!val) return;
+
+      if (val === PASSWORD) {
+        msg.textContent = "…";
+        wrap.classList.add("fadeOut");
+
+        // Go to the next page
+        setTimeout(() => {
+          window.location.href = "entry.html";
+        }, 650);
       } else {
-        alert("Access denied.");
+        msg.textContent = "Wrong.";
+        wrap.classList.remove("wrong");
+        void wrap.offsetWidth; // restart animation
+        wrap.classList.add("wrong");
+        pw.select();
       }
     }
+
+    btn.addEventListener("click", check);
+    pw.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") check();
+    });
   </script>
-
 </body>
-
 </html>
-
-
-
-
-
-
-
-
-
-
