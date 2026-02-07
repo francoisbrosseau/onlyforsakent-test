@@ -9,64 +9,93 @@
     :root{
       --text: rgba(255,255,255,0.90);
       --muted: rgba(255,255,255,0.52);
-      --faint: rgba(255,255,255,0.14);
       --shadow: rgba(0,0,0,0.65);
-      --glow: rgba(255,255,255,0.85);
     }
 
     *{ box-sizing:border-box; }
     html,body{ height:100%; margin:0; background:#000; font-family: Georgia, "Times New Roman", serif; }
 
+    /* HERO */
     .hero{
       min-height:100vh;
-      position:relative;
+      position:relative;          /* important for absolute children */
       overflow:hidden;
       display:flex;
       align-items:center;
       justify-content:center;
 
-      /* ✅ Put your Level 2 background image filename here */
       background-image: url("entry.jpg");
       background-size: cover;
       background-position: center 30%;
       background-repeat: no-repeat;
     }
 
+    /* Dark overlay */
     .hero::before{
-  content:"";
-  position:absolute; inset:0;
-  background:
-    radial-gradient(circle at center, rgba(0,0,0,0.10), rgba(0,0,0,0.55)),
-    linear-gradient(to bottom, rgba(0,0,0,0.25), rgba(0,0,0,0.55));
-}
-
-    }
-
-    /* subtle grain */
-    .hero::after{
       content:"";
-      position:absolute; inset:0;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.20'/%3E%3C/svg%3E");
-      mix-blend-mode: overlay;
-      opacity: .22;
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at center, rgba(0,0,0,0.10), rgba(0,0,0,0.55)),
+        linear-gradient(to bottom, rgba(0,0,0,0.25), rgba(0,0,0,0.55));
+      z-index: 1;
       pointer-events:none;
     }
 
+    /* Subtle grain */
+    .hero::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.20'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+      opacity: .14;               /* slightly less noisy */
+      pointer-events:none;
+      z-index: 1;
+    }
+
+    /* Floating letters layer */
+    #specters{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      z-index: 2;                 /* above overlays */
+    }
+
+    .glyph{
+      position:absolute;
+      font-size: clamp(18px, 2.0vw, 28px);
+      letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.18);
+      text-shadow: 0 0 18px rgba(255,255,255,0.14);
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(1);
+      filter: blur(0.2px);
+      animation: floatFade 1.3s ease forwards;
+      user-select:none;
+      will-change: transform, opacity;
+    }
+
+    .glyph.flash{
+      color: rgba(255,255,255,0.92);
+      text-shadow: 0 0 28px rgba(255,255,255,0.35);
+    }
+
+    @keyframes floatFade{
+      0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.98); }
+      20%  { opacity: 0.95; }
+      100% { opacity: 0; transform: translate(-50%, -55%) scale(1.03); }
+    }
+
+    /* UI */
     .wrap{
       position: relative;
-      z-index: 3;
+      z-index: 3;                 /* above everything */
       width: min(760px, 92vw);
       padding: 40px 22px;
       text-align: center;
-     filter: drop-shadow(0 14px 20px var(--shadow));
-}
-      
-     .hero::before,
-     .hero::after{
-      z-index: 1;
-}
-
-    
+      filter: drop-shadow(0 14px 20px var(--shadow));
+    }
 
     .kicker{
       letter-spacing: 0.22em;
@@ -96,14 +125,32 @@
     }
 
     .story em{
-     .story em{
-  font-style: italic;
-  color: rgba(255,255,255,0.78);
-  text-shadow: 0 0 14px rgba(255,255,255,0.12);
-}
+      font-style: italic;
+      color: rgba(255,255,255,0.78);
+      text-shadow: 0 0 14px rgba(255,255,255,0.12);
+    }
+
+    .final{
+      margin: 10px auto 0;
+      max-width: 56ch;
+      color: rgba(255,255,255,0.70);
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      font-size: 11px;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 450ms ease, transform 450ms ease;
+      text-shadow: 0 0 18px rgba(255,255,255,0.12);
+      user-select: none;
+    }
+
+    .final.show{
+      opacity: 1;
+      transform: translateY(0);
+    }
 
     .hint{
-      margin: 0 auto 24px;
+      margin: 18px auto 24px;
       color: rgba(255,255,255,0.36);
       letter-spacing: 0.14em;
       text-transform: uppercase;
@@ -164,55 +211,6 @@
 
     .fadeOut{ animation: fade 700ms ease forwards; }
     @keyframes fade{ to{ opacity:0; transform: translateY(6px); } }
-
-    /* Floating letters */
-    #specters{
-      position:absolute;
-      inset:0;
-      pointer-events:none;
-      z-index: 2;
-    }
-    .glyph{
-      position:absolute;
-      font-size: clamp(18px, 2.0vw, 28px);
-      letter-spacing: 0.12em;
-      color: rgba(255,255,255,0.18);
-      text-shadow: 0 0 18px rgba(255,255,255,0.14);
-      opacity: 0;
-      transform: translate(-50%, -50%) scale(1);
-      filter: blur(0.2px);
-      animation: floatFade 1.3s ease forwards;
-      user-select:none;
-    }
-    .glyph.flash{
-  color: rgba(255,255,255,0.92);
-  text-shadow: 0 0 28px rgba(255,255,255,0.35);
-}
-
-    @keyframes floatFade{
-      0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.98); }
-      20%  { opacity: 0.95; }
-      100% { opacity: 0; transform: translate(-50%, -55%) scale(1.03); }
-    }
-      .final{
-  margin: 10px auto 0;
-  max-width: 56ch;
-  color: rgba(255,255,255,0.70);
-  letter-spacing: 0.10em;
-  text-transform: uppercase;
-  font-size: 11px;
-  opacity: 0;
-  transform: translateY(4px);
-  transition: opacity 450ms ease, transform 450ms ease;
-  text-shadow: 0 0 18px rgba(255,255,255,0.12);
-  user-select: none;
-}
-
-.final.show{
-  opacity: 1;
-  transform: translateY(0);
-}
-
   </style>
 </head>
 
@@ -224,23 +222,22 @@
       <div class="kicker">Level 1</div>
       <h1>The Castle Remembers</h1>
 
-<p class="story">
-  The door shuts without a sound—yet the air grows heavier, as if the stone itself
-  has been holding its breath for centuries.
-  <br><br>
-  Ahead: arches drowned in soot, prayer-candles still warm, and a corridor that
-  shouldn’t exist. Each step feels borrowed. Each heartbeat feels <em>counted</em>.
-  <br><br>
-  You came for the relic they buried in the dark—an ancient gem with a name that
-  was erased from every tongue that spoke it. They say it doesn’t shine.
-  It <em>stares</em>.
-  <br><br>
-  If you want it, you will not be guided by signs or maps.
-  Only by what flickers at the edge of your vision.
-</p>
+      <p class="story">
+        The door shuts without a sound—yet the air grows heavier, as if the stone itself
+        has been holding its breath for centuries.
+        <br><br>
+        Ahead: arches drowned in soot, prayer-candles still warm, and a corridor that
+        shouldn’t exist. Each step feels borrowed. Each heartbeat feels <em>counted</em>.
+        <br><br>
+        You came for the relic they buried in the dark—an ancient gem with a name that
+        was erased from every tongue that spoke it. They say it doesn’t shine.
+        It <em>stares</em>.
+        <br><br>
+        If you want it, you will not be guided by signs or maps.
+        Only by what flickers at the edge of your vision.
+      </p>
+
       <p class="final" id="finalLine">So it knows your name.</p>
-
-
 
       <div class="hint">the dark speaks in numbers</div>
 
@@ -275,13 +272,11 @@
       el.className = "glyph" + (isFlash ? " flash" : "");
       el.textContent = ch;
 
-      // random position (avoid center a bit so it feels peripheral)
-      const x = 8 + Math.random() * 84;   // %
-      const y = 10 + Math.random() * 80;  // %
+      const x = 8 + Math.random() * 84;
+      const y = 10 + Math.random() * 80;
       el.style.left = x + "%";
       el.style.top  = y + "%";
 
-      // random size + slight rotation
       const rot = (-8 + Math.random() * 16).toFixed(2);
       el.style.transform = `translate(-50%, -50%) rotate(${rot}deg)`;
 
@@ -292,7 +287,7 @@
     function wait(ms){ return new Promise(r => setTimeout(r, ms)); }
 
     async function runSequenceForever(){
-      // small ambient “ghost” letters sometimes (very faint, not part of code)
+      // ambient “ghost” letters (decoys)
       setInterval(() => {
         if (Math.random() < 0.35) {
           const junk = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -307,9 +302,9 @@
             await wait(220);
             await wait(120);
           }
-          await wait(850); // pause between letters
+          await wait(850);
         }
-        await wait(1200); // pause between full cycles
+        await wait(1200);
       }
     }
     runSequenceForever();
@@ -325,19 +320,13 @@
       if (!val) return;
 
       if (val === PASSWORD){
-  msg.textContent = "…";
+        msg.textContent = "…";
 
-  const finalLine = document.getElementById("finalLine");
-  finalLine.classList.add("show");
+        const finalLine = document.getElementById("finalLine");
+        finalLine.classList.add("show");
 
-  setTimeout(() => {
-    wrap.classList.add("fadeOut");
-  }, 650);
-
-  setTimeout(() => {
-    window.location.href = "level2.html";
-  }, 1350);
-
+        setTimeout(() => wrap.classList.add("fadeOut"), 650);
+        setTimeout(() => window.location.href = "level2.html", 1350);
       } else {
         msg.textContent = "Not yet.";
         wrap.classList.remove("wrong");
