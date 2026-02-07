@@ -97,7 +97,7 @@
       color: var(--faint);
       text-shadow: 0 0 0 rgba(255,255,255,0);
       transition: opacity 220ms ease, color 220ms ease, text-shadow 220ms ease, transform 220ms ease;
-      opacity: 0.35;
+      opacity: 0.10;
     }
     .riddle .ch.on{
       opacity: 1;
@@ -187,12 +187,17 @@
       <div class="riddle" aria-label="riddle">
         <div class="hint">watch the light</div>
         <div class="letters" id="letters">
-          <span class="ch">O</span>
-          <span class="ch">P</span>
-          <span class="ch">E</span>
-          <span class="ch">N</span>
-        
-        </div>
+  <span class="ch" data-real="1">O</span>
+  <span class="ch" data-real="0">X</span>
+  <span class="ch" data-real="1">P</span>
+  <span class="ch" data-real="0">M</span>
+  <span class="ch" data-real="0">L</span>
+  <span class="ch" data-real="1">E</span>
+  <span class="ch" data-real="0">R</span>
+  <span class="ch" data-real="1">N</span>
+  <span class="ch" data-real="0">A</span>
+</div>
+
       </div>
 
       <div class="gate" id="gate">
@@ -206,16 +211,39 @@
 
   <script>
     // ✅ Your real password
-    const PASSWORD = "HOPIN";
+    const PASSWORD = "OPEN";
 
     // Letter glow loop (H O P I N)
     const letters = Array.from(document.querySelectorAll("#letters .ch"));
-    let i = 0;
-    setInterval(() => {
-      letters.forEach(el => el.classList.remove("on"));
-      letters[i].classList.add("on");
-      i = (i + 1) % letters.length;
-    }, 1200);
+const real = letters.filter(el => el.dataset.real === "1");
+const decoy = letters.filter(el => el.dataset.real !== "1");
+
+// Weighted random pick: real letters show more often than decoys
+function pickLetter(){
+  // 80% chance real, 20% chance decoy
+  const pool = (Math.random() < 0.80) ? real : decoy;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function flash(){
+  letters.forEach(el => el.classList.remove("on"));
+
+  const chosen = pickLetter();
+  chosen.classList.add("on");
+
+  // short flash window
+  const flashMs = 260 + Math.floor(Math.random() * 220); // 260–480ms
+  setTimeout(() => chosen.classList.remove("on"), flashMs);
+}
+
+// random-ish timing so it feels alive
+function loop(){
+  flash();
+  const nextMs = 650 + Math.floor(Math.random() * 650); // 650–1300ms
+  setTimeout(loop, nextMs);
+}
+loop();
+
 
     const wrap = document.getElementById("wrap");
     const pw = document.getElementById("pw");
@@ -250,4 +278,5 @@
   </script>
 </body>
 </html>
+
 
