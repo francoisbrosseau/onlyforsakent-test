@@ -257,7 +257,7 @@
 
       <div class="gate">
         <input id="pw" type="password" placeholder="password…" autocomplete="off" />
-        <button id="btn">Descend</button>
+        <button id="btn">DARE</button>
       </div>
 
       <div class="msg" id="msg"></div>
@@ -302,26 +302,48 @@
 
     async function runSequenceForever(){
       // ambient “ghost” letters (decoys)
-      setInterval(() => {
-        if (Math.random() < 0.35) {
-          const junk = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-          spawnGlyph(junk[Math.floor(Math.random() * junk.length)], false);
-        }
-      }, 650);
+      function wait(ms){ return new Promise(r => setTimeout(r, ms)); }
 
-      while(true){
-        for (const item of sequence){
-          for (let i = 0; i < item.flashes; i++){
-            spawnGlyph(item.ch, true);
-            await wait(220);
-            await wait(120);
-          }
-          await wait(850);
-        }
-        await wait(1200);
-      }
+function shuffle(arr){
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+async function flashLetterNTimes(letter, n){
+  for (let i = 0; i < n; i++){
+    spawnGlyph(letter, true);
+    await wait(220);
+    await wait(120);
+  }
+}
+
+async function runSequenceForever(){
+  // ambient decoys (same as before)
+  setInterval(() => {
+    if (Math.random() < 0.35) {
+      const junk = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      spawnGlyph(junk[Math.floor(Math.random() * junk.length)], false);
     }
-    runSequenceForever();
+  }, 650);
+
+  while(true){
+    // 🔥 Randomize the order each full cycle
+    const randomized = shuffle(sequence);
+
+    for (const item of randomized){
+      await flashLetterNTimes(item.ch, item.flashes);
+      await wait(850); // pause between letter groups
+    }
+
+    await wait(1200); // pause between cycles
+  }
+}
+runSequenceForever();
+
 
     // Gate logic
     const wrap = document.getElementById("wrap");
