@@ -26,7 +26,7 @@
       justify-content:center;
 
       /* ✅ Put your Level 2 background image filename here */
-      background-image: url("LEVEL2_BG.jpg");
+      background-image: url("entry.jpg");
       background-size: cover;
       background-position: center 30%;
       background-repeat: no-repeat;
@@ -68,6 +68,7 @@
     }
 
     h1{
+      text-shadow: 0 0 28px rgba(255,255,255,0.10);
       margin: 0 0 14px;
       letter-spacing: 0.18em;
       text-transform: uppercase;
@@ -85,9 +86,11 @@
     }
 
     .story em{
-      font-style: normal;
-      color: rgba(255,255,255,0.70);
-    }
+     .story em{
+  font-style: italic;
+  color: rgba(255,255,255,0.78);
+  text-shadow: 0 0 14px rgba(255,255,255,0.12);
+}
 
     .hint{
       margin: 0 auto 24px;
@@ -180,6 +183,25 @@
       20%  { opacity: 0.95; }
       100% { opacity: 0; transform: translate(-50%, -55%) scale(1.03); }
     }
+      .final{
+  margin: 10px auto 0;
+  max-width: 56ch;
+  color: rgba(255,255,255,0.70);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  font-size: 11px;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 450ms ease, transform 450ms ease;
+  text-shadow: 0 0 18px rgba(255,255,255,0.12);
+  user-select: none;
+}
+
+.final.show{
+  opacity: 1;
+  transform: translateY(0);
+}
+
   </style>
 </head>
 
@@ -189,19 +211,27 @@
 
     <section class="wrap" id="wrap">
       <div class="kicker">Level 1</div>
-      <h1>The Door Didn’t Resist You</h1>
+      <h1>The Castle Remembers</h1>
 
-      <p class="story">
-        The hinge didn’t creak. The lock didn’t fight.
-        <br><br>
-        Inside, the air tastes old—like wet stone and burnt paper.
-        Something is <em>counting</em> you.
-        <br><br>
-        If you want to go deeper, don’t search. Don’t guess.
-        <em>Watch.</em> Then write it down.
-      </p>
+<p class="story">
+  The door shuts without a sound—yet the air grows heavier, as if the stone itself
+  has been holding its breath for centuries.
+  <br><br>
+  Ahead: arches drowned in soot, prayer-candles still warm, and a corridor that
+  shouldn’t exist. Each step feels borrowed. Each heartbeat feels <em>counted</em>.
+  <br><br>
+  You came for the relic they buried in the dark—an ancient gem with a name that
+  was erased from every tongue that spoke it. They say it doesn’t shine.
+  It <em>stares</em>.
+  <br><br>
+  If you want it, you will not be guided by signs or maps.
+  Only by what flickers at the edge of your vision.
+</p>
+      <p class="final" id="finalLine">So it knows your name.</p>
 
-      <div class="hint">count the flashes</div>
+
+
+      <div class="hint">the dark speaks in numbers</div>
 
       <div class="gate">
         <input id="pw" type="password" placeholder="password…" autocomplete="off" />
@@ -284,12 +314,19 @@
       if (!val) return;
 
       if (val === PASSWORD){
-        msg.textContent = "…";
-        wrap.classList.add("fadeOut");
-        setTimeout(() => {
-          // ✅ next page after this one
-          window.location.href = "level2.html";
-        }, 700);
+  msg.textContent = "…";
+
+  const finalLine = document.getElementById("finalLine");
+  finalLine.classList.add("show");
+
+  setTimeout(() => {
+    wrap.classList.add("fadeOut");
+  }, 650);
+
+  setTimeout(() => {
+    window.location.href = "level2.html";
+  }, 1350);
+
       } else {
         msg.textContent = "Not yet.";
         wrap.classList.remove("wrong");
