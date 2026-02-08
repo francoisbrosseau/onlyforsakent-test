@@ -29,7 +29,7 @@
       font-family: Georgia, "Times New Roman", serif;
     }
 
-    /* ✅ Background: brighter + crisper */
+    /* Background layer */
     .bg{
       position:absolute; inset:0;
       background-image: url("Level3.jpg"); /* ✅ your level 3 image */
@@ -41,13 +41,13 @@
       z-index:0;
     }
 
-    /* ✅ Overlay: less heavy so statue is visible */
+    /* Overlay (not too heavy) */
     .hero::before{
       content:"";
       position:absolute; inset:0;
       background:
-        radial-gradient(circle at 50% 42%, rgba(0,0,0,0.06), rgba(0,0,0,0.52)),
-        linear-gradient(to bottom, rgba(0,0,0,0.16), rgba(0,0,0,0.62));
+        radial-gradient(circle at 50% 40%, rgba(0,0,0,0.06), rgba(0,0,0,0.52)),
+        linear-gradient(to bottom, rgba(0,0,0,0.14), rgba(0,0,0,0.62));
       z-index:1;
       pointer-events:none;
     }
@@ -63,24 +63,89 @@
       z-index:1;
     }
 
-    /* ✅ Hotspots layer (MUST allow pointer events) */
+    /* ✅ Hotspots layer */
     .hotspots{
       position:absolute;
       inset:0;
       z-index:2;
-      pointer-events:auto; /* ✅ FIXED: hover works now */
+      pointer-events:auto; /* ✅ must be ON */
     }
 
-    /* The hidden letter zones */
+    /* ✅ Flag (riddle on a banner in the scene) */
+    .flag{
+      position:absolute;
+      left: 9%;
+      top: 33%;
+      width: min(420px, 72vw);
+      padding: 14px 16px;
+      border-radius: 10px;
+      pointer-events:none;
+      user-select:none;
+
+      background: linear-gradient(180deg,
+        rgba(255,255,255,0.06),
+        rgba(0,0,0,0.30)
+      );
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow: 0 16px 36px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06);
+      backdrop-filter: blur(1px);
+
+      transform: rotate(-2deg);
+      opacity: 0.90;
+    }
+
+    .flag:before, .flag:after{
+      content:"";
+      position:absolute;
+      top: 10px;
+      width: 18px;
+      height: calc(100% - 20px);
+      background: rgba(0,0,0,0.20);
+      filter: blur(0.2px);
+      opacity: 0.55;
+    }
+    .flag:before{ left:-10px; border-radius: 12px 0 0 12px; }
+    .flag:after{ right:-10px; border-radius: 0 12px 12px 0; }
+
+    .flagTitle{
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-size: 11px;
+      color: rgba(255,255,255,0.34);
+      margin-bottom: 8px;
+      text-align:center;
+    }
+
+    .flagText{
+      font-family: "Cormorant Garamond", serif;
+      font-size: 16px;
+      line-height: 1.35;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align:center;
+
+      color: rgba(255,255,255,0.22);
+      text-shadow: 0 1px 0 rgba(0,0,0,0.85), 0 -1px 0 rgba(255,255,255,0.06);
+    }
+
+    /* ✅ Letter zones (THIS is the critical fix) */
     .spot{
       position:absolute;
-      width: 110px;
-      height: 110px;
+      width: 120px;
+      height: 120px;
       border-radius: 999px;
+
+      /* ✅ IMPORTANT: centers the zone on left/top coordinates */
+      transform: translate(-50%, -50%);
+
       display:flex;
       align-items:center;
       justify-content:center;
-      background: rgba(255,255,255,0.00);
+
+      /* tiny invisible fill so hover always "catches" */
+      background: rgba(255,255,255,0.01);
+
       outline: none;
       -webkit-tap-highlight-color: transparent;
       cursor: default;
@@ -88,10 +153,9 @@
 
     .spot span{
       font-family: "Cinzel Decorative", serif;
-      font-size: 38px;
+      font-size: 40px;
       letter-spacing: 0.08em;
 
-      /* nearly invisible normally */
       color: rgba(255,255,255,0.05);
       opacity: 0.10;
       text-shadow: 0 0 0 rgba(255,255,255,0);
@@ -107,9 +171,7 @@
     .spot:focus-visible span{
       opacity: 1;
       color: rgba(255,255,255,0.94);
-      text-shadow:
-        0 0 16px rgba(255,255,255,0.24),
-        0 0 34px rgba(140,0,0,0.20);
+      text-shadow: 0 0 16px rgba(255,255,255,0.24), 0 0 34px rgba(140,0,0,0.20);
       transform: translateY(0);
       animation: flicker 1.25s ease-in-out;
     }
@@ -179,46 +241,8 @@
       text-shadow: 0 0 10px rgba(140,0,0,0.22);
     }
 
-    /* ✅ Plaque INSIDE the story section (below story) */
-    .plaque{
-      margin: 14px auto 18px;
-      width: min(560px, 92vw);
-      padding: 14px 16px;
-      border-radius: 12px;
-
-      background: linear-gradient(180deg,
-        rgba(255,255,255,0.06),
-        rgba(0,0,0,0.18)
-      );
-      border: 1px solid rgba(255,255,255,0.12);
-      box-shadow:
-        0 10px 26px rgba(0,0,0,0.45),
-        inset 0 1px 0 rgba(255,255,255,0.06);
-      backdrop-filter: blur(1px);
-
-      text-align:center;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      user-select:none;
-    }
-
-    .plaque .title{
-      font-family: "Cinzel Decorative", serif;
-      font-size: 12px;
-      color: rgba(255,255,255,0.32);
-      margin-bottom: 6px;
-    }
-    .plaque .riddletext{
-      font-family: "Cormorant Garamond", serif;
-      font-size: 16px;
-      color: rgba(255,255,255,0.22);
-      text-shadow:
-        0 1px 0 rgba(0,0,0,0.85),
-        0 -1px 0 rgba(255,255,255,0.06);
-    }
-
-    .riddlehint{
-      margin: 10px auto 22px;
+    .hint{
+      margin: 14px auto 22px;
       max-width: 64ch;
       color: var(--hint);
       font-size: 12px;
@@ -282,8 +306,9 @@
     @keyframes fade{ to{ opacity:0; transform: translateY(6px); } }
 
     @media (max-width: 600px){
-      .spot{ width: 120px; height: 120px; }
-      .spot span{ font-size: 40px; }
+      .spot{ width: 130px; height: 130px; }
+      .spot span{ font-size: 42px; }
+      .flag{ left: 6%; top: 30%; }
     }
   </style>
 </head>
@@ -292,18 +317,31 @@
   <main class="hero">
     <div class="bg" aria-hidden="true"></div>
 
-    <!-- ✅ TRUTH hidden ON the statue/pedestal (hover/tap) -->
+    <!-- ✅ Flag + hidden hover letters -->
     <div class="hotspots" aria-hidden="true">
-      <!-- Hood highlight -->
-      <div class="spot" style="left:49.8%; top:24.9%;" tabindex="-1"><span>T</span></div>
+
+      <!-- ✅ RIDDLE ON A FLAG -->
+      <div class="flag">
+        <div class="flagTitle">THE EYE THAT FOLLOWS</div>
+        <div class="flagText">
+          IT WATCHES THROUGH EVERY MASK.<br>
+          BURN THE MASK — WHAT REMAINS?<br>
+          SEEK WHAT CANNOT LIE.
+        </div>
+      </div>
+
+      <!-- ✅ TRUTH hotspots on statue/pedestal (centered & hoverable) -->
+      <!-- Hood glow -->
+      <div class="spot" style="left:49.8%; top:24.9%;"><span>T</span></div>
       <!-- Left shoulder -->
-      <div class="spot" style="left:44.7%; top:31.7%;" tabindex="-1"><span>R</span></div>
+      <div class="spot" style="left:44.7%; top:31.7%;"><span>R</span></div>
       <!-- Right shoulder -->
-      <div class="spot" style="left:54.9%; top:31.7%;" tabindex="-1"><span>U</span></div>
+      <div class="spot" style="left:54.9%; top:31.7%;"><span>U</span></div>
       <!-- Pedestal glow -->
-      <div class="spot" style="left:49.8%; top:47.9%;" tabindex="-1"><span>T</span></div>
+      <div class="spot" style="left:49.8%; top:47.9%;"><span>T</span></div>
       <!-- Lower pedestal -->
-      <div class="spot" style="left:49.8%; top:54.7%;" tabindex="-1"><span>H</span></div>
+      <div class="spot" style="left:49.8%; top:54.7%;"><span>H</span></div>
+
     </div>
 
     <section class="wrap" id="wrap">
@@ -320,14 +358,8 @@
         The castle offers no directions. Only hints… <em>if you dare to look where you shouldn’t.</em>
       </p>
 
-      <!-- ✅ Plaque now appears BELOW the story -->
-      <div class="plaque">
-        <div class="title">Engraved on the pedestal</div>
-        <div class="riddletext">What remains when the mask burns?</div>
-      </div>
-
-      <div class="riddlehint">
-        it won’t speak aloud. it hides in plain sight. let the stone confess.
+      <div class="hint">
+        the truth does not announce itself.
       </div>
 
       <div class="gate">
