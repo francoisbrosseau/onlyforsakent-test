@@ -358,7 +358,7 @@
     ];
 
     // reveal radius (in pixels) — larger = easier to find
-    const RADIUS = 85;
+    const RADIUS = 55;
 
     function setLantern(clientX, clientY){
       lantern.style.left = clientX + "px";
@@ -380,8 +380,14 @@
 
         const el = glyphEls[h.key];
         // place glyph at its hotspot (not at cursor)
-        el.style.left = (rect.left + hx) + "px";
-        el.style.top  = (rect.top  + hy) + "px";
+        // scatter positions (fixed per load)
+if (!el.dataset.sx){
+  el.dataset.sx = (5 + Math.random() * 90).toFixed(2);
+  el.dataset.sy = (8 + Math.random() * 84).toFixed(2);
+}
+el.style.left = (rect.left + (parseFloat(el.dataset.sx) / 100) * rect.width) + "px";
+el.style.top  = (rect.top  + (parseFloat(el.dataset.sy) / 100) * rect.height) + "px";
+
 
         if (dist <= RADIUS){
           el.classList.add("on");
