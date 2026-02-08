@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ONLYFORSAKEN</title>
 
+  <!-- ✅ Cooler title font (same “entry page vibe” type of gothic display font) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+
   <style>
     :root{
       --text: rgba(255,255,255,0.90);
@@ -12,6 +17,12 @@
       --faint: rgba(255,255,255,0.18);
       --glow: rgba(255,255,255,0.95);
       --shadow: rgba(0,0,0,0.55);
+
+      /* ✅ Subtle per-letter hint colors (dim by default) */
+      --hint-o: rgba(120, 255, 170, 0.28);  /* faint green */
+      --hint-p: rgba(120, 190, 255, 0.28);  /* faint blue */
+      --hint-e: rgba(255, 120, 140, 0.28);  /* faint red */
+      --hint-n: rgba(200, 160, 255, 0.28);  /* faint violet */
     }
 
     *{ box-sizing:border-box; }
@@ -47,13 +58,19 @@
       filter: drop-shadow(0 12px 18px var(--shadow));
     }
 
+    /* ✅ TITLE: cooler / more “entry page” */
     .brand{
-      letter-spacing: 0.22em;
+      font-family: "Cinzel Decorative", "Cinzel", Georgia, "Times New Roman", serif;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      font-size: clamp(28px, 4vw, 44px);
-      color: var(--text);
-      margin: 0 0 12px 0;
+      font-size: clamp(30px, 4.4vw, 54px);
+      color: rgba(255,255,255,0.92);
+      margin: 0 0 10px 0;
       user-select:none;
+
+      text-shadow:
+        0 0 14px rgba(255,255,255,0.12),
+        0 10px 30px rgba(0,0,0,0.65);
     }
 
     .sub{
@@ -63,6 +80,7 @@
       text-transform: lowercase;
       font-size: 13px;
       user-select:none;
+      font-family: "Cinzel", Georgia, "Times New Roman", serif;
     }
 
     /* RIDDLE LINE */
@@ -85,25 +103,63 @@
       margin-right: 10px;
       display:flex;
       align-items:center;
+      font-family: "Cinzel", Georgia, "Times New Roman", serif;
     }
     .riddle .letters{
       display:inline-flex;
       gap: 10px;
       align-items:center;
     }
+
     .riddle .ch{
       font-size: 16px;
       letter-spacing: 0.12em;
       color: var(--faint);
       text-shadow: 0 0 0 rgba(255,255,255,0);
-      transition: opacity 220ms ease, color 220ms ease, text-shadow 220ms ease, transform 220ms ease;
+      transition: opacity 220ms ease, color 220ms ease, text-shadow 220ms ease, transform 220ms ease, filter 220ms ease;
       opacity: 0.10;
     }
+
+    /* ✅ Subtle hint tints (always lightly colored, but still dim) */
+    .riddle .ch.hint{
+      opacity: 0.18;
+      color: rgba(255,255,255,0.22);
+      filter: drop-shadow(0 0 10px rgba(255,255,255,0.00));
+    }
+    .riddle .ch.hint[data-hint="o"]{ color: var(--hint-o); }
+    .riddle .ch.hint[data-hint="p"]{ color: var(--hint-p); }
+    .riddle .ch.hint[data-hint="e"]{ color: var(--hint-e); }
+    .riddle .ch.hint[data-hint="n"]{ color: var(--hint-n); }
+
+    /* Default flash */
     .riddle .ch.on{
       opacity: 1;
       color: var(--glow);
       text-shadow: 0 0 16px rgba(255,255,255,0.22);
       transform: translateY(-1px);
+    }
+
+    /* ✅ When a hinted letter flashes, it keeps its own tint (subtle but noticeable) */
+    .riddle .ch.hint.on{
+      color: rgba(255,255,255,0.88); /* base lift */
+      text-shadow: 0 0 18px rgba(255,255,255,0.10);
+      transform: translateY(-1px);
+    }
+    .riddle .ch.hint.on[data-hint="o"]{
+      color: rgba(180, 255, 210, 0.92);
+      text-shadow: 0 0 18px rgba(120, 255, 170, 0.18);
+    }
+    .riddle .ch.hint.on[data-hint="p"]{
+      color: rgba(190, 225, 255, 0.92);
+      text-shadow: 0 0 18px rgba(120, 190, 255, 0.18);
+    }
+    .riddle .ch.hint.on[data-hint="e"]{
+      color: rgba(255, 200, 205, 0.92);
+      text-shadow: 0 0 18px rgba(255, 120, 140, 0.18);
+    }
+    .riddle .ch.hint.on[data-hint="n"]{
+      color: rgba(235, 215, 255, 0.92);
+      text-shadow: 0 0 18px rgba(200, 160, 255, 0.18);
     }
 
     /* PASSWORD BOX */
@@ -126,6 +182,7 @@
       outline: none;
       letter-spacing: 0.08em;
       font-size: 14px;
+      font-family: "Cinzel", Georgia, "Times New Roman", serif;
     }
     input[type="password"]::placeholder{ color: rgba(255,255,255,0.28); }
 
@@ -139,6 +196,7 @@
       text-transform: uppercase;
       cursor:pointer;
       transition: transform 120ms ease, background 120ms ease;
+      font-family: "Cinzel", Georgia, "Times New Roman", serif;
     }
     button:hover{ background: rgba(255,255,255,0.10); }
     button:active{ transform: translateY(1px); }
@@ -149,6 +207,7 @@
       color: rgba(255,255,255,0.55);
       letter-spacing: 0.08em;
       font-size: 12px;
+      font-family: "Cinzel", Georgia, "Times New Roman", serif;
     }
 
     .wrong{
@@ -186,18 +245,19 @@
 
       <div class="riddle" aria-label="riddle">
         <div class="hint">watch the light</div>
-        <div class="letters" id="letters">
-  <span class="ch" data-real="1">O</span>
-  <span class="ch" data-real="0">X</span>
-  <span class="ch" data-real="1">P</span>
-  <span class="ch" data-real="0">M</span>
-  <span class="ch" data-real="0">L</span>
-  <span class="ch" data-real="1">E</span>
-  <span class="ch" data-real="0">R</span>
-  <span class="ch" data-real="1">N</span>
-  <span class="ch" data-real="0">A</span>
-</div>
 
+        <!-- ✅ Mark O/P/E/N as subtle colored hints -->
+        <div class="letters" id="letters">
+          <span class="ch hint" data-real="1" data-hint="o">O</span>
+          <span class="ch" data-real="0">X</span>
+          <span class="ch hint" data-real="1" data-hint="p">P</span>
+          <span class="ch" data-real="0">M</span>
+          <span class="ch" data-real="0">L</span>
+          <span class="ch hint" data-real="1" data-hint="e">E</span>
+          <span class="ch" data-real="0">R</span>
+          <span class="ch hint" data-real="1" data-hint="n">N</span>
+          <span class="ch" data-real="0">A</span>
+        </div>
       </div>
 
       <div class="gate" id="gate">
@@ -210,40 +270,39 @@
   </main>
 
   <script>
-    // ✅ Your real password
+    // ✅ Your real password (unchanged)
     const PASSWORD = "OPEN";
 
-    // Letter glow loop (H O P I N)
+    // Letter glow loop
     const letters = Array.from(document.querySelectorAll("#letters .ch"));
-const real = letters.filter(el => el.dataset.real === "1");
-const decoy = letters.filter(el => el.dataset.real !== "1");
+    const real = letters.filter(el => el.dataset.real === "1");
+    const decoy = letters.filter(el => el.dataset.real !== "1");
 
-// Weighted random pick: real letters show more often than decoys
-function pickLetter(){
-  // 80% chance real, 20% chance decoy
-  const pool = (Math.random() < 0.80) ? real : decoy;
-  return pool[Math.floor(Math.random() * pool.length)];
-}
+    // Weighted random pick: real letters show more often than decoys
+    function pickLetter(){
+      // 80% chance real, 20% chance decoy
+      const pool = (Math.random() < 0.80) ? real : decoy;
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
 
-function flash(){
-  letters.forEach(el => el.classList.remove("on"));
+    function flash(){
+      letters.forEach(el => el.classList.remove("on"));
 
-  const chosen = pickLetter();
-  chosen.classList.add("on");
+      const chosen = pickLetter();
+      chosen.classList.add("on");
 
-  // short flash window
-  const flashMs = 260 + Math.floor(Math.random() * 220); // 260–480ms
-  setTimeout(() => chosen.classList.remove("on"), flashMs);
-}
+      // short flash window
+      const flashMs = 260 + Math.floor(Math.random() * 220); // 260–480ms
+      setTimeout(() => chosen.classList.remove("on"), flashMs);
+    }
 
-// random-ish timing so it feels alive
-function loop(){
-  flash();
-  const nextMs = 650 + Math.floor(Math.random() * 650); // 650–1300ms
-  setTimeout(loop, nextMs);
-}
-loop();
-
+    // random-ish timing so it feels alive
+    function loop(){
+      flash();
+      const nextMs = 650 + Math.floor(Math.random() * 650); // 650–1300ms
+      setTimeout(loop, nextMs);
+    }
+    loop();
 
     const wrap = document.getElementById("wrap");
     const pw = document.getElementById("pw");
@@ -278,6 +337,3 @@ loop();
   </script>
 </body>
 </html>
-
-
-
