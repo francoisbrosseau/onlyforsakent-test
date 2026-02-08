@@ -1,365 +1,363 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Level 4 — The Halls of the Whispering Stone</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ONLYFORSAKEN — Level 4</title>
 
-  <!-- MUST be the same CSS file as Level 2/3 -->
+  <!-- ✅ EXACT same fonts as Level 3 -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --ink: rgba(235, 226, 214, .94);
-      --muted: rgba(235, 226, 214, .72);
-      --faint: rgba(235, 226, 214, .52);
-      --edge: rgba(255,255,255,.10);
-      --edge2: rgba(255,255,255,.18);
-      --cold: rgba(155,210,255,.28);
-      --warn: rgba(255,140,140,.90);
-      --ok: rgba(170,255,210,.92);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.78);
+      --hint: rgba(255,255,255,0.42);
+      --shadow: rgba(0,0,0,0.72);
     }
 
     *{ box-sizing:border-box; }
-    html, body{ height:100%; }
+    html,body{ height:100%; margin:0; background:#000; }
 
-    /* IMPORTANT: do NOT set fonts here. Level 2/3 decide fonts. */
-    body{
-      margin:0;
-      background:#000;
-      color:var(--ink);
-      overflow-x:hidden;
-    }
-
-    /* ✅ BACKGROUND IMAGE PLACE (THIS IS IT) */
-    /* Put level4.jpg in the same folder as this HTML */
-    .bg{
-      position:fixed;
-      inset:0;
-      z-index:-2;
-      background:#000;
+    .hero{
+      min-height:100vh;
+      position:relative;
       overflow:hidden;
-    }
-    .bg img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      filter: brightness(.72) contrast(1.05) saturate(.95);
-      transform: scale(1.03);
-    }
-
-    .overlay{
-      position:fixed;
-      inset:0;
-      z-index:-1;
-      background:
-        radial-gradient(900px 600px at 50% 35%, rgba(0,0,0,.12), rgba(0,0,0,.75) 70%, rgba(0,0,0,.90) 100%),
-        linear-gradient(180deg, rgba(0,0,0,.40), rgba(0,0,0,.78));
-    }
-
-    .wrap{
-      min-height:100%;
       display:flex;
       align-items:center;
       justify-content:center;
-      padding: 56px 16px;
+      background:#000;
+      font-family: Georgia, "Times New Roman", serif;
     }
 
-    /* Single centered block like your Level 2/3 vibe */
-    .center{
-      width: min(860px, 100%);
-      text-align:center;
-      padding: 18px 18px 12px;
+    /* ✅ Background image (Level 4) — MORE VISIBLE */
+    .bg{
+      position:absolute; inset:0;
+      background-image: url("level4.jpg");
+      background-size: cover;
+      background-position: center 45%;
+      background-repeat: no-repeat;
+
+      /* Make details pop (you can tweak these 3 numbers if you want) */
+      filter: brightness(1.18) contrast(1.16) saturate(1.05);
+
+      transform: scale(1.02);
+      z-index:0;
+    }
+
+    /* ✅ Dark overlay (lighter than before so we see the image) */
+    .hero::before{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        radial-gradient(circle at 50% 40%, rgba(0,0,0,0.04), rgba(0,0,0,0.46)),
+        linear-gradient(to bottom, rgba(0,0,0,0.10), rgba(0,0,0,0.54));
+      z-index:1;
+      pointer-events:none;
+    }
+
+    /* Grain (same as Level 3) */
+    .hero::after{
+      content:"";
+      position:absolute; inset:0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+      opacity: .10;
+      pointer-events:none;
+      z-index:1;
+    }
+
+    /* UI panel */
+    .wrap{
+      position: relative;
+      z-index: 3;
+      width: min(820px, 92vw);
+      padding: 42px 22px;
+      text-align: center;
+      filter: drop-shadow(0 16px 22px var(--shadow));
+      pointer-events:auto;
     }
 
     .kicker{
-      margin:0 0 10px;
-      letter-spacing:.32em;
-      text-transform:uppercase;
-      font-size:12px;
-      color: var(--faint);
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      font-size: 12px;
+      color: rgba(255,255,255,0.46);
+      margin: 0 0 10px;
+      user-select:none;
     }
 
-    /* 🔥 Title: NO font-family here at all so it uses Level 2/3 exactly */
+    @keyframes candleFlicker {
+      0%   { opacity: 0.92; text-shadow: 0 0 6px rgba(255,255,255,0.10), 0 0 18px rgba(120,0,0,0.18); }
+      25%  { opacity: 1;    text-shadow: 0 0 10px rgba(255,255,255,0.18), 0 0 28px rgba(120,0,0,0.28); }
+      50%  { opacity: 0.96; text-shadow: 0 0 7px rgba(255,255,255,0.12), 0 0 20px rgba(120,0,0,0.22); }
+      75%  { opacity: 1;    text-shadow: 0 0 12px rgba(255,255,255,0.20), 0 0 34px rgba(120,0,0,0.32); }
+      100% { opacity: 0.94; text-shadow: 0 0 6px rgba(255,255,255,0.10), 0 0 18px rgba(120,0,0,0.18); }
+    }
+
+    /* ✅ Title font EXACT same as Level 3 */
     h1{
-      margin:0 0 12px;
-      /* do NOT set font-family */
-      font-size: clamp(34px, 4.6vw, 56px);
-      letter-spacing:.03em;
-      line-height:1.02;
-      text-shadow: 0 0 26px rgba(255,255,255,.10);
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: clamp(24px, 3.6vw, 40px);
+      color: #e8e2d6;
+      margin: 0 0 14px;
+      animation: candleFlicker 3.5s infinite ease-in-out;
+      user-select:none;
     }
 
+    /* ✅ Story font EXACT same as Level 3 */
     .story{
-      margin: 0 auto;
-      text-align:left;
+      font-family: "Cormorant Garamond", serif;
       font-size: 18px;
-      line-height: 1.9;
-      letter-spacing:.01em;
-      text-shadow: 0 1px 0 rgba(0,0,0,.35);
+      line-height: 1.65;
+      letter-spacing: 0.02em;
+      color: var(--muted);
+      margin: 0 auto 16px;
+      max-width: 62ch;
+      animation: candleFlicker 5s infinite ease-in-out;
+      text-align: left;
     }
-    .story p{ margin:0 0 14px; }
 
-    .quote{
-      margin: 18px 0;
-      padding: 14px 14px;
-      border-left: 3px solid var(--cold);
-      background: rgba(0,0,0,.22);
+    .story em{
+      font-style: normal;
+      color: rgba(255,255,255,0.92);
+      text-shadow: 0 0 10px rgba(140,0,0,0.22);
+    }
+
+    /* Subtle hint line (same vibe) */
+    .hint{
+      margin: 14px auto 22px;
+      max-width: 64ch;
+      color: var(--hint);
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      user-select:none;
+      text-align:center;
+    }
+
+    /* ✅ Gate EXACT same style */
+    .gate{
+      display:flex;
+      gap: 10px;
+      justify-content:center;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-top: 6px;
+    }
+
+    input[type="password"]{
+      width: min(340px, 86vw);
+      padding: 12px 14px;
       border-radius: 12px;
-      color: rgba(235,226,214,.92);
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.34);
+      color: var(--text);
+      outline: none;
+      letter-spacing: 0.12em;
+      font-size: 14px;
+      font-family: "Cormorant Garamond", serif;
+    }
+    input[type="password"]::placeholder{ color: rgba(255,255,255,0.28); }
+
+    button{
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor:pointer;
+      font-family: "Cormorant Garamond", serif;
+    }
+
+    .msg{
+      margin-top: 14px;
+      min-height: 18px;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.08em;
+      font-size: 12px;
+      user-select:none;
+    }
+
+    .wrong{ animation: shake 340ms ease; }
+    @keyframes shake{
+      0%{ transform: translateX(0); }
+      20%{ transform: translateX(-6px); }
+      40%{ transform: translateX(6px); }
+      60%{ transform: translateX(-4px); }
+      80%{ transform: translateX(4px); }
+      100%{ transform: translateX(0); }
+    }
+
+    .fadeOut{ animation: fade 700ms ease forwards; }
+    @keyframes fade{ to{ opacity:0; transform: translateY(6px); } }
+
+    /* Hidden password letters: B R E A T H */
+    .sigil{
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 0;
+    }
+    .hintOn .sigil{
+      border-bottom: 1px dotted rgba(255,255,255,0.25);
+      text-shadow: 0 0 10px rgba(140,0,0,0.22);
+    }
+
+    .hintBtn{
+      margin-top: 8px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.22);
+      color: rgba(255,255,255,0.62);
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      cursor:pointer;
+      font-size: 12px;
+      font-family: "Cormorant Garamond", serif;
     }
 
     .sep{
       height:1px;
-      background: linear-gradient(90deg, transparent, var(--edge2), transparent);
-      margin: 18px 0 16px;
+      width:min(560px, 92vw);
+      margin: 18px auto 14px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent);
+      opacity: .85;
     }
 
     .riddleTitle{
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: 11px;
+      color: rgba(255,255,255,0.34);
       margin: 0 0 8px;
-      /* do NOT set font-family, keep like Level 2/3 */
-      font-size: 24px;
-      letter-spacing:.04em;
+      user-select:none;
     }
 
-    .riddle{
-      margin:0;
-      padding: 14px 14px;
-      border-radius: 14px;
-      border: 1px solid var(--edge);
-      background: rgba(0,0,0,.20);
-      font-size: 18px;
-      line-height: 1.7;
-      color: rgba(235,226,214,.92);
-    }
-
-    /* Password area — smaller + centered */
-    .gate{
-      margin-top: 16px;
-      padding-top: 14px;
-      border-top: 1px solid rgba(255,255,255,.10);
-    }
-
-    .gateLabel{
-      color: var(--muted);
-      text-align:center;
-    }
-
-    .gateRow{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      justify-content:center; /* ✅ centered */
-      margin-top: 10px;
-      flex-wrap:wrap;
-    }
-
-    input[type="password"]{
-      width: 220px;          /* ✅ smaller */
-      max-width: 70vw;
-      padding: 10px 12px;    /* ✅ smaller */
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.35);
-      color: var(--ink);
-      outline:none;
+    .riddleText{
+      font-family: "Cormorant Garamond", serif;
       font-size: 16px;
-      text-align:center;     /* ✅ matches centered vibe */
-    }
-
-    button{
-      padding: 10px 14px;    /* ✅ smaller */
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.06);
-      color: var(--ink);
-      cursor:pointer;
-      font-size: 16px;
-    }
-    button:hover{ background: rgba(255,255,255,.09); }
-
-    .msg{
-      min-height: 22px;
-      margin-top: 10px;
+      line-height: 1.35;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
       text-align:center;
-      color: var(--muted);
-      font-size: 15px;
-    }
-    .msg.error{ color: var(--warn); }
-    .msg.ok{ color: var(--ok); }
-
-    .reveal{
-      display:none;
-      margin-top: 10px;
-      text-align:center;
-      color: rgba(235,226,214,.86);
+      color: rgba(255,255,255,0.22);
+      text-shadow: 0 1px 0 rgba(0,0,0,0.85), 0 -1px 0 rgba(255,255,255,0.06);
+      max-width: 62ch;
+      margin: 0 auto;
+      user-select:none;
     }
 
-    .reveal a{
-      color: rgba(200,235,255,.92);
-      text-decoration:none;
-      border-bottom: 1px solid rgba(200,235,255,.25);
+    @media (max-width: 600px){
+      .wrap{ padding: 38px 18px; }
     }
-    .reveal a:hover{ border-bottom-color: rgba(200,235,255,.55); }
-
-    /* Hidden meta: B R E A T H embedded (subtle) */
-    .sigil{ color: inherit; }
-    .hintOn .sigil{
-      text-shadow: 0 0 10px rgba(155,210,255,.18);
-      border-bottom: 1px dotted rgba(155,210,255,.22);
-    }
-
-    .hintBar{
-      display:flex;
-      justify-content:flex-end;
-      margin-top: 6px;
-    }
-    .hintBtn{
-      padding: 10px 12px;
-      font-size: 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.18);
-      color: rgba(235,226,214,.70);
-      cursor:pointer;
-    }
-    .hintBtn:hover{ background: rgba(255,255,255,.05); }
   </style>
 </head>
 
 <body>
-  <!-- ✅ THIS is where you put your image: name it level4.jpg -->
-  <div class="bg">
-    <img src="level4.jpg" alt="">
-  </div>
-  <div class="overlay"></div>
+  <main class="hero" id="hero">
+    <div class="bg" aria-hidden="true"></div>
 
-  <main class="wrap">
-    <section class="center" id="panel">
-      <p class="kicker">Castle Descent • Level 4</p>
+    <section class="wrap" id="wrap">
+      <div class="kicker">Level 4</div>
       <h1>The Halls of the Whispering Stone</h1>
 
-      <div class="story">
-        <p>The stairs spiral down far longer than they should.</p>
+      <p class="story">
+        The stairs spiral down far longer than they should.
+        <br><br>
+        Your footsteps echo, but the echo returns a fraction too late—like something is repeating them after you.
+        The air tastes of dust and old iron.
+        <br><br>
+        At the bottom, the stairwell opens into a corridor carved from black rock. No torches. No windows.
+        Yet you can see.
+        <br><br>
+        The walls are covered with shapes that almost look like faces, stretching outward from the stone,
+        mouths open in silent warnings. Their eyes follow you as you walk.
+        <br><br>
+        Halfway down, the whispers begin. Not loud enough to understand—layered, desperate, overlapping.
+        Some beg. Some laugh. Some repeat the same word again and again.
+        <br><br>
+        At the far end stands a door of pale marble, untouched by age. Letters carve themselves into its surface,
+        as if written by an invisible claw. The whispers stop. One voice remains:
+        <br><br>
+        “If you wish to go further, you must answer.
+        Speak the thing that is taken from you the moment you try to hold it.”
+        <br><br>
+        The corridor feels <span class="sigil">B</span>lessed and cursed at once—like it was built to listen.
+        Your chest rises, then stills, as if the stone is counting.
+        The marble waits, patient as <span class="sigil">R</span>uins.
+        <br><br>
+        You try to steady yourself, but the air refuses to belong to you.
+        The walls drink warmth with every step, and even the silence feels <span class="sigil">E</span>arned.
+        <br><br>
+        A thin fog curls along the floor, slipping around your ankles like a warning you can’t <span class="sigil">A</span>void.
+        Somewhere behind the stone faces, something sighs.
+        <br><br>
+        Instinct says to hold on—but the moment you grip it, it leaves you. Always. Without <span class="sigil">T</span>ouch.
+        <br><br>
+        The last whisper is close enough to feel against your skin—
+        a reminder that even courage needs a <span class="sigil">H</span>ollow space to enter.
+      </p>
 
-        <p>
-          Your footsteps echo, but the echo returns a fraction too late—like something is repeating them after you.
-          The air tastes of dust and old iron.
-        </p>
+      <div class="hint">Read like the castle writes.</div>
+      <button class="hintBtn" id="hintBtn" type="button">Toggle subtle hint</button>
 
-        <p>
-          At the bottom, the stairwell opens into a corridor carved from black rock. No torches. No windows.
-          Yet you can see.
-        </p>
+      <div class="sep"></div>
 
-        <p>
-          The walls are covered with shapes that almost look like faces, stretching outward from the stone,
-          mouths open in silent warnings. Their eyes follow you as you walk.
-        </p>
+      <div class="riddleTitle">Riddle</div>
+      <div class="riddleText">WHAT IS TAKEN FROM YOU THE MOMENT YOU TRY TO HOLD IT?</div>
 
-        <p>
-          Halfway down, the whispers begin. Not loud enough to understand—layered, desperate, overlapping.
-          Some beg. Some laugh. Some repeat the same word again and again.
-        </p>
-
-        <div class="quote">
-          At the far end stands a door of pale marble, untouched by age. Letters carve themselves into its surface,
-          as if written by an invisible claw. The whispers stop. One voice remains:
-          <br><br>
-          “If you wish to go further, you must answer.
-          Speak the thing that is taken from you the moment you try to hold it.”
-        </div>
-
-        <p>
-          The corridor feels <span class="sigil">B</span>lessed and cursed at once—like it was built to listen.
-          Your chest rises, then stills, as if the stone is counting.
-          The marble waits, patient as <span class="sigil">R</span>uins.
-        </p>
-
-        <p>
-          You try to steady yourself, but the air refuses to belong to you.
-          The walls drink warmth with every step, and even the silence feels <span class="sigil">E</span>arned.
-        </p>
-
-        <p>
-          A thin fog curls along the floor, slipping around your ankles like a warning you can’t <span class="sigil">A</span>void.
-          Somewhere behind the stone faces, something sighs.
-        </p>
-
-        <p>
-          Instinct says to hold on—but the moment you grip it, it leaves you. Always. Without <span class="sigil">T</span>ouch.
-        </p>
-
-        <p>
-          The last whisper is close enough to feel against your skin—
-          a reminder that even courage needs a <span class="sigil">H</span>ollow space to enter.
-        </p>
-
-        <div class="hintBar">
-          <button class="hintBtn" id="hintBtn" type="button">Toggle subtle hint</button>
-        </div>
-
-        <div class="sep"></div>
-
-        <h2 class="riddleTitle">Riddle</h2>
-        <p class="riddle">“What is taken from you the moment you try to hold it?”</p>
-
-        <div class="gate">
-          <div class="gateLabel">Enter the password to descend.</div>
-
-          <div class="gateRow">
-            <input id="pw" type="password" placeholder="Password…" autocomplete="off" />
-            <button id="enterBtn" type="button">Enter</button>
-          </div>
-
-          <div class="msg" id="msg"></div>
-
-          <div class="reveal" id="reveal">
-            The marble seam opens with a slow exhale.
-            <br><br>
-            <a href="level5.html">Continue to Level 5 →</a>
-          </div>
-        </div>
+      <div class="gate">
+        <input id="pw" type="password" placeholder="password…" autocomplete="off" />
+        <button id="btn">ENTER</button>
       </div>
+
+      <div class="msg" id="msg"></div>
     </section>
   </main>
 
   <script>
-    const ACCEPTED = new Set(["breathe","breath"]);
+    // Level 4 password:
+    // Accept both "BREATHE" and "BREATH" (people might solve literally)
+    const ACCEPTED = new Set(["BREATHE", "BREATH"]);
 
-    const panel = document.getElementById("panel");
+    const wrap = document.getElementById("wrap");
+    const pw = document.getElementById("pw");
+    const btn = document.getElementById("btn");
+    const msg = document.getElementById("msg");
+
     const hintBtn = document.getElementById("hintBtn");
 
-    const pw = document.getElementById("pw");
-    const enterBtn = document.getElementById("enterBtn");
-    const msg = document.getElementById("msg");
-    const reveal = document.getElementById("reveal");
-
-    const norm = (s) => (s || "").trim().toLowerCase();
+    hintBtn.addEventListener("click", () => {
+      wrap.classList.toggle("hintOn");
+    });
 
     function check(){
-      const val = norm(pw.value);
-      if(!val){
-        msg.textContent = "Enter a word.";
-        msg.className = "msg error";
-        reveal.style.display = "none";
-        return;
-      }
-      if(ACCEPTED.has(val)){
-        msg.textContent = "Accepted.";
-        msg.className = "msg ok";
-        reveal.style.display = "block";
+      const val = (pw.value || "").trim().toUpperCase();
+      if (!val) return;
+
+      if (ACCEPTED.has(val)){
+        msg.textContent = "…";
+        setTimeout(() => wrap.classList.add("fadeOut"), 650);
+        setTimeout(() => window.location.href = "level5.html", 1350);
       } else {
-        msg.textContent = "Wrong. The whispers press closer.";
-        msg.className = "msg error";
-        reveal.style.display = "none";
+        msg.textContent = "Not yet.";
+        wrap.classList.remove("wrong");
+        void wrap.offsetWidth;
+        wrap.classList.add("wrong");
+        pw.select();
       }
     }
 
-    enterBtn.addEventListener("click", check);
-    pw.addEventListener("keydown", (e)=>{ if(e.key === "Enter") check(); });
-
-    hintBtn.addEventListener("click", ()=> panel.classList.toggle("hintOn"));
+    btn.addEventListener("click", check);
+    pw.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") check();
+    });
   </script>
 </body>
 </html>
