@@ -9,15 +9,15 @@
 
   <style>
     :root{
-      --text: rgba(255,255,255,0.90);
-      --muted: rgba(255,255,255,0.52);
-      --shadow: rgba(0,0,0,0.65);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.78);
+      --hint: rgba(255,255,255,0.40);
+      --shadow: rgba(0,0,0,0.72);
     }
 
     *{ box-sizing:border-box; }
-    html,body{ height:100%; margin:0; background:#000; font-family: Georgia, "Times New Roman", serif; }
+    html,body{ height:100%; margin:0; background:#000; }
 
-    /* HERO */
     .hero{
       min-height:100vh;
       position:relative;
@@ -26,95 +26,161 @@
       align-items:center;
       justify-content:center;
       background:#000;
+      font-family: Georgia, "Times New Roman", serif;
     }
 
-    /* ✅ Background image as its OWN layer so we can sharpen/brighten it */
+    /* Background layer */
     .bg{
-      position:absolute;
-      inset:0;
-      background-image: url("level3.jpg"); /* <- your level3 image filename */
+      position:absolute; inset:0;
+      background-image: url("Level3.jpg"); /* ✅ your level 3 image */
       background-size: cover;
-      background-position: center 30%;
+      background-position: center 40%;
       background-repeat: no-repeat;
-
-      /* sharper + brighter without affecting UI */
-      filter: brightness(1.14) contrast(1.18) saturate(1.06);
-      transform: scale(1.02); /* hides edge gaps from filter */
-      z-index: 0;
+      filter: brightness(1.12) contrast(1.18) saturate(1.05);
+      transform: scale(1.02);
+      z-index:0;
     }
 
-    /* Dark overlay (LIGHTER so image is visible) */
+    /* Overlay */
     .hero::before{
       content:"";
-      position:absolute;
-      inset:0;
+      position:absolute; inset:0;
       background:
-        radial-gradient(circle at center, rgba(0,0,0,0.06), rgba(0,0,0,0.42)),
-        linear-gradient(to bottom, rgba(0,0,0,0.18), rgba(0,0,0,0.48));
-      z-index: 1;
+        radial-gradient(circle at center, rgba(0,0,0,0.10), rgba(0,0,0,0.58)),
+        linear-gradient(to bottom, rgba(0,0,0,0.22), rgba(0,0,0,0.70));
+      z-index:1;
       pointer-events:none;
     }
 
-    /* Subtle grain */
+    /* Grain */
     .hero::after{
       content:"";
-      position:absolute;
-      inset:0;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.20'/%3E%3C/svg%3E");
+      position:absolute; inset:0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
       mix-blend-mode: overlay;
-      opacity: .12;
+      opacity: .10;
       pointer-events:none;
-      z-index: 1;
+      z-index:1;
     }
 
-    /* Floating letters layer */
-    #specters{
+    /* Hotspots + plaque layer */
+    .hotspots{
       position:absolute;
       inset:0;
-      pointer-events:none;
-      z-index: 2;
+      z-index:2;
+      pointer-events:none; /* spots will re-enable pointer events */
     }
 
-    .glyph{
+    /* ✅ PLAQUE on pedestal */
+    .plaque{
       position:absolute;
-      font-size: clamp(18px, 2.0vw, 28px);
-      letter-spacing: 0.12em;
-      color: rgba(255,255,255,0.18);
-      text-shadow: 0 0 18px rgba(255,255,255,0.16);
-      opacity: 0;
-      transform: translate(-50%, -50%) scale(1);
-      filter: blur(0.2px);
-      animation: floatFade 1.6s ease forwards;
+      left: 50%;
+      top: 62.8%;                 /* tuned to your pedestal */
+      transform: translate(-50%, -50%);
+      width: min(520px, 86vw);
+      padding: 14px 16px;
+      border-radius: 10px;
+
+      /* plaque look */
+      background: linear-gradient(180deg,
+        rgba(255,255,255,0.06),
+        rgba(0,0,0,0.18)
+      );
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.45),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      backdrop-filter: blur(1px);
+
+      /* engraved text effect */
+      font-family: "Cormorant Garamond", serif;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      text-align: center;
+
+      color: rgba(255,255,255,0.22);
+      text-shadow:
+        0 1px 0 rgba(0,0,0,0.85),
+        0 -1px 0 rgba(255,255,255,0.06);
+
+      opacity: 0.88;
+      pointer-events:none; /* stays purely visual */
       user-select:none;
-      will-change: transform, opacity;
     }
 
-    .glyph.flash{
+    .plaque .line1{
+      font-size: 12px;
+      margin-bottom: 6px;
+      color: rgba(255,255,255,0.26);
+    }
+    .plaque .line2{
+      font-size: 15px;
+      color: rgba(255,255,255,0.20);
+    }
+
+    .spot{
+      pointer-events:auto; /* ✅ re-enable interaction */
+      position:absolute;
+      width: 110px;
+      height: 110px;
+      border-radius: 999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(255,255,255,0.00);
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .spot span{
+      font-family: "Cinzel Decorative", serif;
+      font-size: 38px;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.05);
+      text-shadow: 0 0 0 rgba(255,255,255,0);
+      opacity: 0.10;
+      transform: translateY(1px);
+      transition: opacity 220ms ease, color 220ms ease, text-shadow 220ms ease, transform 220ms ease;
+      user-select:none;
+      pointer-events:none;
+    }
+
+    .spot.reveal span,
+    .spot:hover span,
+    .spot:focus-visible span{
+      opacity: 1;
       color: rgba(255,255,255,0.94);
-      text-shadow: 0 0 34px rgba(255,255,255,0.40);
+      text-shadow:
+        0 0 16px rgba(255,255,255,0.24),
+        0 0 34px rgba(140,0,0,0.20);
+      transform: translateY(0);
+      animation: flicker 1.25s ease-in-out;
     }
 
-    @keyframes floatFade{
-      0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.98); }
-      20%  { opacity: 0.96; }
-      100% { opacity: 0; transform: translate(-50%, -56%) scale(1.03); }
+    @keyframes flicker{
+      0%{ opacity: .18; }
+      14%{ opacity: 1; }
+      30%{ opacity: .55; }
+      48%{ opacity: 1; }
+      62%{ opacity: .70; }
+      100%{ opacity: 1; }
     }
 
-    /* UI */
+    /* UI panel */
     .wrap{
       position: relative;
       z-index: 3;
-      width: min(760px, 92vw);
-      padding: 40px 22px;
+      width: min(820px, 92vw);
+      padding: 42px 22px;
       text-align: center;
-      filter: drop-shadow(0 14px 20px var(--shadow));
+      filter: drop-shadow(0 16px 22px var(--shadow));
     }
 
     .kicker{
-      letter-spacing: 0.22em;
+      letter-spacing: 0.24em;
       text-transform: uppercase;
       font-size: 12px;
-      color: rgba(255,255,255,0.45);
+      color: rgba(255,255,255,0.46);
       margin: 0 0 10px;
       user-select:none;
     }
@@ -131,50 +197,37 @@
       font-family: "Cinzel Decorative", serif;
       letter-spacing: 0.16em;
       text-transform: uppercase;
-      font-size: clamp(26px, 4vw, 40px);
+      font-size: clamp(24px, 3.6vw, 40px);
       color: #e8e2d6;
       margin: 0 0 14px;
       animation: candleFlicker 3.5s infinite ease-in-out;
+      user-select:none;
     }
 
     .story{
       font-family: "Cormorant Garamond", serif;
-      font-size: 17px;
+      font-size: 18px;
       line-height: 1.65;
-      letter-spacing: 0.03em;
-      color: rgba(255,255,255,0.78);
-      margin: 0 auto 22px;
-      max-width: 56ch;
+      letter-spacing: 0.02em;
+      color: var(--muted);
+      margin: 0 auto 18px;
+      max-width: 62ch;
       animation: candleFlicker 5s infinite ease-in-out;
     }
 
     .story em{
       font-style: normal;
-      color: #d2c7b3;
-      text-shadow: 0 0 10px rgba(120,0,0,0.35);
+      color: rgba(255,255,255,0.92);
+      text-shadow: 0 0 10px rgba(140,0,0,0.22);
     }
 
-    .final{
-      margin: 10px auto 0;
-      max-width: 56ch;
-      color: rgba(255,255,255,0.72);
-      letter-spacing: 0.10em;
+    .riddle{
+      margin: 16px auto 22px;
+      max-width: 64ch;
+      color: var(--hint);
+      font-size: 12px;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
-      font-size: 11px;
-      opacity: 0;
-      transform: translateY(4px);
-      transition: opacity 450ms ease, transform 450ms ease;
-      text-shadow: 0 0 18px rgba(255,255,255,0.12);
-      user-select: none;
-    }
-    .final.show{ opacity: 1; transform: translateY(0); }
-
-    .hint{
-      margin: 18px auto 24px;
-      color: rgba(255,255,255,0.38);
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      font-size: 11px;
       user-select:none;
     }
 
@@ -184,7 +237,7 @@
       justify-content:center;
       align-items:center;
       flex-wrap:wrap;
-      margin-top: 4px;
+      margin-top: 6px;
     }
 
     input[type="password"]{
@@ -195,7 +248,7 @@
       background: rgba(0,0,0,0.34);
       color: var(--text);
       outline: none;
-      letter-spacing: 0.10em;
+      letter-spacing: 0.12em;
       font-size: 14px;
     }
     input[type="password"]::placeholder{ color: rgba(255,255,255,0.28); }
@@ -231,36 +284,52 @@
 
     .fadeOut{ animation: fade 700ms ease forwards; }
     @keyframes fade{ to{ opacity:0; transform: translateY(6px); } }
+
+    @media (max-width: 600px){
+      .spot{ width: 120px; height: 120px; }
+      .spot span{ font-size: 40px; }
+      .plaque{ top: 64.3%; }
+    }
   </style>
 </head>
 
 <body>
   <main class="hero">
     <div class="bg" aria-hidden="true"></div>
-    <div id="specters" aria-hidden="true"></div>
+
+    <div class="hotspots" aria-hidden="true">
+      <!-- ✅ Plaque text ON the statue/pedestal -->
+      <div class="plaque">
+        <div class="line1">THE EYE THAT FOLLOWS</div>
+        <div class="line2">WHAT REMAINS WHEN THE MASK BURNS?</div>
+      </div>
+
+      <!-- ✅ TRUTH hidden ON the statue/pedestal -->
+      <!-- Coordinates tuned to your image (center statue/pedestal) -->
+      <div class="spot" data-letter="T" style="left:49.8%; top:24.9%;"><span>T</span></div>
+      <div class="spot" data-letter="R" style="left:44.7%; top:31.7%;"><span>R</span></div>
+      <div class="spot" data-letter="U" style="left:54.9%; top:31.7%;"><span>U</span></div>
+      <div class="spot" data-letter="T" style="left:49.8%; top:47.9%;"><span>T</span></div>
+      <div class="spot" data-letter="H" style="left:49.8%; top:54.7%;"><span>H</span></div>
+    </div>
 
     <section class="wrap" id="wrap">
       <div class="kicker">Level 3</div>
-      <h1>The Castle Remembers</h1>
+      <h1>The Eye That Follow</h1>
 
       <p class="story">
-        The door shuts without a sound—yet the air grows heavier, as if the stone itself
-        has been holding its breath for centuries.
+        The corridor narrows like a throat. The air tastes of cold iron and old prayers.
+        Somewhere behind the stone, something drags its nails across a memory it does not own.
         <br><br>
-        Ahead: arches drowned in soot, prayer-candles still warm, and a corridor that
-        shouldn’t exist. Each step feels borrowed. Each heartbeat feels <em>counted</em>.
+        You pass a blackened statue—faceless, yet watching. Its shadow does not match the torchlight.
+        The deeper you walk, the more you feel it: a gaze that does not blink.
         <br><br>
-        You came for the relic they buried in the dark—an ancient gem with a name that
-        was erased from every tongue that spoke it. They say it doesn’t shine.
-        It <em>stares</em>.
-        <br><br>
-        If you want it, you will not be guided by signs or maps.
-        Only by what you see and trust.
+        The castle offers no directions. Only hints… <em>if you dare to look where you shouldn’t.</em>
       </p>
 
-      <p class="final" id="finalLine">So it knows your name.</p>
-
-      <div class="hint">the dark speaks in numbers</div>
+      <div class="riddle">
+        it won’t speak aloud. it hides in plain sight. let the stone confess.
+      </div>
 
       <div class="gate">
         <input id="pw" type="password" placeholder="password…" autocomplete="off" />
@@ -272,103 +341,21 @@
   </main>
 
   <script>
-    const PASSWORD = "DESCEND";
+    const PASSWORD = "TRUTH";
 
-    // D(1), E(2), S(3), C(4), E(5), N(6), D(7)
-    const sequence = [
-      { ch: "D", flashes: 1 },
-      { ch: "E", flashes: 2 },
-      { ch: "S", flashes: 3 },
-      { ch: "C", flashes: 4 },
-      { ch: "E", flashes: 5 },
-      { ch: "N", flashes: 6 },
-      { ch: "D", flashes: 7 }
-    ];
-
-    const specters = document.getElementById("specters");
-
-    function spawnGlyph(ch, isFlash){
-      const el = document.createElement("div");
-      el.className = "glyph" + (isFlash ? " flash" : "");
-      el.textContent = ch;
-
-      // Peripheral positioning (edges)
-      const pickEdgeBand = () => {
-        const r = Math.random();
-
-        // Left or right edge
-        if (r < 0.50) {
-          const x = (r < 0.25)
-            ? (4 + Math.random() * 14)    // left 4–18%
-            : (82 + Math.random() * 14);  // right 82–96%
-          const y = 10 + Math.random() * 80;
-          return { x, y };
-        }
-
-        // Top or bottom edge
-        const y = (r < 0.75)
-          ? (5 + Math.random() * 14)      // top 5–19%
-          : (81 + Math.random() * 14);    // bottom 81–95%
-        const x = 12 + Math.random() * 76;
-        return { x, y };
+    // Hover + mobile tap reveal
+    const spots = Array.from(document.querySelectorAll(".spot"));
+    spots.forEach(spot => {
+      const reveal = () => {
+        spot.classList.add("reveal");
+        setTimeout(() => spot.classList.remove("reveal"), 1250);
       };
+      spot.addEventListener("mouseenter", reveal);
+      spot.addEventListener("touchstart", (e) => { e.preventDefault(); reveal(); }, { passive:false });
+      spot.addEventListener("click", reveal);
+    });
 
-      const { x, y } = pickEdgeBand();
-      el.style.left = x + "%";
-      el.style.top  = y + "%";
-
-      const rot = (-10 + Math.random() * 20).toFixed(2);
-      el.style.transform = `translate(-50%, -50%) rotate(${rot}deg)`;
-
-      specters.appendChild(el);
-      setTimeout(() => el.remove(), 1900);
-    }
-
-    function wait(ms){ return new Promise(r => setTimeout(r, ms)); }
-
-    function shuffle(arr){
-      const a = arr.slice();
-      for (let i = a.length - 1; i > 0; i--){
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-      }
-      return a;
-    }
-
-    async function flashLetterNTimes(letter, n){
-      for (let i = 0; i < n; i++){
-        spawnGlyph(letter, true);
-        await wait(520);  // slower on
-        await wait(320);  // slower off
-      }
-    }
-
-    function startAmbientDecoys(){
-      setInterval(() => {
-        if (Math.random() < 0.22) {
-          const junk = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-          spawnGlyph(junk[Math.floor(Math.random() * junk.length)], false);
-        }
-      }, 1200);
-    }
-
-    async function runSequenceForever(){
-      startAmbientDecoys();
-
-      while(true){
-        const randomized = shuffle(sequence);
-
-        for (const item of randomized){
-          await flashLetterNTimes(item.ch, item.flashes);
-          await wait(1500); // slower between groups
-        }
-
-        await wait(2400); // slower between cycles
-      }
-    }
-    runSequenceForever();
-
-    // Gate logic
+    // Gate
     const wrap = document.getElementById("wrap");
     const pw = document.getElementById("pw");
     const btn = document.getElementById("btn");
@@ -380,11 +367,7 @@
 
       if (val === PASSWORD){
         msg.textContent = "…";
-        document.getElementById("finalLine").classList.add("show");
-
         setTimeout(() => wrap.classList.add("fadeOut"), 650);
-
-        // ✅ Next level
         setTimeout(() => window.location.href = "level4.html", 1350);
       } else {
         msg.textContent = "Not yet.";
@@ -402,4 +385,3 @@
   </script>
 </body>
 </html>
-
