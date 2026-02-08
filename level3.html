@@ -29,10 +29,10 @@
       font-family: Georgia, "Times New Roman", serif;
     }
 
-    /* Background layer */
+    /* Background */
     .bg{
       position:absolute; inset:0;
-      background-image: url("Level3.jpg"); /* ✅ your level 3 image */
+      background-image: url("Level3.jpg");
       background-size: cover;
       background-position: center 40%;
       background-repeat: no-repeat;
@@ -41,7 +41,7 @@
       z-index:0;
     }
 
-    /* Overlay (not too heavy) */
+    /* Dark overlay */
     .hero::before{
       content:"";
       position:absolute; inset:0;
@@ -63,50 +63,49 @@
       z-index:1;
     }
 
-    /* ✅ Hotspots layer */
-    .hotspots{
-      position:absolute;
-      inset:0;
-      z-index:2;
-      pointer-events:auto; /* ✅ must be ON */
+    /* ✅ Lantern glow follows cursor */
+    #lantern{
+      position: fixed;
+      left: -9999px;
+      top: -9999px;
+      width: 340px;
+      height: 340px;
+      border-radius: 999px;
+      pointer-events:none;
+      z-index: 2;
+
+      /* candle-ish glow */
+      background: radial-gradient(circle at center,
+        rgba(255,255,255,0.16) 0%,
+        rgba(255,255,255,0.08) 22%,
+        rgba(255,160,80,0.06) 38%,
+        rgba(0,0,0,0) 70%
+      );
+      mix-blend-mode: screen;
+      filter: blur(1px);
+      opacity: 0.95;
+      transform: translate(-50%, -50%);
     }
 
-    /* ✅ Flag (riddle on a banner in the scene) */
+    /* ✅ Riddle flag (always visible) */
     .flag{
       position:absolute;
-      left: 9%;
-      top: 33%;
-      width: min(420px, 72vw);
+      left: 7%;
+      top: 26%;
+      width: min(460px, 78vw);
       padding: 14px 16px;
       border-radius: 10px;
       pointer-events:none;
       user-select:none;
+      z-index:2;
 
-      background: linear-gradient(180deg,
-        rgba(255,255,255,0.06),
-        rgba(0,0,0,0.30)
-      );
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.30));
       border: 1px solid rgba(255,255,255,0.10);
       box-shadow: 0 16px 36px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06);
       backdrop-filter: blur(1px);
-
       transform: rotate(-2deg);
-      opacity: 0.90;
+      opacity: 0.92;
     }
-
-    .flag:before, .flag:after{
-      content:"";
-      position:absolute;
-      top: 10px;
-      width: 18px;
-      height: calc(100% - 20px);
-      background: rgba(0,0,0,0.20);
-      filter: blur(0.2px);
-      opacity: 0.55;
-    }
-    .flag:before{ left:-10px; border-radius: 12px 0 0 12px; }
-    .flag:after{ right:-10px; border-radius: 0 12px 12px 0; }
-
     .flagTitle{
       font-family: "Cinzel Decorative", serif;
       letter-spacing: 0.18em;
@@ -116,68 +115,40 @@
       margin-bottom: 8px;
       text-align:center;
     }
-
     .flagText{
       font-family: "Cormorant Garamond", serif;
       font-size: 16px;
       line-height: 1.35;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.10em;
       text-transform: uppercase;
       text-align:center;
-
       color: rgba(255,255,255,0.22);
       text-shadow: 0 1px 0 rgba(0,0,0,0.85), 0 -1px 0 rgba(255,255,255,0.06);
     }
 
-    /* ✅ Letter zones (THIS is the critical fix) */
-    .spot{
-      position:absolute;
-      width: 120px;
-      height: 120px;
-      border-radius: 999px;
-
-      /* ✅ IMPORTANT: centers the zone on left/top coordinates */
-      transform: translate(-50%, -50%);
-
-      display:flex;
-      align-items:center;
-      justify-content:center;
-
-      /* tiny invisible fill so hover always "catches" */
-      background: rgba(255,255,255,0.01);
-
-      outline: none;
-      -webkit-tap-highlight-color: transparent;
-      cursor: default;
-    }
-
-    .spot span{
-      font-family: "Cinzel Decorative", serif;
-      font-size: 40px;
-      letter-spacing: 0.08em;
-
-      color: rgba(255,255,255,0.05);
-      opacity: 0.10;
-      text-shadow: 0 0 0 rgba(255,255,255,0);
-
-      transform: translateY(1px);
-      transition: opacity 220ms ease, color 220ms ease, text-shadow 220ms ease, transform 220ms ease;
-      user-select:none;
+    /* ✅ Flicker letters (positioned by JS near statue) */
+    .glyph{
+      position: absolute;
+      left: -9999px;
+      top: -9999px;
+      z-index: 2;
       pointer-events:none;
-    }
+      user-select:none;
 
-    .spot.reveal span,
-    .spot:hover span,
-    .spot:focus-visible span{
-      opacity: 1;
+      font-family: "Cinzel Decorative", serif;
+      font-size: 42px;
+      letter-spacing: 0.08em;
       color: rgba(255,255,255,0.94);
       text-shadow: 0 0 16px rgba(255,255,255,0.24), 0 0 34px rgba(140,0,0,0.20);
-      transform: translateY(0);
+      opacity: 0;
+      transform: translate(-50%, -50%);
+    }
+    .glyph.on{
+      opacity: 1;
       animation: flicker 1.25s ease-in-out;
     }
-
     @keyframes flicker{
-      0%{ opacity: .18; }
+      0%{ opacity: .10; }
       14%{ opacity: 1; }
       30%{ opacity: .55; }
       48%{ opacity: 1; }
@@ -306,43 +277,34 @@
     @keyframes fade{ to{ opacity:0; transform: translateY(6px); } }
 
     @media (max-width: 600px){
-      .spot{ width: 130px; height: 130px; }
-      .spot span{ font-size: 42px; }
-      .flag{ left: 6%; top: 30%; }
+      #lantern{ width: 300px; height: 300px; }
+      .flag{ left: 5%; top: 22%; }
+      .glyph{ font-size: 44px; }
     }
   </style>
 </head>
 
 <body>
-  <main class="hero">
+  <main class="hero" id="hero">
     <div class="bg" aria-hidden="true"></div>
 
-    <!-- ✅ Flag + hidden hover letters -->
-    <div class="hotspots" aria-hidden="true">
-
-      <!-- ✅ RIDDLE ON A FLAG -->
-      <div class="flag">
-        <div class="flagTitle">THE EYE THAT FOLLOWS</div>
-        <div class="flagText">
-          IT WATCHES THROUGH EVERY MASK.<br>
-          BURN THE MASK — WHAT REMAINS?<br>
-          SEEK WHAT CANNOT LIE.
-        </div>
+    <!-- ✅ always-visible riddle flag -->
+    <div class="flag" aria-hidden="true">
+      <div class="flagTitle">THE EYE THAT FOLLOWS</div>
+      <div class="flagText">
+        IT WATCHES THROUGH EVERY MASK.<br>
+        BURN THE MASK — WHAT REMAINS?<br>
+        SPEAK WHAT CANNOT LIE.
       </div>
-
-      <!-- ✅ TRUTH hotspots on statue/pedestal (centered & hoverable) -->
-      <!-- Hood glow -->
-      <div class="spot" style="left:49.8%; top:24.9%;"><span>T</span></div>
-      <!-- Left shoulder -->
-      <div class="spot" style="left:44.7%; top:31.7%;"><span>R</span></div>
-      <!-- Right shoulder -->
-      <div class="spot" style="left:54.9%; top:31.7%;"><span>U</span></div>
-      <!-- Pedestal glow -->
-      <div class="spot" style="left:49.8%; top:47.9%;"><span>T</span></div>
-      <!-- Lower pedestal -->
-      <div class="spot" style="left:49.8%; top:54.7%;"><span>H</span></div>
-
     </div>
+
+    <!-- ✅ lantern + letters -->
+    <div id="lantern" aria-hidden="true"></div>
+    <div class="glyph" id="g1" aria-hidden="true">T</div>
+    <div class="glyph" id="g2" aria-hidden="true">R</div>
+    <div class="glyph" id="g3" aria-hidden="true">U</div>
+    <div class="glyph" id="g4" aria-hidden="true">T</div>
+    <div class="glyph" id="g5" aria-hidden="true">H</div>
 
     <section class="wrap" id="wrap">
       <div class="kicker">Level 3</div>
@@ -359,7 +321,7 @@
       </p>
 
       <div class="hint">
-        the truth does not announce itself. Let the stones speak.
+        Let the light guide you.
       </div>
 
       <div class="gate">
@@ -374,19 +336,84 @@
   <script>
     const PASSWORD = "TRUTH";
 
-    // Hover + mobile tap reveal
-    const spots = Array.from(document.querySelectorAll(".spot"));
-    spots.forEach(spot => {
-      const reveal = () => {
-        spot.classList.add("reveal");
-        setTimeout(() => spot.classList.remove("reveal"), 1250);
-      };
-      spot.addEventListener("mouseenter", reveal);
-      spot.addEventListener("touchstart", (e) => { e.preventDefault(); reveal(); }, { passive:false });
-      spot.addEventListener("click", reveal);
-    });
+    const hero = document.getElementById("hero");
+    const lantern = document.getElementById("lantern");
 
-    // Gate
+    const glyphEls = {
+      T1: document.getElementById("g1"),
+      R:  document.getElementById("g2"),
+      U:  document.getElementById("g3"),
+      T2: document.getElementById("g4"),
+      H:  document.getElementById("g5"),
+    };
+
+    // Hotspots are in % of the hero box (robust across screen sizes)
+    // Tuned to your statue/pedestal in Level3.jpg
+    const hotspots = [
+      { key: "T1", ch: "T", x: 49.8, y: 24.9 }, // hood glow
+      { key: "R",  ch: "R", x: 44.7, y: 31.7 }, // left shoulder
+      { key: "U",  ch: "U", x: 54.9, y: 31.7 }, // right shoulder
+      { key: "T2", ch: "T", x: 49.8, y: 47.9 }, // pedestal glow
+      { key: "H",  ch: "H", x: 49.8, y: 54.7 }, // lower pedestal
+    ];
+
+    // reveal radius (in pixels) — larger = easier to find
+    const RADIUS = 85;
+
+    function setLantern(clientX, clientY){
+      lantern.style.left = clientX + "px";
+      lantern.style.top  = clientY + "px";
+    }
+
+    function updateGlyphs(clientX, clientY){
+      const rect = hero.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+
+      for (const h of hotspots){
+        const hx = (h.x / 100) * rect.width;
+        const hy = (h.y / 100) * rect.height;
+
+        const dx = x - hx;
+        const dy = y - hy;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+
+        const el = glyphEls[h.key];
+        // place glyph at its hotspot (not at cursor)
+        el.style.left = (rect.left + hx) + "px";
+        el.style.top  = (rect.top  + hy) + "px";
+
+        if (dist <= RADIUS){
+          el.classList.add("on");
+        } else {
+          el.classList.remove("on");
+        }
+      }
+    }
+
+    // Desktop mouse move
+    window.addEventListener("mousemove", (e) => {
+      setLantern(e.clientX, e.clientY);
+      updateGlyphs(e.clientX, e.clientY);
+    }, { passive:true });
+
+    // Mobile touch move
+    window.addEventListener("touchmove", (e) => {
+      if (!e.touches || !e.touches[0]) return;
+      const t = e.touches[0];
+      setLantern(t.clientX, t.clientY);
+      updateGlyphs(t.clientX, t.clientY);
+    }, { passive:true });
+
+    // Make lantern appear on first interaction (some browsers start at -9999px)
+    window.addEventListener("touchstart", (e) => {
+      const t = e.touches && e.touches[0];
+      if (!t) return;
+      setLantern(t.clientX, t.clientY);
+      updateGlyphs(t.clientX, t.clientY);
+    }, { passive:true });
+
+    // Gate logic
     const wrap = document.getElementById("wrap");
     const pw = document.getElementById("pw");
     const btn = document.getElementById("btn");
