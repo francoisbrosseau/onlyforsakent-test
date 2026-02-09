@@ -5,43 +5,38 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ONLYFORSAKEN — Level 5</title>
 
-  <!-- SAME TYPOGRAPHY -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
     :root{
       --text: rgba(255,255,255,0.92);
       --muted: rgba(255,255,255,0.58);
-      --faint: rgba(255,255,255,0.40);
-      --shadow: rgba(0,0,0,0.75);
-      --panel: rgba(6,6,8,0.60);
-      --line: rgba(255,255,255,0.18);
-      --line2: rgba(255,255,255,0.30);
-      --glow: rgba(255,255,255,0.12);
-      --ember: rgba(255,210,160,0.10);
+      --shadow: rgba(0,0,0,0.76);
+      --panel: rgba(6,6,8,0.55);
+      --line: rgba(255,255,255,0.16);
+      --line2: rgba(255,255,255,0.26);
     }
 
     *{ box-sizing:border-box; }
     html,body{ height:100%; margin:0; background:#000; }
 
-    /* FULLSCREEN HERO */
     .hero{
       min-height:100%;
       position:relative;
       background:
-        radial-gradient(70% 60% at 50% 35%, rgba(255,210,160,0.06), rgba(0,0,0,0.82)),
+        radial-gradient(70% 60% at 50% 35%, rgba(255,190,120,0.06), rgba(0,0,0,0.84)),
         url("assets/level5-bg.jpg") center/cover no-repeat;
       overflow:hidden;
       font-family:"Cormorant Garamond", serif;
       color:var(--text);
     }
 
-    /* GRAIN + VIGNETTE */
+    /* grain + vignette */
     .hero::before{
       content:"";
       position:absolute; inset:0;
       background:
-        radial-gradient(90% 80% at 50% 40%, rgba(0,0,0,0.10), rgba(0,0,0,0.82)),
+        radial-gradient(90% 80% at 50% 40%, rgba(0,0,0,0.10), rgba(0,0,0,0.84)),
         repeating-linear-gradient(0deg,
           rgba(255,255,255,0.018),
           rgba(255,255,255,0.018) 1px,
@@ -49,29 +44,28 @@
           rgba(0,0,0,0.00) 6px
         );
       mix-blend-mode: overlay;
-      opacity:0.65;
+      opacity:0.62;
       pointer-events:none;
     }
 
-    /* CANDLE FLICKER (subtle) */
+    /* subtle candle drift */
     .hero::after{
       content:"";
       position:absolute; inset:-20%;
-      background: radial-gradient(closest-side at 50% 35%, rgba(255,190,120,0.10), rgba(0,0,0,0.0));
+      background: radial-gradient(closest-side at 50% 35%, rgba(255,190,120,0.12), rgba(0,0,0,0.0));
       filter: blur(18px);
-      opacity:0.35;
-      animation: candleFlicker 6.5s ease-in-out infinite;
+      opacity:0.30;
+      animation: flicker 7s ease-in-out infinite;
       pointer-events:none;
     }
 
-    @keyframes candleFlicker{
-      0%,100% { transform: translate3d(0,0,0) scale(1); opacity:0.30; }
-      25%     { transform: translate3d(-1.5%, 0.8%, 0) scale(1.02); opacity:0.38; }
-      55%     { transform: translate3d(1.0%, -0.6%, 0) scale(1.015); opacity:0.33; }
-      80%     { transform: translate3d(-0.6%, -0.2%, 0) scale(1.01); opacity:0.36; }
+    @keyframes flicker{
+      0%,100% { transform: translate3d(0,0,0) scale(1); opacity:0.28; }
+      22%     { transform: translate3d(-1.3%, 0.9%, 0) scale(1.02); opacity:0.36; }
+      55%     { transform: translate3d(1.0%, -0.6%, 0) scale(1.015); opacity:0.30; }
+      80%     { transform: translate3d(-0.6%, -0.2%, 0) scale(1.01); opacity:0.34; }
     }
 
-    /* CENTERED WRAP */
     .wrap{
       position:relative;
       z-index:2;
@@ -83,25 +77,14 @@
       text-align:center;
     }
 
-    /* CENTER PANEL */
     .panel{
-      width:min(860px, 100%);
+      width:min(900px, 100%);
       background:var(--panel);
       border:1px solid var(--line);
-      border-radius:24px;
-      padding:28px 22px 22px;
-      box-shadow:0 26px 85px var(--shadow);
+      border-radius:26px;
+      padding:30px 22px 24px;
+      box-shadow:0 26px 90px var(--shadow);
       backdrop-filter: blur(6px);
-      position:relative;
-    }
-
-    /* subtle inner edge */
-    .panel::before{
-      content:"";
-      position:absolute; inset:10px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,0.08);
-      pointer-events:none;
     }
 
     h1{
@@ -114,67 +97,58 @@
     }
 
     .subtitle{
-      margin:0 0 16px;
-      color:var(--muted);
+      margin:0 0 18px;
+      color:rgba(255,255,255,0.55);
       font-size:16px;
       letter-spacing:0.35px;
     }
 
     .story{
-      margin:0 auto 16px;
-      max-width: 720px;
+      margin:0 auto 18px;
+      max-width: 760px;
       font-size:18px;
-      line-height:1.6;
+      line-height:1.62;
       color:rgba(255,255,255,0.84);
     }
 
     .divider{
       height:1px;
-      width:min(520px, 92%);
-      margin:18px auto 16px;
-      background:linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+      width:min(560px, 92%);
+      margin:20px auto 18px;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,0.24), transparent);
     }
 
     .riddleTitle{
       font-family:"Cinzel Decorative", serif;
       font-size:18px;
-      margin:0 0 8px;
+      margin:0 0 10px;
       letter-spacing:0.6px;
       color:rgba(255,255,255,0.92);
     }
 
     .riddle{
-      margin:0 auto 14px;
-      max-width: 720px;
+      margin:0 auto 6px;
+      max-width: 760px;
       font-size:18px;
-      line-height:1.55;
+      line-height:1.58;
       color:rgba(255,255,255,0.78);
     }
 
-    /* PUZZLE */
-    .hint{
-      margin:8px auto 12px;
-      max-width: 720px;
-      color:rgba(255,255,255,0.52);
-      font-size:15px;
-      line-height:1.35;
-    }
-
+    /* puzzle */
     .tiles{
       display:flex;
       flex-wrap:wrap;
       gap:12px;
       justify-content:center;
-      margin:10px 0 14px;
+      margin:18px 0 14px;
     }
 
     .tile{
       width:66px;
       height:66px;
       border-radius:16px;
-      border:1px solid rgba(255,255,255,0.28);
-      background:
-        radial-gradient(120% 120% at 50% 35%, rgba(255,255,255,0.06), rgba(0,0,0,0.62));
+      border:1px solid rgba(255,255,255,0.26);
+      background: radial-gradient(120% 120% at 50% 35%, rgba(255,255,255,0.06), rgba(0,0,0,0.64));
       box-shadow:0 18px 44px rgba(0,0,0,0.55);
       display:flex;
       align-items:center;
@@ -185,12 +159,15 @@
       cursor:grab;
       user-select:none;
       touch-action:none;
-      position:relative;
-      transition: transform 140ms ease, border-color 180ms ease;
+      transition: transform 140ms ease, border-color 180ms ease, opacity 180ms ease;
     }
 
     .tile:active{ cursor:grabbing; transform: translateY(1px) scale(0.995); }
-    .tile.selected{ border-color: rgba(255,255,255,0.55); box-shadow:0 0 0 2px rgba(255,255,255,0.10), 0 18px 44px rgba(0,0,0,0.62); }
+
+    .tile.selected{
+      border-color: rgba(255,255,255,0.52);
+      box-shadow:0 0 0 2px rgba(255,255,255,0.10), 0 18px 44px rgba(0,0,0,0.62);
+    }
 
     .slots{
       display:flex;
@@ -204,7 +181,7 @@
       width:66px;
       height:66px;
       border-radius:16px;
-      border:1px dashed rgba(255,255,255,0.26);
+      border:1px dashed rgba(255,255,255,0.24);
       background: rgba(255,255,255,0.03);
       display:flex;
       align-items:center;
@@ -218,28 +195,28 @@
 
     .slot.filled{
       border-style:solid;
-      border-color: rgba(255,255,255,0.34);
-      background: rgba(0,0,0,0.45);
+      border-color: rgba(255,255,255,0.32);
+      background: rgba(0,0,0,0.48);
     }
 
     .status{
       min-height:24px;
-      color:rgba(255,255,255,0.66);
+      color:rgba(255,255,255,0.62);
       font-size:16px;
-      margin:6px 0 4px;
+      margin:8px 0 2px;
     }
 
     .unlock{
       display:none;
-      margin-top:10px;
+      margin-top:12px;
     }
 
     .unlock a{
       display:inline-block;
       padding:10px 16px;
       border-radius:16px;
-      border:1px solid rgba(255,255,255,0.34);
-      background: rgba(0,0,0,0.55);
+      border:1px solid rgba(255,255,255,0.32);
+      background: rgba(0,0,0,0.58);
       color: rgba(255,255,255,0.92);
       text-decoration:none;
       font-family:"Cinzel Decorative", serif;
@@ -248,14 +225,13 @@
       transition: transform 160ms ease, background 180ms ease, border-color 180ms ease;
     }
     .unlock a:hover{
-      background: rgba(0,0,0,0.72);
+      background: rgba(0,0,0,0.74);
       transform: translateY(-1px);
-      border-color: rgba(255,255,255,0.48);
+      border-color: rgba(255,255,255,0.46);
     }
 
-    /* MOBILE FEEL */
     @media (max-width:520px){
-      .panel{ padding:22px 16px 16px; border-radius:20px; }
+      .panel{ padding:24px 16px 18px; border-radius:22px; }
       .tile,.slot{ width:58px; height:58px; border-radius:14px; }
       .story,.riddle{ font-size:17px; }
       .subtitle{ font-size:15px; }
@@ -269,19 +245,28 @@
       <div class="panel">
 
         <h1>The Sigil Chamber</h1>
-        <div class="subtitle">The next lock is not a word — it is a mark.</div>
+        <div class="subtitle">Some doors don’t want words. They want proof.</div>
 
-        <!-- STORY (centered) -->
+        <!-- STORY -->
         <p class="story">
-          The corridor opens into a round room where the stone has been scored by countless hands.
-          Something was practiced here. Something was repeated until it became ritual.
+          The corridor doesn’t end — it opens its mouth.
+          Stone curves into a circle, carved with grooves like fingernails dragged through wax.
+          In the center sits a basin that should be filled, yet holds only a dry shimmer,
+          as if something evaporated here and never forgave the air for it.
           <br><br>
-          In the center, a shallow basin sits dry and stained — as if it once held ink… or something older.
-          Five rune-tiles hover above it, drifting in a slow orbit, each carrying a single letter like a burned prayer.
+          Around the basin, the floor is etched with half-finished patterns: loops, hooks, sharp turns —
+          the kind of lines people draw when they’re trying to remember a dream before it collapses.
+          You recognize the feeling in your ribs: the room expects repetition.
+          It expects obsession.
           <br><br>
-          The door ahead bears a carved symbol that refuses to stay still. When you blink, it changes.
-          A whisper crawls along the walls:
-          <em>“Set the mark in order. Let it recognize you.”</em>
+          Then you see the door.
+          Not a lock — a wound sealed by a shifting mark.
+          It refuses to stay the same shape for more than a heartbeat, like it’s embarrassed to be seen.
+          Above the basin, a swarm of tiles drifts into view, letters mixed with impostors,
+          as if the chamber itself is testing whether you can tell the true mark from a counterfeit.
+          <br><br>
+          The whisper returns, quieter now, right behind your ear:
+          <em>“Choose the real lines. Complete the mark. Let it recognize you.”</em>
         </p>
 
         <div class="divider"></div>
@@ -289,26 +274,30 @@
         <!-- RIDDLE -->
         <div class="riddleTitle">Riddle</div>
         <p class="riddle">
-          I am not spoken, yet I command.<br>
-          I am drawn, and the unseen understands.<br>
-          I am the secret mark that binds a gate—<br>
-          finish me, and I will name your fate.<br>
-          What am I?
+          I am drawn, not spoken.<br>
+          I am a key that looks like a scar.<br>
+          I bind what should stay shut,<br>
+          and obey what you are.<br><br>
+          Five marks only — the rest are lies.
         </p>
 
-        <!-- MECHANIC -->
-        <div class="hint">
-          Drag the tiles into the slots to form the answer.  
-          (On mobile: tap a tile, then tap a slot.)
-        </div>
-
+        <!-- PUZZLE (NO INSTRUCTIONS TEXT) -->
         <div class="tiles" id="tiles">
-          <!-- shuffled -->
-          <div class="tile" draggable="true" data-letter="I">I</div>
+          <!-- decoys included; also similar shapes to confuse slightly -->
           <div class="tile" draggable="true" data-letter="S">S</div>
-          <div class="tile" draggable="true" data-letter="L">L</div>
+          <div class="tile" draggable="true" data-letter="I">I</div>
           <div class="tile" draggable="true" data-letter="G">G</div>
           <div class="tile" draggable="true" data-letter="I">I</div>
+          <div class="tile" draggable="true" data-letter="L">L</div>
+
+          <!-- decoys -->
+          <div class="tile" draggable="true" data-letter="O">O</div>
+          <div class="tile" draggable="true" data-letter="C">C</div>
+          <div class="tile" draggable="true" data-letter="E">E</div>
+          <div class="tile" draggable="true" data-letter="T">T</div>
+          <div class="tile" draggable="true" data-letter="V">V</div>
+          <div class="tile" draggable="true" data-letter="|">|</div>
+          <div class="tile" draggable="true" data-letter="1">1</div>
         </div>
 
         <div class="slots" id="slots">
@@ -340,7 +329,7 @@
     let draggedTile = null;
     let selectedTile = null;
 
-    function currentAttempt(){
+    function attempt(){
       return slots.map(s => s.textContent.trim()).join("");
     }
 
@@ -350,39 +339,37 @@
     }
 
     function check(){
-      const attempt = currentAttempt();
-
-      if(attempt.length < ANSWER.length){
+      const a = attempt();
+      if(a.length < ANSWER.length){
         unlockEl.style.display = "none";
-        statusEl.textContent = selectedTile ? "Tile chosen. Place it." : "The room watches.";
+        statusEl.textContent = "The room watches.";
         return;
       }
-
-      if(attempt === ANSWER){
-        statusEl.textContent = "The sigil completes. The door yields.";
+      if(a === ANSWER){
+        statusEl.textContent = "The mark completes. The door yields.";
         unlockEl.style.display = "block";
-      } else {
+      }else{
         unlockEl.style.display = "none";
-        statusEl.textContent = "Wrong. The mark twists away.";
+        statusEl.textContent = "The mark rejects you.";
       }
     }
 
-    // Desktop drag/drop
+    // drag (desktop)
     tiles.forEach(t => {
       t.addEventListener("dragstart", () => draggedTile = t);
 
-      // Mobile/desktop tap-select
+      // tap-select (mobile + desktop)
       t.addEventListener("click", () => {
         tiles.forEach(x => x.classList.remove("selected"));
         selectedTile = t;
         t.classList.add("selected");
-        statusEl.textContent = "Tile chosen. Tap a slot to place it.";
       });
     });
 
-    // Slots: drop or tap place
+    // slots
     slots.forEach(s => {
       s.addEventListener("dragover", e => e.preventDefault());
+
       s.addEventListener("drop", () => {
         if(!draggedTile) return;
         s.textContent = draggedTile.dataset.letter;
@@ -398,7 +385,6 @@
         check();
       });
 
-      // dblclick clears (desktop)
       s.addEventListener("dblclick", () => {
         s.textContent = "";
         s.classList.remove("filled");
