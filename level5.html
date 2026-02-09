@@ -1,1 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ONLYFORSAKEN — Level 5</title>
+
+  <!-- SAME TYPOGRAPHY -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --text: rgba(255,255,255,0.90);
+      --muted: rgba(255,255,255,0.55);
+      --shadow: rgba(0,0,0,0.72);
+      --panel: rgba(8,8,10,0.62);
+      --line: rgba(255,255,255,0.22);
+      --line2: rgba(255,255,255,0.35);
+      --glow: rgba(255,255,255,0.10);
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; margin:0; background:#000; }
+
+    /* HERO BG (REPLACE IMAGE PATH) */
+    .hero{
+      min-height:100%;
+      position:relative;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,0.52), rgba(0,0,0,0.80)),
+        url("assets/level5-bg.jpg") center/cover no-repeat;
+      overflow:hidden;
+    }
+
+    /* SUBTLE GRAIN + VIGNETTE */
+    .hero::before{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        radial-gradient(80% 70% at 50% 40%, rgba(0,0,0,0.06), rgba(0,0,0,0.78)),
+        repeating-linear-gradient(0deg,
+          rgba(255,255,255,0.018),
+          rgba(255,255,255,0.018) 1px,
+          rgba(0,0,0,0.00) 2px,
+          rgba(0,0,0,0.00) 5px
+        );
+      mix-blend-mode: overlay;
+      opacity:0.65;
+      pointer-events:none;
+    }
+
+    /* WRAP PANEL */
+    .wrap{
+      position:relative;
+      z-index:2;
+      min-height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px 14px;
+      font-family:"Cormorant Garamond", serif;
+      color:var(--text);
+    }
+
+    .panel{
+      width:min(900px, 100%);
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:26px 22px 22px;
+      box-shadow:0 20px 70px var(--shadow);
+      backdrop-filter: blur(5px);
+    }
+
+    .chapter{
+      margin:0 0 10px;
+      color:var(--muted);
+      font-size:16px;
+      letter-spacing:0.45px;
+      text-transform:uppercase;
+    }
+
+    h1{
+      font-family:"Cinzel Decorative", serif;
+      font-weight:700;
+      margin:0 0 12px;
+      letter-spacing:0.8px;
+      font-size:clamp(24px, 3.2vw, 42px);
+      text-shadow:0 0 16px rgba(0,0,0,0.7);
+    }
+
+    .story{
+      margin:0 0 16px;
+      font-size:18px;
+      line-height:1.58;
+      color:rgba(255,255,255,0.84);
+    }
+
+    .divider{
+      height:1px;
+      background:linear-gradient(90deg, transparent, var(--line2), transparent);
+      margin:18px 0;
+    }
+
+    .riddleTitle{
+      font-family:"Cinzel Decorative", serif;
+      margin:0 0 6px;
+      font-size:18px;
+      letter-spacing:0.6px;
+    }
+
+    .riddle{
+      margin:0 0 14px;
+      color:rgba(255,255,255,0.80);
+      font-size:18px;
+      line-height:1.52;
+    }
+
+    .puzzle{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+      margin-top:6px;
+    }
+
+    .hint{
+      color:rgba(255,255,255,0.55);
+      font-size:15px;
+      line-height:1.35;
+      text-align:center;
+    }
+
+    .tiles{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:center;
+      padding:8px 0 2px;
+    }
+
+    .tile{
+      width:64px;
+      height:64px;
+      border-radius:14px;
+      background:rgba(0,0,0,0.55);
+      border:1px solid var(--line2);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family:"Cinzel Decorative", serif;
+      font-size:22px;
+      letter-spacing:1px;
+      box-shadow:0 10px 26px rgba(0,0,0,0.45);
+      cursor:grab;
+      user-select:none;
+      touch-action:none;
+      position:relative;
+    }
+    .tile:active{ cursor:grabbing; }
+
+    .tile.selected{
+      outline:2px solid rgba(255,255,255,0.35);
+      box-shadow:0 0 0 2px rgba(255,255,255,0.10), 0 12px 28px rgba(0,0,0,0.55);
+    }
+
+    .slots{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+      padding-top:2px;
+    }
+
+    .slot{
+      width:64px;
+      height:64px;
+      border-radius:14px;
+      background:rgba(255,255,255,0.04);
+      border:1px dashed rgba(255,255,255,0.30);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family:"Cinzel Decorative", serif;
+      font-size:22px;
+      letter-spacing:1px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.35);
+      transition: transform 120ms ease, background 180ms ease;
+    }
+
+    .slot.filled{
+      border-style:solid;
+      background:rgba(0,0,0,0.48);
+    }
+
+    .slot.pop{
+      transform: scale(1.04);
+    }
+
+    .status{
+      text-align:center;
+      min-height:24px;
+      font-size:16px;
+      color:rgba(255,255,255,0.68);
+    }
+
+    .unlock{
+      display:none;
+      margin-top:8px;
+      text-align:center;
+    }
+
+    .unlock a{
+      display:inline-block;
+      padding:10px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,0.35);
+      background:rgba(0,0,0,0.55);
+      color:rgba(255,255,255,0.92);
+      text-decoration:none;
+      font-family:"Cinzel Decorative", serif;
+      letter-spacing:0.5px;
+      box-shadow:0 14px 36px rgba(0,0,0,0.55);
+    }
+
+    .unlock a:hover{
+      background:rgba(0,0,0,0.72);
+    }
+
+    /* MOBILE COMFORT */
+    @media (max-width:520px){
+      .panel{ padding:20px 16px 16px; border-radius:18px; }
+      .tile,.slot{ width:58px; height:58px; border-radius:12px; }
+      .story,.riddle{ font-size:17px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="hero">
+    <div class="wrap">
+      <div class="panel">
+
+        <!-- STORY FIRST -->
+        <div class="chapter">Chapter V — The Mark That Binds</div>
+        <h1>The Sigil Chamber</h1>
+
+        <p class="story">
+          The corridor exhales into a circular room carved with spirals that never quite repeat.
+          A shallow basin sits at the center—bone-dry—yet the air tastes like wet stone.
+          Above the basin, tiles hover in a slow orbit, each etched with a single letter that
+          flickers like a living ember.
+          <br><br>
+          On the far door, a symbol is scratched deep into the metal. Not a word—an instruction.
+          A warning. A promise. The carving seems to shift when you look away, as if the room
+          is trying to remember what you are.
+          <br><br>
+          A whisper drifts from the walls: <em>“Set the mark in order… and the mark will set you.”</em>
+        </p>
+
+        <div class="divider"></div>
+
+        <!-- RIDDLE SECOND -->
+        <h2 class="riddleTitle">Riddle</h2>
+        <p class="riddle">
+          I am not a name, yet I claim you.<br>
+          Draw me once, and doors obey.<br>
+          I am a mark that speaks without sound—<br>
+          a secret shape that binds the way.<br>
+          What am I?
+        </p>
+
+        <!-- MECHANIC THIRD -->
+        <div class="puzzle">
+          <div class="hint">
+            Drag the tiles into the slots to form the answer.  
+            (Mobile tip: tap a tile, then tap a slot.)
+          </div>
+
+          <div class="tiles" id="tiles">
+            <!-- intentionally shuffled for the player -->
+            <div class="tile" draggable="true" data-letter="I">I</div>
+            <div class="tile" draggable="true" data-letter="S">S</div>
+            <div class="tile" draggable="true" data-letter="L">L</div>
+            <div class="tile" draggable="true" data-letter="I">I</div>
+            <div class="tile" draggable="true" data-letter="G">G</div>
+          </div>
+
+          <div class="slots" id="slots">
+            <div class="slot" data-i="0"></div>
+            <div class="slot" data-i="1"></div>
+            <div class="slot" data-i="2"></div>
+            <div class="slot" data-i="3"></div>
+            <div class="slot" data-i="4"></div>
+          </div>
+
+          <div class="status" id="status">The chamber waits.</div>
+
+          <div class="unlock" id="unlock">
+            <a href="level6.html">Enter the next threshold</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+<script>
+  // Desktop: drag & drop.
+  // Mobile: tap tile -> tap slot to place.
+  const ANSWER = "SIGIL";
+
+  const tiles = Array.from(document.querySelectorAll(".tile"));
+  const slots = Array.from(document.querySelectorAll(".slot"));
+  const statusEl = document.getElementById("status");
+  const unlockEl = document.getElementById("unlock");
+
+  let draggedTile = null;
+  let selectedTile = null;
+
+  function currentAttempt(){
+    return slots.map(s => s.textContent.trim()).join("");
+  }
+
+  function softPop(el){
+    el.classList.add("pop");
+    setTimeout(() => el.classList.remove("pop"), 140);
+  }
+
+  function check(){
+    const attempt = currentAttempt();
+
+    if(attempt.length < ANSWER.length){
+      unlockEl.style.display = "none";
+      statusEl.textContent = selectedTile ? "Tile chosen. Place it." : "The chamber waits.";
+      return;
+    }
+
+    if(attempt === ANSWER){
+      statusEl.textContent = "The mark completes. The door yields.";
+      unlockEl.style.display = "block";
+    } else {
+      unlockEl.style.display = "none";
+      statusEl.textContent = "The sigil is wrong. The lines twitch.";
+    }
+  }
+
+  // Drag start (desktop)
+  tiles.forEach(t => {
+    t.addEventListener("dragstart", () => {
+      draggedTile = t;
+    });
+
+    // Tap-select (mobile + also nice on desktop)
+    t.addEventListener("click", () => {
+      tiles.forEach(x => x.classList.remove("selected"));
+      selectedTile = t;
+      t.classList.add("selected");
+      statusEl.textContent = "Tile chosen. Tap a slot to place it.";
+    });
+  });
+
+  // Slots accept drops (desktop)
+  slots.forEach(s => {
+    s.addEventListener("dragover", e => e.preventDefault());
+
+    s.addEventListener("drop", () => {
+      if(!draggedTile) return;
+      s.textContent = draggedTile.dataset.letter;
+      s.classList.add("filled");
+      softPop(s);
+      check();
+    });
+
+    // Tap-place (mobile)
+    s.addEventListener("click", () => {
+      if(!selectedTile) return;
+      s.textContent = selectedTile.dataset.letter;
+      s.classList.add("filled");
+      softPop(s);
+
+      tiles.forEach(x => x.classList.remove("selected"));
+      selectedTile = null;
+
+      check();
+    });
+
+    // Double-click to clear (desktop quality-of-life)
+    s.addEventListener("dblclick", () => {
+      s.textContent = "";
+      s.classList.remove("filled");
+      unlockEl.style.display = "none";
+      statusEl.textContent = "The chamber waits.";
+    });
+  });
+</script>
+
+</body>
+</html>
 
