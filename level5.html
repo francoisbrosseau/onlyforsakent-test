@@ -11,9 +11,11 @@
     :root{
       --text: rgba(255,255,255,0.92);
       --muted: rgba(255,255,255,0.62);
-      --shadow: rgba(0,0,0,0.80);
+      --shadow: rgba(0,0,0,0.82);
       --line: rgba(255,255,255,0.22);
       --tilebg: rgba(0,0,0,0.40);
+      --ember: rgba(255,190,120,0.18);
+      --ember2: rgba(255,190,120,0.08);
     }
 
     *{ box-sizing:border-box; }
@@ -24,7 +26,7 @@
       min-height:100%;
       position:relative;
       background:
-        radial-gradient(70% 60% at 50% 35%, rgba(255,190,120,0.06), rgba(0,0,0,0.86)),
+        radial-gradient(70% 60% at 50% 35%, rgba(255,190,120,0.06), rgba(0,0,0,0.87)),
         url("assets/level5-bg.jpg") center/cover no-repeat;
       overflow:hidden;
       font-family:"Cormorant Garamond", serif;
@@ -37,7 +39,7 @@
       content:"";
       position:absolute; inset:0;
       background:
-        radial-gradient(95% 85% at 50% 40%, rgba(0,0,0,0.10), rgba(0,0,0,0.86)),
+        radial-gradient(95% 85% at 50% 40%, rgba(0,0,0,0.12), rgba(0,0,0,0.87)),
         repeating-linear-gradient(0deg,
           rgba(255,255,255,0.018),
           rgba(255,255,255,0.018) 1px,
@@ -45,7 +47,7 @@
           rgba(0,0,0,0.00) 6px
         );
       mix-blend-mode: overlay;
-      opacity:0.62;
+      opacity:0.60;
       pointer-events:none;
     }
 
@@ -67,7 +69,7 @@
       80%     { transform: translate3d(-0.6%, -0.2%, 0) scale(1.01); opacity:0.32; }
     }
 
-    /* CENTERED CONTENT (NO BOX) */
+    /* CENTERED CONTENT (NO PANEL/BOX) */
     .wrap{
       position:relative;
       z-index:2;
@@ -79,7 +81,7 @@
     }
 
     .content{
-      width:min(920px, 100%);
+      width:min(940px, 100%);
     }
 
     h1{
@@ -101,17 +103,17 @@
 
     .story{
       margin:0 auto 18px;
-      max-width: 780px;
+      max-width: 820px;
       font-size:18px;
       line-height:1.62;
-      color:rgba(255,255,255,0.86);
-      text-shadow:0 2px 16px rgba(0,0,0,0.70);
+      color:rgba(255,255,255,0.87);
+      text-shadow:0 2px 18px rgba(0,0,0,0.72);
     }
 
     .divider{
       height:1px;
-      width:min(560px, 92%);
-      margin:20px auto 18px;
+      width:min(600px, 92%);
+      margin:22px auto 18px;
       background:linear-gradient(90deg, transparent, rgba(255,255,255,0.26), transparent);
     }
 
@@ -125,11 +127,11 @@
 
     .riddle{
       margin:0 auto 6px;
-      max-width: 780px;
+      max-width: 820px;
       font-size:18px;
       line-height:1.58;
       color:rgba(255,255,255,0.80);
-      text-shadow:0 2px 16px rgba(0,0,0,0.70);
+      text-shadow:0 2px 18px rgba(0,0,0,0.72);
     }
 
     /* tiles & slots */
@@ -161,27 +163,54 @@
       text-shadow:0 0 10px rgba(0,0,0,0.65);
       opacity:0.92;
       position:relative;
+      overflow:hidden;
     }
     .tile:active{ cursor:grabbing; transform: translateY(1px) scale(0.995); }
     .tile.selected{ border-color: rgba(255,255,255,0.46); }
 
     /* Haunted fade */
     @keyframes breatheFade{
-      0%,100%{ opacity:0.20; filter: blur(0px); }
-      40%    { opacity:0.95; filter: blur(0px); }
-      60%    { opacity:0.35; filter: blur(0.2px); }
+      0%,100%{ opacity:0.18; filter: blur(0px); }
+      38%    { opacity:0.95; filter: blur(0px); }
+      62%    { opacity:0.30; filter: blur(0.2px); }
     }
-
-    /* micro drift */
     @keyframes drift{
       0%,100% { transform: translate3d(0,0,0); }
       50%     { transform: translate3d(0.8px,-0.6px,0); }
     }
-
     .tile.haunted{
       animation:
         breatheFade var(--fadeDur) ease-in-out infinite,
         drift var(--driftDur) ease-in-out infinite;
+      animation-delay: var(--delay);
+    }
+
+    /* The “marked” tiles: subtle ember halo + tiny scratch line (in-world clue) */
+    .tile.marked{
+      border-color: rgba(255,190,120,0.26);
+      box-shadow:
+        0 18px 44px rgba(0,0,0,0.55),
+        0 0 22px var(--ember2);
+    }
+    .tile.marked::after{
+      content:"";
+      position:absolute;
+      width:88%;
+      height:1px;
+      left:6%;
+      top:18%;
+      background: linear-gradient(90deg, transparent, rgba(255,190,120,0.30), transparent);
+      transform: rotate(-8deg);
+      opacity:0.55;
+      pointer-events:none;
+    }
+    .tile.marked::before{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background: radial-gradient(closest-side at 50% 50%, var(--ember), rgba(0,0,0,0));
+      opacity:0.22;
+      pointer-events:none;
     }
 
     .slots{
@@ -219,7 +248,7 @@
       color:rgba(255,255,255,0.64);
       font-size:16px;
       margin:10px 0 2px;
-      text-shadow:0 2px 16px rgba(0,0,0,0.70);
+      text-shadow:0 2px 18px rgba(0,0,0,0.72);
     }
 
     .unlock{
@@ -260,37 +289,50 @@
       <div class="content">
 
         <h1>The Sigil Chamber</h1>
-        <div class="subtitle">The mark is watching back.</div>
+        <div class="subtitle">Some doors don’t want words. They want proof.</div>
 
+        <!-- STORY BACK (real story, not placeholder) -->
         <p class="story">
-          (We’ll refine this story next. For now: the chamber, the basin, the shifting mark, and the tiles that won’t sit still.)
+          The corridor widens without warning, as if the castle finally decided to breathe.
+          You step into a circular chamber where the air tastes like iron and old incense.
+          The stones are scored with grooves—loops and hooks—repeated so many times they’ve become a language.
+          <br><br>
+          In the center sits a shallow basin, dry but shimmering, as if something once pooled there and refused to vanish cleanly.
+          The far door is sealed by a shifting mark carved into dark metal. It changes whenever you look away,
+          as if it’s ashamed to be seen in one shape too long.
+          <br><br>
+          Above the basin, tiles drift into view—letters and impostors, truth mixed with counterfeit—each blinking in and out
+          like a heartbeat. And underneath the whisper of stone, you feel it:
+          the chamber is not asking for a word.
+          It is asking for the correct mark.
         </p>
 
         <div class="divider"></div>
 
         <div class="riddleTitle">Riddle</div>
         <p class="riddle">
-          I am drawn, not spoken.<br>
-          A key that looks like a scar.<br>
-          Five strokes bind the gate—<br>
-          the rest are counterfeit.
+          I am not spoken, yet I command.<br>
+          I am written without ink, and seen without light.<br>
+          I bind what should remain shut—<br>
+          and open only for the true strokes.<br><br>
+          The real ones are scarred. The rest only pretend.
         </p>
 
-        <!-- Tiles are REMIXED so SIGIL is NOT the first 5 -->
+        <!-- Tiles: decoys first; real letters are subtly "scarred" (marked) -->
         <div class="tiles" id="tiles">
-          <!-- decoys first -->
+          <!-- decoys -->
           <div class="tile haunted" draggable="true" data-letter="E">E</div>
           <div class="tile haunted" draggable="true" data-letter="T">T</div>
           <div class="tile haunted" draggable="true" data-letter="O">O</div>
           <div class="tile haunted" draggable="true" data-letter="V">V</div>
           <div class="tile haunted" draggable="true" data-letter="C">C</div>
 
-          <!-- real letters mixed in (not grouped) -->
-          <div class="tile haunted" draggable="true" data-letter="I">I</div>
-          <div class="tile haunted" draggable="true" data-letter="L">L</div>
-          <div class="tile haunted" draggable="true" data-letter="S">S</div>
-          <div class="tile haunted" draggable="true" data-letter="G">G</div>
-          <div class="tile haunted" draggable="true" data-letter="I">I</div>
+          <!-- real letters (marked, but NOT grouped and NOT first) -->
+          <div class="tile haunted marked" draggable="true" data-letter="I">I</div>
+          <div class="tile haunted marked" draggable="true" data-letter="L">L</div>
+          <div class="tile haunted marked" draggable="true" data-letter="S">S</div>
+          <div class="tile haunted marked" draggable="true" data-letter="G">G</div>
+          <div class="tile haunted marked" draggable="true" data-letter="I">I</div>
 
           <!-- tricky impostors -->
           <div class="tile haunted" draggable="true" data-letter="|">|</div>
@@ -326,16 +368,15 @@
     let draggedTile = null;
     let selectedTile = null;
 
-    // randomize each tile's fade timing so it looks alive
-    tiles.forEach((t, i) => {
+    // give each tile unique fade/drift so it feels alive
+    tiles.forEach(t => {
       if (t.classList.contains("haunted")) {
         const fade = 3.2 + Math.random() * 2.8;   // 3.2s - 6.0s
         const drift = 4.0 + Math.random() * 3.5;  // 4.0s - 7.5s
+        const delay = Math.random() * 1.8;        // stagger
         t.style.setProperty("--fadeDur", fade.toFixed(2) + "s");
         t.style.setProperty("--driftDur", drift.toFixed(2) + "s");
-
-        // stagger start so it's not synchronized
-        t.style.animationDelay = (Math.random() * 1.8).toFixed(2) + "s";
+        t.style.setProperty("--delay", delay.toFixed(2) + "s");
       }
     });
 
@@ -368,7 +409,7 @@
     tiles.forEach(t => {
       t.addEventListener("dragstart", () => draggedTile = t);
 
-      // Tap select (mobile helper, no on-screen instruction)
+      // Tap select (mobile helper; no instruction text on page)
       t.addEventListener("click", () => {
         tiles.forEach(x => x.classList.remove("selected"));
         selectedTile = t;
