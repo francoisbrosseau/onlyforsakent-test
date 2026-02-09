@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ONLYFORSAKEN — Level 6</title>
 
-  <!-- Your site typography -->
+  <!-- Your typography -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
@@ -15,199 +15,201 @@
 
       --text: rgba(255,255,255,0.92);
       --muted: rgba(255,255,255,0.62);
-      --shadow: rgba(0,0,0,0.72);
 
-      --panel: rgba(10,10,10,0.46);
+      --panel: rgba(10,10,10,0.50);
       --panel-border: rgba(255,255,255,0.12);
+      --shadow: rgba(0,0,0,0.70);
 
-      --radius: 18px;
-      --maxw: 900px;
-      --ring: rgba(255,255,255,0.22);
+      --radius: 26px;   /* <- matches the softer rounded look */
+      --maxw: 820px;
 
       --ok: rgba(170,255,210,0.95);
       --bad: rgba(255,140,140,0.95);
+      --ring: rgba(255,255,255,0.18);
     }
 
     *{ box-sizing:border-box; }
     html,body{ height:100%; margin:0; background:#000; color:var(--text); }
     body{ font-family: var(--body-font); overflow-x:hidden; }
 
-    /* HERO */
+    /* Full-screen hero */
     .hero{
       min-height:100vh;
       position:relative;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: clamp(18px, 4vw, 46px);
+      display:grid;
+      place-items:center;
+      padding: clamp(18px, 4vw, 52px);
       isolation:isolate;
       background:#000;
     }
 
-    /* Background image slot (replace the URL later) */
+    /* Background image slot (swap later) */
     .bg{
       position:absolute; inset:0;
       background:
-        linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.82)),
+        radial-gradient(900px 540px at 50% 22%, rgba(255,255,255,0.10), rgba(0,0,0,0.0) 60%),
+        linear-gradient(to bottom, rgba(0,0,0,0.30), rgba(0,0,0,0.82)),
         url("assets/level6-bg.webp");
       background-size:cover;
       background-position:center;
-      filter: contrast(1.05) saturate(0.9);
-      z-index:-3;
+      z-index:-4;
     }
 
-    /* Grain overlay (no extra image needed) */
+    /* Grain overlay (lightweight, no extra file) */
     .grain{
       position:absolute; inset:0;
       pointer-events:none;
-      opacity:0.12;
+      opacity:0.14;
       background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
       mix-blend-mode:overlay;
+      z-index:-3;
+    }
+
+    .vignette{
+      position:absolute; inset:-30%;
+      pointer-events:none;
+      background: radial-gradient(closest-side at 50% 35%, rgba(0,0,0,0) 18%, rgba(0,0,0,0.88) 82%);
       z-index:-2;
     }
 
-    /* Subtle vignette */
-    .vignette{
-      position:absolute; inset:-20%;
-      background: radial-gradient(closest-side at 50% 35%, rgba(0,0,0,0) 20%, rgba(0,0,0,0.85) 80%);
-      z-index:-1;
-      pointer-events:none;
-    }
-
-    /* Candle-flicker / breathing */
+    /* candle/breath */
     @keyframes candleFlicker{
-      0%{ opacity:0.85; transform: translateY(0px); }
+      0%{ opacity:0.90; transform: translateY(0px); }
       50%{ opacity:1; transform: translateY(-1px); }
-      100%{ opacity:0.88; transform: translateY(0px); }
+      100%{ opacity:0.92; transform: translateY(0px); }
     }
-    .flicker{ animation: candleFlicker 4.8s ease-in-out infinite; }
+    .flicker{ animation: candleFlicker 5.2s ease-in-out infinite; }
 
+    /* Centered wrap panel (your style) */
     .wrap{
       width:min(var(--maxw), 100%);
       border-radius: calc(var(--radius) + 6px);
       background: var(--panel);
       border:1px solid var(--panel-border);
-      box-shadow: 0 30px 90px var(--shadow);
-      padding: clamp(18px, 3.2vw, 34px);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 30px 110px var(--shadow);
+      padding: clamp(20px, 3.5vw, 40px);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      text-align:center; /* IMPORTANT: center everything */
       position:relative;
     }
 
-    .topline{
-      display:flex;
-      align-items:baseline;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom: 12px;
+    .kicker{
+      font-family: var(--title-font);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-size: 12px;
+      color: rgba(255,255,255,0.60);
+      margin: 2px 0 10px;
     }
 
     h1{
       margin:0;
       font-family: var(--title-font);
-      letter-spacing: 0.06em;
-      font-size: clamp(26px, 3.2vw, 38px);
-      text-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      letter-spacing: 0.08em;
+      font-size: clamp(30px, 3.6vw, 46px);
+      text-shadow: 0 12px 40px rgba(0,0,0,0.70);
     }
 
-    .lvl{
-      font-family: var(--title-font);
-      letter-spacing: 0.10em;
-      font-size: 12px;
-      color: var(--muted);
-      text-transform: uppercase;
-      border:1px solid rgba(255,255,255,0.16);
-      padding: 8px 10px;
-      border-radius: 999px;
-      background: rgba(0,0,0,0.22);
-      white-space:nowrap;
+    h2{
+      margin: 10px 0 0;
+      font-weight: 600;
+      font-size: clamp(18px, 2.2vw, 24px);
+      color: rgba(255,255,255,0.80);
+      letter-spacing: 0.02em;
     }
-
-    .chapter{
-      margin-top: 6px;
-      font-size: clamp(18px, 2vw, 22px);
-      line-height: 1.6;
-      color: rgba(255,255,255,0.88);
-    }
-    .chapter p{ margin: 12px 0; }
 
     .divider{
       height:1px;
-      background: linear-gradient(to right, transparent, rgba(255,255,255,0.20), transparent);
-      margin: 18px 0 16px;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.22), transparent);
+      margin: 18px 0 18px;
     }
+
+    .story{
+      text-align:center;
+      margin: 0 auto;
+      max-width: 64ch;
+      font-size: clamp(18px, 2.0vw, 22px);
+      line-height: 1.7;
+      color: rgba(255,255,255,0.88);
+    }
+    .story p{ margin: 12px 0; }
 
     .riddleTitle{
       font-family: var(--title-font);
-      letter-spacing: 0.08em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      font-size: 14px;
-      color: rgba(255,255,255,0.78);
-      margin: 0 0 10px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.72);
+      margin: 8px 0 10px;
     }
 
     .riddle{
+      display:inline-block;
+      text-align:center;
       border-radius: var(--radius);
-      padding: 14px 16px;
-      background: rgba(0,0,0,0.32);
+      padding: 14px 18px;
+      background: rgba(0,0,0,0.30);
       border: 1px solid rgba(255,255,255,0.10);
-      line-height: 1.7;
-      font-size: clamp(18px, 2vw, 22px);
+      line-height: 1.8;
+      font-size: clamp(18px, 2.0vw, 22px);
+      max-width: 62ch;
     }
 
+    /* Password gate centered + not huge */
     .gate{
-      margin-top: 16px;
+      margin-top: 18px;
       display:flex;
+      justify-content:center;
       gap: 10px;
       flex-wrap:wrap;
       align-items:center;
     }
 
     input[type="password"]{
-      flex: 1 1 220px;
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.18);
-      background: rgba(0,0,0,0.35);
+      width: min(340px, 92vw); /* smaller on desktop */
+      padding: 10px 12px;       /* not chunky */
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(0,0,0,0.32);
       color: var(--text);
       font-family: var(--body-font);
       font-size: 18px;
       outline:none;
-      box-shadow: 0 0 0 0 rgba(255,255,255,0);
-      transition: box-shadow .18s ease, border-color .18s ease;
+      transition: box-shadow .18s ease, border-color .18s ease, transform .08s ease;
     }
     input[type="password"]:focus{
-      border-color: rgba(255,255,255,0.35);
+      border-color: rgba(255,255,255,0.30);
       box-shadow: 0 0 0 4px rgba(255,255,255,0.08);
     }
 
     button{
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.18);
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.16);
       background: rgba(255,255,255,0.10);
       color: rgba(255,255,255,0.92);
       font-family: var(--title-font);
-      letter-spacing: 0.08em;
+      letter-spacing: 0.10em;
       text-transform: uppercase;
-      font-size: 12px;
+      font-size: 11px;
       cursor:pointer;
       transition: transform .08s ease, background .18s ease, border-color .18s ease;
     }
-    button:hover{ background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.28); }
+    button:hover{ background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.26); }
     button:active{ transform: translateY(1px); }
 
     .hint{
       margin-top: 10px;
       color: var(--muted);
-      font-size: 15px;
+      font-size: 14px;
       line-height:1.5;
     }
 
     .msg{
       margin-top: 10px;
       min-height: 22px;
-      font-size: 16px;
+      font-size: 15px;
       letter-spacing: 0.02em;
     }
     .msg.ok{ color: var(--ok); }
@@ -215,48 +217,39 @@
 
     .foot{
       margin-top: 16px;
-      color: rgba(255,255,255,0.38);
+      color: rgba(255,255,255,0.40);
       font-size: 12px;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.10em;
       text-transform: uppercase;
-    }
-
-    /* Small screens */
-    @media (max-width:520px){
-      .topline{ flex-direction:column; align-items:flex-start; }
-      .lvl{ margin-top: 6px; }
     }
   </style>
 </head>
 
 <body>
   <main class="hero">
-    <!-- SLOT: swap this file later for the generated image -->
-    <!-- Put your final image at: /assets/level6-bg.webp (recommended WebP) -->
+    <!-- SLOT: replace later with generated image -->
     <div class="bg" aria-hidden="true"></div>
     <div class="grain" aria-hidden="true"></div>
     <div class="vignette" aria-hidden="true"></div>
 
-    <section class="wrap flicker" aria-label="Level 6 content">
-      <div class="topline">
-        <h1>ONLYFORSAKEN</h1>
-        <div class="lvl">Level VI — The Hall of Repeat</div>
-      </div>
+    <section class="wrap flicker" aria-label="Level 6">
+      <div class="kicker">ONLYFORSAKEN • LEVEL VI</div>
+      <h1>The Hall of Repeat</h1>
+      <h2>Where the castle answers you back.</h2>
 
-      <div class="chapter">
-        <p><strong>Chapter VI:</strong> The corridor tightens as if the castle has begun to breathe.</p>
+      <div class="divider"></div>
 
-        <p>You pass a doorway that you swear you’ve already passed—its iron handle bent like a broken finger, the same scrape in the stone beneath it, the same stain that never dries. The deeper you walk, the more the architecture stops obeying distance. Steps become suggestions. Corners return you to places you never meant to revisit.</p>
-
-        <p>There is a sound now, too—soft, almost polite. Not footsteps behind you… but <em>answers</em>. Your own breathing comes back to you with a delay, as if the walls are learning it. The castle repeats you, not to mock you—  
-        but to <em>measure</em> you.</p>
-
-        <p>At the end of the hall, a niche holds a slab of black stone. No lock. No keyhole. Only a shallow indentation where a word should be placed like an offering. Above it, etched into the mortar, a warning:</p>
+      <div class="story">
+        <p>You swear the corridor is shrinking behind you. Not closing—<em>remembering</em>.</p>
+        <p>Every step you take returns with a delay, as if the stones rehearse your presence before they allow it. Corners feel familiar in the wrong way. A doorway you passed an hour ago appears again, identical down to the bent iron handle and the dry smear on the floor.</p>
+        <p>Your breath leaves your throat… and then comes back to you, softer. Not wind. Not a draft.</p>
+        <p>A reply.</p>
+        <p>At the end of the passage, a slab of black stone waits like an open mouth. No keyhole. No latch. Just a shallow indentation, made for a single word—as if the castle will only open for something it can repeat.</p>
       </div>
 
       <div class="divider"></div>
 
-      <div class="riddleTitle">Riddle — The Silent Judge</div>
+      <div class="riddleTitle">Riddle</div>
       <div class="riddle">
         I speak without a mouth.<br>
         I answer without a voice.<br>
@@ -270,17 +263,17 @@
         <button id="enterBtn" type="button">Enter</button>
       </div>
 
-      <div class="hint">Tip: answers here are a single word. No spaces. No punctuation.</div>
+      <div class="hint">One word. No spaces.</div>
       <div id="msg" class="msg" aria-live="polite"></div>
 
-      <div class="foot">If you speak it right, the castle speaks you back.</div>
+      <div class="foot">If you say it right, the stone will say it back.</div>
     </section>
   </main>
 
   <script>
     // ====== CONFIG ======
-    const PASSWORD = "echo";          // <-- password (case-insensitive)
-    const NEXT_PAGE = "level7.html";  // <-- change this if your next file name differs
+    const PASSWORD = "echo";          // case-insensitive
+    const NEXT_PAGE = "level7.html";  // change if needed
     // ====================
 
     const pw = document.getElementById("pw");
@@ -299,8 +292,7 @@
         return;
       }
       if(v === PASSWORD){
-        setMsg("Accepted. The corridor remembers you.", true);
-        // small delay for vibe, then move on
+        setMsg("Accepted. The hall remembers you.", true);
         setTimeout(()=> { window.location.href = NEXT_PAGE; }, 650);
       } else {
         setMsg("Wrong. The castle repeats your mistake.");
@@ -309,11 +301,7 @@
     }
 
     btn.addEventListener("click", check);
-    pw.addEventListener("keydown", (e)=>{
-      if(e.key === "Enter") check();
-    });
-
-    // Optional: autofocus for smoother flow
+    pw.addEventListener("keydown", (e)=> { if(e.key === "Enter") check(); });
     window.addEventListener("load", ()=> pw.focus());
   </script>
 </body>
