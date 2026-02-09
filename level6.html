@@ -5,139 +5,143 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ONLYFORSAKEN — Level 6</title>
 
-  <!-- Your typography -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --title-font: "Cinzel Decorative", serif;
-      --body-font: "Cormorant Garamond", serif;
+      --title-font:"Cinzel Decorative", serif;
+      --body-font:"Cormorant Garamond", serif;
 
       --text: rgba(255,255,255,0.92);
       --muted: rgba(255,255,255,0.62);
 
-      --panel: rgba(10,10,10,0.50);
-      --panel-border: rgba(255,255,255,0.12);
+      --panel: rgba(10,10,10,0.40);          /* softer = less “boxed” */
+      --panel-border: rgba(255,255,255,0.10);
       --shadow: rgba(0,0,0,0.70);
 
-      --radius: 26px;   /* <- matches the softer rounded look */
-      --maxw: 820px;
+      --radius: 28px;
+      --maxw: 880px;
 
       --ok: rgba(170,255,210,0.95);
       --bad: rgba(255,140,140,0.95);
-      --ring: rgba(255,255,255,0.18);
     }
 
     *{ box-sizing:border-box; }
     html,body{ height:100%; margin:0; background:#000; color:var(--text); }
     body{ font-family: var(--body-font); overflow-x:hidden; }
 
-    /* Full-screen hero */
+    /* FULL HERO — centered */
     .hero{
-      min-height:100vh;
+      min-height: 100vh;
+      min-height: 100svh;
       position:relative;
       display:grid;
       place-items:center;
-      padding: clamp(18px, 4vw, 52px);
+      padding: clamp(18px, 4vw, 56px);
       isolation:isolate;
       background:#000;
+      text-align:center;
     }
 
-    /* Background image slot (swap later) */
+    /* BACKGROUND IMAGE SLOT */
     .bg{
       position:absolute; inset:0;
       background:
-        radial-gradient(900px 540px at 50% 22%, rgba(255,255,255,0.10), rgba(0,0,0,0.0) 60%),
-        linear-gradient(to bottom, rgba(0,0,0,0.30), rgba(0,0,0,0.82)),
+        radial-gradient(1000px 600px at 50% 24%, rgba(255,255,255,0.10), rgba(0,0,0,0) 60%),
+        linear-gradient(to bottom, rgba(0,0,0,0.30), rgba(0,0,0,0.84)),
         url("assets/level6-bg.webp");
-      background-size:cover;
-      background-position:center;
+      background-size: cover;
+      background-position: center;
       z-index:-4;
     }
 
-    /* Grain overlay (lightweight, no extra file) */
+    /* grain */
     .grain{
       position:absolute; inset:0;
       pointer-events:none;
       opacity:0.14;
       background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
-      mix-blend-mode:overlay;
+      mix-blend-mode: overlay;
       z-index:-3;
     }
 
     .vignette{
-      position:absolute; inset:-30%;
+      position:absolute; inset:-35%;
       pointer-events:none;
-      background: radial-gradient(closest-side at 50% 35%, rgba(0,0,0,0) 18%, rgba(0,0,0,0.88) 82%);
+      background: radial-gradient(closest-side at 50% 35%, rgba(0,0,0,0) 18%, rgba(0,0,0,0.90) 82%);
       z-index:-2;
     }
 
-    /* candle/breath */
     @keyframes candleFlicker{
-      0%{ opacity:0.90; transform: translateY(0px); }
+      0%{ opacity:0.92; transform: translateY(0px); }
       50%{ opacity:1; transform: translateY(-1px); }
-      100%{ opacity:0.92; transform: translateY(0px); }
+      100%{ opacity:0.94; transform: translateY(0px); }
     }
     .flicker{ animation: candleFlicker 5.2s ease-in-out infinite; }
 
-    /* Centered wrap panel (your style) */
+    /* CENTERED WRAP — “not boxed” */
     .wrap{
-      width:min(var(--maxw), 100%);
-      border-radius: calc(var(--radius) + 6px);
+      width: min(var(--maxw), 100%);
+      padding: clamp(18px, 3.4vw, 42px);
+      border-radius: calc(var(--radius) + 10px);
+
+      /* soft panel + heavy blur = cinematic, not “square box” */
       background: var(--panel);
-      border:1px solid var(--panel-border);
-      box-shadow: 0 30px 110px var(--shadow);
-      padding: clamp(20px, 3.5vw, 40px);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      text-align:center; /* IMPORTANT: center everything */
+      border: 1px solid var(--panel-border);
+      box-shadow: 0 34px 120px var(--shadow);
+
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+
+      text-align:center;
       position:relative;
     }
 
-    .kicker{
-      font-family: var(--title-font);
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      font-size: 12px;
-      color: rgba(255,255,255,0.60);
-      margin: 2px 0 10px;
+    /* subtle inner glow to avoid “cheap rectangle” feel */
+    .wrap:before{
+      content:"";
+      position:absolute; inset:0;
+      border-radius: inherit;
+      pointer-events:none;
+      background: radial-gradient(700px 380px at 50% 0%, rgba(255,255,255,0.06), rgba(255,255,255,0) 60%);
+      opacity:0.9;
     }
+    .wrap > *{ position:relative; }
 
     h1{
-      margin:0;
+      margin: 0;
       font-family: var(--title-font);
-      letter-spacing: 0.08em;
-      font-size: clamp(30px, 3.6vw, 46px);
-      text-shadow: 0 12px 40px rgba(0,0,0,0.70);
+      letter-spacing: 0.10em;
+      font-size: clamp(32px, 3.8vw, 52px);
+      text-shadow: 0 14px 44px rgba(0,0,0,0.70);
     }
 
-    h2{
-      margin: 10px 0 0;
+    .sub{
+      margin-top: 10px;
       font-weight: 600;
       font-size: clamp(18px, 2.2vw, 24px);
       color: rgba(255,255,255,0.80);
-      letter-spacing: 0.02em;
     }
 
     .divider{
       height:1px;
       background: linear-gradient(to right, transparent, rgba(255,255,255,0.22), transparent);
-      margin: 18px 0 18px;
+      margin: 20px 0 18px;
     }
 
     .story{
-      text-align:center;
       margin: 0 auto;
-      max-width: 64ch;
-      font-size: clamp(18px, 2.0vw, 22px);
-      line-height: 1.7;
+      max-width: 66ch;
+      font-size: clamp(18px, 2.05vw, 22px);
+      line-height: 1.75;
       color: rgba(255,255,255,0.88);
+      text-align:center;
     }
     .story p{ margin: 12px 0; }
 
     .riddleTitle{
       font-family: var(--title-font);
-      letter-spacing: 0.12em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       font-size: 12px;
       color: rgba(255,255,255,0.72);
@@ -145,38 +149,40 @@
     }
 
     .riddle{
-      display:inline-block;
+      margin: 0 auto;
+      max-width: 62ch;
+      display:block;
       text-align:center;
       border-radius: var(--radius);
       padding: 14px 18px;
-      background: rgba(0,0,0,0.30);
+      background: rgba(0,0,0,0.22);
       border: 1px solid rgba(255,255,255,0.10);
-      line-height: 1.8;
-      font-size: clamp(18px, 2.0vw, 22px);
-      max-width: 62ch;
+      line-height: 1.85;
+      font-size: clamp(18px, 2.05vw, 22px);
     }
 
-    /* Password gate centered + not huge */
+    /* GATE — centered + smaller input */
     .gate{
       margin-top: 18px;
       display:flex;
       justify-content:center;
-      gap: 10px;
-      flex-wrap:wrap;
       align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     input[type="password"]{
-      width: min(340px, 92vw); /* smaller on desktop */
-      padding: 10px 12px;       /* not chunky */
+      width: min(300px, 86vw); /* reduced */
+      padding: 9px 12px;
       border-radius: 14px;
       border: 1px solid rgba(255,255,255,0.16);
-      background: rgba(0,0,0,0.32);
+      background: rgba(0,0,0,0.28);
       color: var(--text);
       font-family: var(--body-font);
       font-size: 18px;
-      outline:none;
-      transition: box-shadow .18s ease, border-color .18s ease, transform .08s ease;
+      outline: none;
+      transition: box-shadow .18s ease, border-color .18s ease;
+      text-align:center; /* even the typed text is centered */
     }
     input[type="password"]:focus{
       border-color: rgba(255,255,255,0.30);
@@ -193,7 +199,7 @@
       letter-spacing: 0.10em;
       text-transform: uppercase;
       font-size: 11px;
-      cursor:pointer;
+      cursor: pointer;
       transition: transform .08s ease, background .18s ease, border-color .18s ease;
     }
     button:hover{ background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.26); }
@@ -203,7 +209,6 @@
       margin-top: 10px;
       color: var(--muted);
       font-size: 14px;
-      line-height:1.5;
     }
 
     .msg{
@@ -227,24 +232,21 @@
 
 <body>
   <main class="hero">
-    <!-- SLOT: replace later with generated image -->
     <div class="bg" aria-hidden="true"></div>
     <div class="grain" aria-hidden="true"></div>
     <div class="vignette" aria-hidden="true"></div>
 
     <section class="wrap flicker" aria-label="Level 6">
-      <div class="kicker">ONLYFORSAKEN • LEVEL VI</div>
-      <h1>The Hall of Repeat</h1>
-      <h2>Where the castle answers you back.</h2>
+      <h1>ONLYFORSAKEN</h1>
+      <div class="sub">Deeper still — the castle begins to answer.</div>
 
       <div class="divider"></div>
 
       <div class="story">
-        <p>You swear the corridor is shrinking behind you. Not closing—<em>remembering</em>.</p>
-        <p>Every step you take returns with a delay, as if the stones rehearse your presence before they allow it. Corners feel familiar in the wrong way. A doorway you passed an hour ago appears again, identical down to the bent iron handle and the dry smear on the floor.</p>
-        <p>Your breath leaves your throat… and then comes back to you, softer. Not wind. Not a draft.</p>
-        <p>A reply.</p>
-        <p>At the end of the passage, a slab of black stone waits like an open mouth. No keyhole. No latch. Just a shallow indentation, made for a single word—as if the castle will only open for something it can repeat.</p>
+        <p>You step forward and the corridor returns your step—late, softer, wrong.</p>
+        <p>The stones are not just holding the sound. They are <em>learning</em> it.</p>
+        <p>A doorway you passed before appears again with the same bent handle, the same stain that never dries, the same cold draft that smells like old iron. Distance stops meaning what it should. Corners lead back to memories you did not agree to revisit.</p>
+        <p>At the end, a slab of black stone waits with a shallow indentation—made for a single word. Not a key. Not a name. A word the castle can repeat until it becomes true.</p>
       </div>
 
       <div class="divider"></div>
@@ -266,7 +268,7 @@
       <div class="hint">One word. No spaces.</div>
       <div id="msg" class="msg" aria-live="polite"></div>
 
-      <div class="foot">If you say it right, the stone will say it back.</div>
+      <div class="foot">Say it right — and the stone will say it back.</div>
     </section>
   </main>
 
@@ -301,7 +303,7 @@
     }
 
     btn.addEventListener("click", check);
-    pw.addEventListener("keydown", (e)=> { if(e.key === "Enter") check(); });
+    pw.addEventListener("keydown", (e)=>{ if(e.key === "Enter") check(); });
     window.addEventListener("load", ()=> pw.focus());
   </script>
 </body>
