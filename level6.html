@@ -27,6 +27,7 @@
     *{ box-sizing:border-box; }
     html,body{ height:100%; margin:0; background:#000; }
     body{
+      body{ min-height: 100vh; }
       color:var(--text);
       font-family:var(--body-font);
       overflow-x:hidden;
@@ -34,8 +35,9 @@
     }
 
     /* FULLSCREEN HERO */
-    .hero{
-      min-height:100vh;
+    .hero{ min-height: auto; }
+
+    min-height:100vh;
       min-height:100svh;
       position:relative;
       display:grid;
@@ -46,7 +48,11 @@
 
     /* BACKGROUND IMAGE SLOT (swap later) */
     .bg{
-  position:absolute; inset:0;
+  .bg{
+  position: fixed;   /* was absolute */
+  inset: 0;
+  z-index: -4;
+}
 
   /* IMPORTANT: crisp + visible */
   background:
