@@ -10,33 +10,34 @@
   <style>
     :root{
       --text: rgba(255,255,255,0.92);
-      --muted: rgba(255,255,255,0.58);
-      --shadow: rgba(0,0,0,0.76);
-      --panel: rgba(6,6,8,0.55);
-      --line: rgba(255,255,255,0.16);
-      --line2: rgba(255,255,255,0.26);
+      --muted: rgba(255,255,255,0.62);
+      --shadow: rgba(0,0,0,0.80);
+      --line: rgba(255,255,255,0.22);
+      --tilebg: rgba(0,0,0,0.40);
     }
 
     *{ box-sizing:border-box; }
     html,body{ height:100%; margin:0; background:#000; }
 
+    /* FULLSCREEN HERO */
     .hero{
       min-height:100%;
       position:relative;
       background:
-        radial-gradient(70% 60% at 50% 35%, rgba(255,190,120,0.06), rgba(0,0,0,0.84)),
+        radial-gradient(70% 60% at 50% 35%, rgba(255,190,120,0.06), rgba(0,0,0,0.86)),
         url("assets/level5-bg.jpg") center/cover no-repeat;
       overflow:hidden;
       font-family:"Cormorant Garamond", serif;
       color:var(--text);
+      text-align:center;
     }
 
-    /* grain + vignette */
+    /* GRAIN + VIGNETTE */
     .hero::before{
       content:"";
       position:absolute; inset:0;
       background:
-        radial-gradient(90% 80% at 50% 40%, rgba(0,0,0,0.10), rgba(0,0,0,0.84)),
+        radial-gradient(95% 85% at 50% 40%, rgba(0,0,0,0.10), rgba(0,0,0,0.86)),
         repeating-linear-gradient(0deg,
           rgba(255,255,255,0.018),
           rgba(255,255,255,0.018) 1px,
@@ -48,24 +49,25 @@
       pointer-events:none;
     }
 
-    /* subtle candle drift */
+    /* subtle candle glow */
     .hero::after{
       content:"";
       position:absolute; inset:-20%;
-      background: radial-gradient(closest-side at 50% 35%, rgba(255,190,120,0.12), rgba(0,0,0,0.0));
+      background: radial-gradient(closest-side at 50% 35%, rgba(255,190,120,0.13), rgba(0,0,0,0.0));
       filter: blur(18px);
       opacity:0.30;
-      animation: flicker 7s ease-in-out infinite;
+      animation: flicker 7.2s ease-in-out infinite;
       pointer-events:none;
     }
 
     @keyframes flicker{
-      0%,100% { transform: translate3d(0,0,0) scale(1); opacity:0.28; }
-      22%     { transform: translate3d(-1.3%, 0.9%, 0) scale(1.02); opacity:0.36; }
-      55%     { transform: translate3d(1.0%, -0.6%, 0) scale(1.015); opacity:0.30; }
-      80%     { transform: translate3d(-0.6%, -0.2%, 0) scale(1.01); opacity:0.34; }
+      0%,100% { transform: translate3d(0,0,0) scale(1); opacity:0.26; }
+      22%     { transform: translate3d(-1.2%, 0.8%, 0) scale(1.02); opacity:0.34; }
+      55%     { transform: translate3d(1.0%, -0.6%, 0) scale(1.015); opacity:0.28; }
+      80%     { transform: translate3d(-0.6%, -0.2%, 0) scale(1.01); opacity:0.32; }
     }
 
+    /* CENTERED CONTENT (NO BOX) */
     .wrap{
       position:relative;
       z-index:2;
@@ -73,18 +75,11 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:28px 14px;
-      text-align:center;
+      padding:36px 14px;
     }
 
-    .panel{
-      width:min(900px, 100%);
-      background:var(--panel);
-      border:1px solid var(--line);
-      border-radius:26px;
-      padding:30px 22px 24px;
-      box-shadow:0 26px 90px var(--shadow);
-      backdrop-filter: blur(6px);
+    .content{
+      width:min(920px, 100%);
     }
 
     h1{
@@ -92,30 +87,32 @@
       font-weight:700;
       margin:0 0 10px;
       letter-spacing:0.9px;
-      font-size:clamp(26px, 3.6vw, 46px);
-      text-shadow:0 0 18px rgba(0,0,0,0.75);
+      font-size:clamp(28px, 3.8vw, 52px);
+      text-shadow:0 0 18px rgba(0,0,0,0.85);
     }
 
     .subtitle{
       margin:0 0 18px;
-      color:rgba(255,255,255,0.55);
+      color:rgba(255,255,255,0.60);
       font-size:16px;
       letter-spacing:0.35px;
+      text-shadow:0 0 14px rgba(0,0,0,0.75);
     }
 
     .story{
       margin:0 auto 18px;
-      max-width: 760px;
+      max-width: 780px;
       font-size:18px;
       line-height:1.62;
-      color:rgba(255,255,255,0.84);
+      color:rgba(255,255,255,0.86);
+      text-shadow:0 2px 16px rgba(0,0,0,0.70);
     }
 
     .divider{
       height:1px;
       width:min(560px, 92%);
       margin:20px auto 18px;
-      background:linear-gradient(90deg, transparent, rgba(255,255,255,0.24), transparent);
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,0.26), transparent);
     }
 
     .riddleTitle{
@@ -123,18 +120,19 @@
       font-size:18px;
       margin:0 0 10px;
       letter-spacing:0.6px;
-      color:rgba(255,255,255,0.92);
+      text-shadow:0 0 16px rgba(0,0,0,0.85);
     }
 
     .riddle{
       margin:0 auto 6px;
-      max-width: 760px;
+      max-width: 780px;
       font-size:18px;
       line-height:1.58;
-      color:rgba(255,255,255,0.78);
+      color:rgba(255,255,255,0.80);
+      text-shadow:0 2px 16px rgba(0,0,0,0.70);
     }
 
-    /* puzzle */
+    /* tiles & slots */
     .tiles{
       display:flex;
       flex-wrap:wrap;
@@ -147,8 +145,8 @@
       width:66px;
       height:66px;
       border-radius:16px;
-      border:1px solid rgba(255,255,255,0.26);
-      background: radial-gradient(120% 120% at 50% 35%, rgba(255,255,255,0.06), rgba(0,0,0,0.64));
+      border:1px solid rgba(255,255,255,0.18);
+      background: radial-gradient(120% 120% at 50% 35%, rgba(255,255,255,0.05), var(--tilebg));
       box-shadow:0 18px 44px rgba(0,0,0,0.55);
       display:flex;
       align-items:center;
@@ -159,14 +157,31 @@
       cursor:grab;
       user-select:none;
       touch-action:none;
-      transition: transform 140ms ease, border-color 180ms ease, opacity 180ms ease;
+      transition: transform 140ms ease, border-color 180ms ease;
+      text-shadow:0 0 10px rgba(0,0,0,0.65);
+      opacity:0.92;
+      position:relative;
+    }
+    .tile:active{ cursor:grabbing; transform: translateY(1px) scale(0.995); }
+    .tile.selected{ border-color: rgba(255,255,255,0.46); }
+
+    /* Haunted fade */
+    @keyframes breatheFade{
+      0%,100%{ opacity:0.20; filter: blur(0px); }
+      40%    { opacity:0.95; filter: blur(0px); }
+      60%    { opacity:0.35; filter: blur(0.2px); }
     }
 
-    .tile:active{ cursor:grabbing; transform: translateY(1px) scale(0.995); }
+    /* micro drift */
+    @keyframes drift{
+      0%,100% { transform: translate3d(0,0,0); }
+      50%     { transform: translate3d(0.8px,-0.6px,0); }
+    }
 
-    .tile.selected{
-      border-color: rgba(255,255,255,0.52);
-      box-shadow:0 0 0 2px rgba(255,255,255,0.10), 0 18px 44px rgba(0,0,0,0.62);
+    .tile.haunted{
+      animation:
+        breatheFade var(--fadeDur) ease-in-out infinite,
+        drift var(--driftDur) ease-in-out infinite;
     }
 
     .slots{
@@ -181,42 +196,43 @@
       width:66px;
       height:66px;
       border-radius:16px;
-      border:1px dashed rgba(255,255,255,0.24);
-      background: rgba(255,255,255,0.03);
+      border:1px dashed rgba(255,255,255,0.18);
+      background: rgba(0,0,0,0.22);
       display:flex;
       align-items:center;
       justify-content:center;
       font-family:"Cinzel Decorative", serif;
       font-size:22px;
       letter-spacing:1px;
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.38);
-      transition: transform 120ms ease, border-color 180ms ease, background 180ms ease;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.40);
+      text-shadow:0 0 10px rgba(0,0,0,0.65);
     }
 
     .slot.filled{
       border-style:solid;
-      border-color: rgba(255,255,255,0.32);
-      background: rgba(0,0,0,0.48);
+      border-color: rgba(255,255,255,0.26);
+      background: rgba(0,0,0,0.40);
     }
 
     .status{
       min-height:24px;
-      color:rgba(255,255,255,0.62);
+      color:rgba(255,255,255,0.64);
       font-size:16px;
-      margin:8px 0 2px;
+      margin:10px 0 2px;
+      text-shadow:0 2px 16px rgba(0,0,0,0.70);
     }
 
     .unlock{
       display:none;
-      margin-top:12px;
+      margin-top:14px;
     }
 
     .unlock a{
       display:inline-block;
       padding:10px 16px;
       border-radius:16px;
-      border:1px solid rgba(255,255,255,0.32);
-      background: rgba(0,0,0,0.58);
+      border:1px solid rgba(255,255,255,0.26);
+      background: rgba(0,0,0,0.56);
       color: rgba(255,255,255,0.92);
       text-decoration:none;
       font-family:"Cinzel Decorative", serif;
@@ -227,11 +243,10 @@
     .unlock a:hover{
       background: rgba(0,0,0,0.74);
       transform: translateY(-1px);
-      border-color: rgba(255,255,255,0.46);
+      border-color: rgba(255,255,255,0.40);
     }
 
     @media (max-width:520px){
-      .panel{ padding:24px 16px 18px; border-radius:22px; }
       .tile,.slot{ width:58px; height:58px; border-radius:14px; }
       .story,.riddle{ font-size:17px; }
       .subtitle{ font-size:15px; }
@@ -242,62 +257,44 @@
 <body>
   <div class="hero">
     <div class="wrap">
-      <div class="panel">
+      <div class="content">
 
         <h1>The Sigil Chamber</h1>
-        <div class="subtitle">Some doors don’t want words. They want proof.</div>
+        <div class="subtitle">The mark is watching back.</div>
 
-        <!-- STORY -->
         <p class="story">
-          The corridor doesn’t end — it opens its mouth.
-          Stone curves into a circle, carved with grooves like fingernails dragged through wax.
-          In the center sits a basin that should be filled, yet holds only a dry shimmer,
-          as if something evaporated here and never forgave the air for it.
-          <br><br>
-          Around the basin, the floor is etched with half-finished patterns: loops, hooks, sharp turns —
-          the kind of lines people draw when they’re trying to remember a dream before it collapses.
-          You recognize the feeling in your ribs: the room expects repetition.
-          It expects obsession.
-          <br><br>
-          Then you see the door.
-          Not a lock — a wound sealed by a shifting mark.
-          It refuses to stay the same shape for more than a heartbeat, like it’s embarrassed to be seen.
-          Above the basin, a swarm of tiles drifts into view, letters mixed with impostors,
-          as if the chamber itself is testing whether you can tell the true mark from a counterfeit.
-          <br><br>
-          The whisper returns, quieter now, right behind your ear:
-          <em>“Choose the real lines. Complete the mark. Let it recognize you.”</em>
+          (We’ll refine this story next. For now: the chamber, the basin, the shifting mark, and the tiles that won’t sit still.)
         </p>
 
         <div class="divider"></div>
 
-        <!-- RIDDLE -->
         <div class="riddleTitle">Riddle</div>
         <p class="riddle">
           I am drawn, not spoken.<br>
-          I am a key that looks like a scar.<br>
-          I bind what should stay shut,<br>
-          and obey what you are.<br><br>
-          Five marks only — the rest are lies.
+          A key that looks like a scar.<br>
+          Five strokes bind the gate—<br>
+          the rest are counterfeit.
         </p>
 
-        <!-- PUZZLE (NO INSTRUCTIONS TEXT) -->
+        <!-- Tiles are REMIXED so SIGIL is NOT the first 5 -->
         <div class="tiles" id="tiles">
-          <!-- decoys included; also similar shapes to confuse slightly -->
-          <div class="tile" draggable="true" data-letter="S">S</div>
-          <div class="tile" draggable="true" data-letter="I">I</div>
-          <div class="tile" draggable="true" data-letter="G">G</div>
-          <div class="tile" draggable="true" data-letter="I">I</div>
-          <div class="tile" draggable="true" data-letter="L">L</div>
+          <!-- decoys first -->
+          <div class="tile haunted" draggable="true" data-letter="E">E</div>
+          <div class="tile haunted" draggable="true" data-letter="T">T</div>
+          <div class="tile haunted" draggable="true" data-letter="O">O</div>
+          <div class="tile haunted" draggable="true" data-letter="V">V</div>
+          <div class="tile haunted" draggable="true" data-letter="C">C</div>
 
-          <!-- decoys -->
-          <div class="tile" draggable="true" data-letter="O">O</div>
-          <div class="tile" draggable="true" data-letter="C">C</div>
-          <div class="tile" draggable="true" data-letter="E">E</div>
-          <div class="tile" draggable="true" data-letter="T">T</div>
-          <div class="tile" draggable="true" data-letter="V">V</div>
-          <div class="tile" draggable="true" data-letter="|">|</div>
-          <div class="tile" draggable="true" data-letter="1">1</div>
+          <!-- real letters mixed in (not grouped) -->
+          <div class="tile haunted" draggable="true" data-letter="I">I</div>
+          <div class="tile haunted" draggable="true" data-letter="L">L</div>
+          <div class="tile haunted" draggable="true" data-letter="S">S</div>
+          <div class="tile haunted" draggable="true" data-letter="G">G</div>
+          <div class="tile haunted" draggable="true" data-letter="I">I</div>
+
+          <!-- tricky impostors -->
+          <div class="tile haunted" draggable="true" data-letter="|">|</div>
+          <div class="tile haunted" draggable="true" data-letter="1">1</div>
         </div>
 
         <div class="slots" id="slots">
@@ -329,7 +326,20 @@
     let draggedTile = null;
     let selectedTile = null;
 
-    function attempt(){
+    // randomize each tile's fade timing so it looks alive
+    tiles.forEach((t, i) => {
+      if (t.classList.contains("haunted")) {
+        const fade = 3.2 + Math.random() * 2.8;   // 3.2s - 6.0s
+        const drift = 4.0 + Math.random() * 3.5;  // 4.0s - 7.5s
+        t.style.setProperty("--fadeDur", fade.toFixed(2) + "s");
+        t.style.setProperty("--driftDur", drift.toFixed(2) + "s");
+
+        // stagger start so it's not synchronized
+        t.style.animationDelay = (Math.random() * 1.8).toFixed(2) + "s";
+      }
+    });
+
+    function currentAttempt(){
       return slots.map(s => s.textContent.trim()).join("");
     }
 
@@ -339,7 +349,7 @@
     }
 
     function check(){
-      const a = attempt();
+      const a = currentAttempt();
       if(a.length < ANSWER.length){
         unlockEl.style.display = "none";
         statusEl.textContent = "The room watches.";
@@ -354,11 +364,11 @@
       }
     }
 
-    // drag (desktop)
+    // Desktop drag/drop
     tiles.forEach(t => {
       t.addEventListener("dragstart", () => draggedTile = t);
 
-      // tap-select (mobile + desktop)
+      // Tap select (mobile helper, no on-screen instruction)
       t.addEventListener("click", () => {
         tiles.forEach(x => x.classList.remove("selected"));
         selectedTile = t;
@@ -366,7 +376,6 @@
       });
     });
 
-    // slots
     slots.forEach(s => {
       s.addEventListener("dragover", e => e.preventDefault());
 
@@ -377,6 +386,7 @@
         check();
       });
 
+      // tap place
       s.addEventListener("click", () => {
         if(!selectedTile) return;
         s.textContent = selectedTile.dataset.letter;
@@ -385,6 +395,7 @@
         check();
       });
 
+      // dbl click clear (desktop)
       s.addEventListener("dblclick", () => {
         s.textContent = "";
         s.classList.remove("filled");
