@@ -412,6 +412,43 @@
   </script>
   <audio id="mordainVoice" autoplay>
   <source src="audio/mordain-whisper.mp3" type="audio/mpeg">
+    </audio>
+  <script>
+(function () {
+  const audio = document.getElementById("mordainVoice");
+  const srcEl = document.getElementById("mordainSrc");
+  const baseSrc = "audio/mordain-whisper.mp3";
+
+  async function restartMordain() {
+    try {
+      // Make it a "fresh" URL so the browser fully reloads the media
+      const busted = `${baseSrc}?v=${Date.now()}`;
+      srcEl.src = busted;
+
+      audio.pause();
+      audio.currentTime = 0;
+
+      // Force reload the source
+      audio.load();
+
+      // Try to play
+      await audio.play();
+    } catch (e) {
+      // If autoplay is blocked, user interaction will unlock it later
+      // (we'll add a one-tap unlock below)
+    }
+  }
+
+  // Fires on normal load AND when page is restored from back/forward cache
+  window.addEventListener("pageshow", () => restartMordain());
+
+  // One-tap unlock if the browser blocks autoplay
+  window.addEventListener("pointerdown", () => {
+    if (audio.paused) restartMordain();
+  }, { once: true });
+})();
+</script>
+
     <script>
 const mordain = document.getElementById("mordainVoice");
 
@@ -420,8 +457,6 @@ window.addEventListener("load", () => {
   mordain.play().catch(() => {});
 });
 </script>
-
-</audio>
   <script>
   const mordain = document.getElementById("mordainVoice");
   mordain.volume = 0;
