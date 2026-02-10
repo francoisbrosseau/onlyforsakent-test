@@ -389,6 +389,21 @@
   <audio id="mordainVoice" autoplay>
   <source src="audio/mordain-whisper.mp3" type="audio/mpeg">
 </audio>
+  <script>
+  const mordain = document.getElementById("mordainVoice");
+  mordain.volume = 0;
+
+  // Try to start playback (helps on some browsers)
+  mordain.play?.().catch(()=>{});
+
+  let v = 0;
+  const fade = setInterval(() => {
+    v = Math.min(1, v + 0.03);
+    mordain.volume = v;
+    if (v >= 1) clearInterval(fade);
+  }, 120);
+</script>
+
 
 </body>
 </html>
