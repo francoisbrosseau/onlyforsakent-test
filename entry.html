@@ -221,33 +221,27 @@
 
     .fadeOut{ animation: fade 700ms ease forwards; }
     @keyframes fade{ to{ opacity:0; transform: translateY(6px); } }
+
+    /* Ensure the mute button is always clickable above everything */
+    #muteBtn{
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 999999;
+      pointer-events: auto;
+      cursor: pointer;
+      background: rgba(0,0,0,.35);
+      border: 1px solid rgba(255,255,255,.25);
+      color: rgba(255,255,255,.85);
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-family: 'Cormorant Garamond', serif;
+      backdrop-filter: blur(6px);
+    }
   </style>
 </head>
 
 <body>
-  <button id="muteBtn" aria-label="Mute audio"
-  style="position:fixed;top:18px;right:18px;z-index:9999;
-  background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.25);
-  color:rgba(255,255,255,.85);padding:10px 12px;border-radius:999px;
-  font-family:'Cormorant Garamond',serif;backdrop-filter:blur(6px);">
-  🔊
-</button>
-
-<script>
-  const btn = document.getElementById("muteBtn");
-  const audio = document.getElementById("mordainVoice");
-
-  const saved = localStorage.getItem("ofs_mute") === "1";
-  audio.muted = saved;
-  btn.textContent = saved ? "🔇" : "🔊";
-
-  btn.addEventListener("click", () => {
-    audio.muted = !audio.muted;
-    localStorage.setItem("ofs_mute", audio.muted ? "1" : "0");
-    btn.textContent = audio.muted ? "🔇" : "🔊";
-    if (!audio.muted) audio.play().catch(()=>{});
-  });
-</script>
 
   <main class="hero">
     <div id="specters" aria-hidden="true"></div>
@@ -410,87 +404,82 @@
       if (e.key === "Enter") check();
     });
   </script>
-  <audio id="mordainVoice" autoplay>
-  <source src="audio/mordain-whisper.mp3" type="audio/mpeg">
-    </audio>
+
+  <!-- Audio + Mute button placed at end so everything exists -->
+  <button id="muteBtn" aria-label="Toggle audio">🔊</button>
+
+  <audio id="mordainVoice" autoplay preload="auto">
+    <source id="mordainSrc" src="audio/mordain-whisper.mp3" type="audio/mpeg">
+  </audio>
+
   <script>
-(function () {
-  const audio = document.getElementById("mordainVoice");
-  const srcEl = document.getElementById("mordainSrc");
-  const baseSrc = "audio/mordain-whisper.mp3";
+    (function () {
+      const audio = document.getElementById("mordainVoice");
+      const srcEl = document.getElementById("mordainSrc");
+      const btn = document.getElementById("muteBtn");
+      const baseSrc = "audio/mordain-whisper.mp3";
 
-  async function restartMordain() {
-    try {
-      // Make it a "fresh" URL so the browser fully reloads the media
-      const busted = `${baseSrc}?v=${Date.now()}`;
-      srcEl.src = busted;
+      // Restore saved mute state
+      const savedMuted = localStorage.getItem("ofs_mute") === "1";
+      audio.muted = savedMuted;
+      btn.textContent = audio.muted ? "🔇" : "🔊";
 
-      audio.pause();
-      audio.currentTime = 0;
+      // Intimate volume ceiling (no cheesy echo)
+      audio.volume = 0;
+      let v = 0;
+      const target = 0.85;
 
-      // Force reload the source
-      audio.load();
+      function fadeIn() {
+        v = 0;
+        audio.volume = 0;
+        const fade = setInterval(() => {
+          v += 0.02;
+          if (v >= target) { v = target; clearInterval(fade); }
+          audio.volume = v;
+        }, 120);
+      }
 
-      // Try to play
-      await audio.play();
-    } catch (e) {
-      // If autoplay is blocked, user interaction will unlock it later
-      // (we'll add a one-tap unlock below)
-    }
-  }
+      function restart({ bustCache } = { bustCache: true }) {
+        try {
+          audio.pause();
+          audio.currentTime = 0;
 
-  // Fires on normal load AND when page is restored from back/forward cache
-  window.addEventListener("pageshow", () => restartMordain());
+          // During dev, force the browser to treat it as "fresh"
+          if (bustCache) {
+            srcEl.src = baseSrc + "?v=" + Date.now();
+            audio.load();
+          }
 
-  // One-tap unlock if the browser blocks autoplay
-  window.addEventListener("pointerdown", () => {
-    if (audio.paused) restartMordain();
-  }, { once: true });
-})();
-</script>
+          const p = audio.play();
+          if (p && typeof p.catch === "function") p.catch(() => {});
+          if (!audio.muted) fadeIn();
+        } catch (e) {}
+      }
 
-    <script>
-const mordain = document.getElementById("mordainVoice");
+      // Try to restart on reload / bfcache restore
+      window.addEventListener("pageshow", () => {
+        if (!audio.muted) restart({ bustCache: true });
+      });
 
-window.addEventListener("load", () => {
-  mordain.currentTime = 0;
-  mordain.play().catch(() => {});
-});
-</script>
-  <script>
-  const mordain = document.getElementById("mordainVoice");
-  mordain.volume = 0;
+      // If autoplay gets blocked, first tap anywhere will start it (dev-friendly)
+      window.addEventListener("pointerdown", () => {
+        if (!audio.muted && audio.paused) restart({ bustCache: false });
+      }, { once: true });
 
-  // Try to start playback (helps on some browsers)
-  mordain.play?.().catch(()=>{});
+      // Button toggles mute/unmute, and starts audio when unmuting
+      btn.addEventListener("click", () => {
+        audio.muted = !audio.muted;
+        localStorage.setItem("ofs_mute", audio.muted ? "1" : "0");
+        btn.textContent = audio.muted ? "🔇" : "🔊";
 
-  let v = 0;
-  const fade = setInterval(() => {
-    v = Math.min(1, v + 0.03);
-    mordain.volume = v;
-    if (v >= 1) clearInterval(fade);
-  }, 120);
-</script>
-  <script>
-const mordain = document.getElementById("mordainVoice");
-
-mordain.volume = 0;
-
-mordain.play().catch(() => {});
-
-let v = 0;
-const fade = setInterval(() => {
-  v += 0.02;
-  if (v >= 0.85) {
-    v = 0.85;  // never full blast, always intimate
-    clearInterval(fade);
-  }
-  mordain.volume = v;
-}, 120);
-</script>
-
-  
-
+        if (!audio.muted) {
+          restart({ bustCache: false });
+        } else {
+          audio.pause();
+        }
+      });
+    })();
+  </script>
 
 </body>
 </html>
