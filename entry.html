@@ -427,49 +427,7 @@
     if (v >= 1) clearInterval(fade);
   }, 120);
 </script>
-  <script>
-  const a = document.getElementById("mordainVoice");
-
-  // WebAudio “in-head” effect
-  const AudioContext = window.AudioContext || window.webkitAudioContext;
-  const ctx = new AudioContext();
-
-  // Some browsers require user gesture; we'll try anyway.
-  const unlock = () => ctx.resume().catch(()=>{});
-  window.addEventListener("pointerdown", unlock, { once: true });
-
-  const src = ctx.createMediaElementSource(a);
-
-  const lowpass = ctx.createBiquadFilter();
-  lowpass.type = "lowpass";
-  lowpass.frequency.value = 2200; // muffles slightly = more intimate
-
-  const convolver = ctx.createConvolver(); // tiny “room in skull”
-  // simple impulse (tiny reverb) generated on the fly
-  const rate = ctx.sampleRate;
-  const len = rate * 0.15; // 150ms
-  const impulse = ctx.createBuffer(2, len, rate);
-  for (let c = 0; c < 2; c++) {
-    const ch = impulse.getChannelData(c);
-    for (let i = 0; i < len; i++) ch[i] = (Math.random()*2-1) * (1 - i/len) * 0.18;
-  }
-  convolver.buffer = impulse;
-
-  const wet = ctx.createGain();
-  wet.gain.value = 0.35; // reverb amount
-
-  const dry = ctx.createGain();
-  dry.gain.value = 0.90;
-
-  src.connect(lowpass);
-  lowpass.connect(dry);
-  lowpass.connect(convolver);
-  convolver.connect(wet);
-
-  dry.connect(ctx.destination);
-  wet.connect(ctx.destination);
-</script>
-
+  
 
 
 </body>
