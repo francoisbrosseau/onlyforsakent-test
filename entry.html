@@ -480,6 +480,72 @@
       });
     })();
   </script>
+<script>
+(() => {
+  // Grab existing elements (works even if you pasted other scripts)
+  const audio = document.getElementById("mordainVoice");
+  const btn = document.getElementById("muteBtn");
+
+  // If either is missing, stop (prevents errors)
+  if (!audio || !btn) return;
+
+  // Make button ALWAYS clickable (even if overlays exist)
+  btn.style.position = "fixed";
+  btn.style.top = "18px";
+  btn.style.right = "18px";
+  btn.style.zIndex = "2147483647"; // maximum-ish
+  btn.style.pointerEvents = "auto";
+  btn.style.cursor = "pointer";
+
+  // Also prevent the hero overlays from stealing clicks
+  // (your ::before/::after already have pointer-events:none, this is extra safety)
+  const hero = document.querySelector(".hero");
+  if (hero) hero.style.pointerEvents = "auto";
+
+  // Restore mute state
+  const savedMuted = localStorage.getItem("ofs_mute") === "1";
+  audio.muted = savedMuted;
+  btn.textContent = audio.muted ? "🔇" : "🔊";
+
+  // Keep it intimate
+  audio.volume = 0.85;
+
+  // A hard restart that doesn't rely on missing source IDs
+  function restart() {
+    try {
+      audio.pause();
+      audio.currentTime = 0;
+      const p = audio.play();
+      if (p && p.catch) p.catch(()=>{});
+    } catch(e) {}
+  }
+
+  // Button click: toggle mute, and if unmuting, start immediately
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    audio.muted = !audio.muted;
+    localStorage.setItem("ofs_mute", audio.muted ? "1" : "0");
+    btn.textContent = audio.muted ? "🔇" : "🔊";
+
+    if (!audio.muted) restart();
+    else audio.pause();
+  }, true);
+
+  // THIS is the dev-friendly fix for reload/autoplay:
+  // First tap anywhere will start it if browser blocked autoplay
+  window.addEventListener("pointerdown", () => {
+    if (!audio.muted && audio.paused) restart();
+  }, { once: true });
+
+  // Try on load anyway (won't hurt; may work on desktop)
+  window.addEventListener("pageshow", () => {
+    if (!audio.muted) restart();
+  });
+
+})();
+</script>
 
 </body>
 </html>
