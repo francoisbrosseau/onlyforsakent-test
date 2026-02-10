@@ -427,6 +427,24 @@
     if (v >= 1) clearInterval(fade);
   }, 120);
 </script>
+  <script>
+const mordain = document.getElementById("mordainVoice");
+
+mordain.volume = 0;
+
+mordain.play().catch(() => {});
+
+let v = 0;
+const fade = setInterval(() => {
+  v += 0.02;
+  if (v >= 0.85) {
+    v = 0.85;  // never full blast, always intimate
+    clearInterval(fade);
+  }
+  mordain.volume = v;
+}, 120);
+</script>
+
   
 
 
