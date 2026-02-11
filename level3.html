@@ -487,8 +487,11 @@ el.style.top  = (rect.top  + (parseFloat(el.dataset.sy) / 100) * rect.height) + 
 
   // try when page appears
   window.addEventListener("pageshow", () => {
-    if (!audio.muted) restart();
-  });
+  if (!audio.muted) {
+    setTimeout(() => restart(), 5000); // 5 seconds
+  }
+});
+
 
   // button behavior
   btn.addEventListener("click", () => {
