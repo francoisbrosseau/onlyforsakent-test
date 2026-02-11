@@ -447,5 +447,66 @@ el.style.top  = (rect.top  + (parseFloat(el.dataset.sy) / 100) * rect.height) + 
       if (e.key === "Enter") check();
     });
   </script>
+  <!-- 🩸 Mordain Voice System -->
+<button id="muteBtn" aria-label="Toggle audio"
+  style="position:fixed;top:18px;right:18px;z-index:2147483647;
+  pointer-events:auto;cursor:pointer;
+  background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.25);
+  color:rgba(255,255,255,.85);padding:10px 12px;border-radius:999px;
+  font-family:'Cormorant Garamond',serif;backdrop-filter:blur(6px);">
+  🔊
+</button>
+
+<audio id="mordainVoice" preload="auto">
+  <source src="audio/Mordain2.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+(() => {
+  const audio = document.getElementById("mordainVoice");
+  const btn = document.getElementById("muteBtn");
+
+  if (!audio || !btn) return;
+
+  // restore mute
+  const savedMuted = localStorage.getItem("ofs_mute") === "1";
+  audio.muted = savedMuted;
+  btn.textContent = audio.muted ? "🔇" : "🔊";
+
+  // intimate volume
+  audio.volume = 0.85;
+
+  function restart(){
+    try{
+      audio.pause();
+      audio.currentTime = 0;
+      const p = audio.play();
+      if (p && p.catch) p.catch(()=>{});
+    }catch(e){}
+  }
+
+  // try when page appears
+  window.addEventListener("pageshow", () => {
+    if (!audio.muted) restart();
+  });
+
+  // button behavior
+  btn.addEventListener("click", () => {
+    audio.muted = !audio.muted;
+    localStorage.setItem("ofs_mute", audio.muted ? "1" : "0");
+    btn.textContent = audio.muted ? "🔇" : "🔊";
+
+    if (!audio.muted) restart();
+    else audio.pause();
+  });
+
+  // autoplay unlock
+  window.addEventListener("pointerdown", () => {
+    if (!audio.muted && audio.paused) restart();
+  }, { once:true });
+
+})();
+</script>
+
 </body>
 </html>
