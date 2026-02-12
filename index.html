@@ -335,8 +335,65 @@
       if (e.key === "Enter") check();
     });
   </script>
+  <!-- 🩸 Index Ambient -->
+<button id="ambientBtn" type="button"
+  style="position:fixed;top:18px;right:18px;z-index:2147483647;
+  padding:10px 12px;border-radius:999px;
+  background:rgba(0,0,0,.45);
+  border:1px solid rgba(255,255,255,.28);
+  color:rgba(255,255,255,.95);
+  font-family:'Cormorant Garamond',serif;">
+  🔊 AMBIENT
+</button>
+
+<audio id="ambientSound" loop preload="auto" playsinline>
+  <source src="audio/index-ambience.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+(() => {
+  const audio = document.getElementById("ambientSound");
+  const btn = document.getElementById("ambientBtn");
+  if (!audio || !btn) return;
+
+  const saved = localStorage.getItem("ofs_mute") === "1";
+  audio.muted = saved;
+  audio.volume = 0.6; // background level
+
+  function update(){
+    btn.textContent = audio.muted ? "🔇 MUTED" : "🔊 AMBIENT";
+  }
+  update();
+
+  async function start(){
+    try{
+      audio.currentTime = 0;
+      await audio.play();
+    }catch(e){}
+  }
+
+  window.addEventListener("pageshow", () => {
+    if (!audio.muted) start();
+  });
+
+  window.addEventListener("pointerdown", () => {
+    if (!audio.muted && audio.paused) start();
+  }, { once:true });
+
+  btn.addEventListener("click", () => {
+    audio.muted = !audio.muted;
+    localStorage.setItem("ofs_mute", audio.muted ? "1" : "0");
+    update();
+
+    if (!audio.muted) start();
+    else audio.pause();
+  });
+})();
+</script>
+
 </body>
 </html>
+
 
 
 
