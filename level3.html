@@ -98,45 +98,7 @@
       transform: translate(-50%, -50%);
     }
 
-    /* ✅ Riddle flag (always visible) */
-    .flag{
-      position:absolute;
-      left: 7%;
-      top: 26%;
-      width: min(460px, 78vw);
-      padding: 14px 16px;
-      border-radius: 10px;
-      pointer-events:none;
-      user-select:none;
-      z-index:2;
-
-      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.30));
-      border: 1px solid rgba(255,255,255,0.10);
-      box-shadow: 0 16px 36px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06);
-      backdrop-filter: blur(1px);
-      transform: rotate(-2deg);
-      opacity: 0.92;
-    }
-    .flagTitle{
-      font-family: "Cinzel Decorative", serif;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      font-size: 11px;
-      color: rgba(255,255,255,0.34);
-      margin-bottom: 8px;
-      text-align:center;
-    }
-    .flagText{
-      font-family: "Cormorant Garamond", serif;
-      font-size: 16px;
-      line-height: 1.35;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      text-align:center;
-      color: rgba(255,255,255,0.22);
-      text-shadow: 0 1px 0 rgba(0,0,0,0.85), 0 -1px 0 rgba(255,255,255,0.06);
-    }
-
+  
     /* ✅ Flicker letters */
     .glyph{
       position: absolute;
@@ -336,14 +298,7 @@
   <main class="hero" id="hero">
     <div class="bg" id="bg" aria-hidden="true"></div>
 
-    <div class="flag" aria-hidden="true">
-      <div class="flagTitle">THE EYE THAT FOLLOWS</div>
-      <div class="flagText">
-        IT WATCHES THROUGH EVERY MASK.<br>
-        BURN THE MASK — WHAT REMAINS?<br>
-        SPEAK WHAT CANNOT LIE.
-      </div>
-    </div>
+    
 
     <div id="lantern" aria-hidden="true"></div>
     <div class="glyph" id="g1" aria-hidden="true">T</div>
