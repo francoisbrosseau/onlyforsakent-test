@@ -29,7 +29,7 @@
       font-family: Georgia, "Times New Roman", serif;
     }
 
-    /* Background */
+    /* 🎬 Background layer (fade-in) */
     .bg{
       position:absolute; inset:0;
       background-image: url("Level3.jpg");
@@ -39,6 +39,13 @@
       filter: brightness(1.22) contrast(1.18) saturate(1.06);
       transform: scale(1.02);
       z-index:0;
+
+      opacity: 0;
+      transition: opacity 2200ms ease, transform 3000ms ease;
+    }
+    .bg.show{
+      opacity: 1;
+      transform: scale(1);
     }
 
     /* Dark overlay */
@@ -50,7 +57,10 @@
         linear-gradient(to bottom, rgba(0,0,0,0.14), rgba(0,0,0,0.62));
       z-index:1;
       pointer-events:none;
+      opacity: 0;
+      transition: opacity 2200ms ease;
     }
+    .hero.reveal::before{ opacity: 1; }
 
     /* Grain */
     .hero::after{
@@ -58,10 +68,12 @@
       position:absolute; inset:0;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
       mix-blend-mode: overlay;
-      opacity: .10;
+      opacity: 0;
       pointer-events:none;
       z-index:1;
+      transition: opacity 2200ms ease;
     }
+    .hero.reveal::after{ opacity: .10; }
 
     /* ✅ Lantern glow follows cursor */
     #lantern{
@@ -74,7 +86,6 @@
       pointer-events:none;
       z-index: 2;
 
-      /* candle-ish glow */
       background: radial-gradient(circle at center,
         rgba(255,255,255,0.16) 0%,
         rgba(255,255,255,0.08) 22%,
@@ -126,7 +137,7 @@
       text-shadow: 0 1px 0 rgba(0,0,0,0.85), 0 -1px 0 rgba(255,255,255,0.06);
     }
 
-    /* ✅ Flicker letters (positioned by JS near statue) */
+    /* ✅ Flicker letters */
     .glyph{
       position: absolute;
       left: -9999px;
@@ -195,15 +206,17 @@
       user-select:none;
     }
 
+    /* ✅ LOCKED CINEMATIC STORY SETTINGS */
     .story{
       font-family: "Cormorant Garamond", serif;
-      font-size: 18px;
-      line-height: 1.65;
-      letter-spacing: 0.02em;
+      font-size: clamp(20px, 2.1vw, 24px);
+      line-height: 1.75;
+      letter-spacing: 0.04em;
       color: var(--muted);
       margin: 0 auto 16px;
       max-width: 62ch;
       animation: candleFlicker 5s infinite ease-in-out;
+      min-height: 12.5em;
     }
 
     .story em{
@@ -281,14 +294,48 @@
       .flag{ left: 5%; top: 22%; }
       .glyph{ font-size: 44px; }
     }
+
+    /* ✅ Audio button (standard) */
+    #muteBtn{
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 2147483647;
+      pointer-events:auto;
+      cursor:pointer;
+      background: rgba(0,0,0,.45);
+      border: 1px solid rgba(255,255,255,.28);
+      color: rgba(255,255,255,.95);
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-family:'Cormorant Garamond',serif;
+      backdrop-filter: blur(6px);
+      -webkit-tap-highlight-color: transparent;
+      user-select:none;
+    }
+
+    /* 🎬 Veil (brief darkness) */
+    #veil{
+      position: fixed;
+      inset: 0;
+      background: #000;
+      opacity: 1;
+      z-index: 2147483646;
+      pointer-events:none;
+      transition: opacity 900ms ease;
+    }
+    #veil.hide{ opacity: 0; }
+
+    body.typing .story{ user-select:none; }
   </style>
 </head>
 
-<body>
-  <main class="hero" id="hero">
-    <div class="bg" aria-hidden="true"></div>
+<body class="typing">
+  <div id="veil" aria-hidden="true"></div>
 
-    <!-- ✅ always-visible riddle flag -->
+  <main class="hero" id="hero">
+    <div class="bg" id="bg" aria-hidden="true"></div>
+
     <div class="flag" aria-hidden="true">
       <div class="flagTitle">THE EYE THAT FOLLOWS</div>
       <div class="flagText">
@@ -298,7 +345,6 @@
       </div>
     </div>
 
-    <!-- ✅ lantern + letters -->
     <div id="lantern" aria-hidden="true"></div>
     <div class="glyph" id="g1" aria-hidden="true">T</div>
     <div class="glyph" id="g2" aria-hidden="true">R</div>
@@ -310,7 +356,7 @@
       <div class="kicker">Level 3</div>
       <h1>The Eye That Follow</h1>
 
-      <p class="story">
+      <p class="story" id="story">
         The corridor narrows like a throat. The air tastes of cold iron and old prayers.
         Somewhere behind the stone, something drags its nails across a memory it does not own.
         <br><br>
@@ -320,9 +366,7 @@
         The castle offers no directions. Only hints… <em>if you dare to look where you shouldn’t.</em>
       </p>
 
-      <div class="hint">
-        Let the light guide you.
-      </div>
+      <div class="hint">Let the light guide you.</div>
 
       <div class="gate">
         <input id="pw" type="password" placeholder="password…" autocomplete="off" />
@@ -347,17 +391,14 @@
       H:  document.getElementById("g5"),
     };
 
-    // Hotspots are in % of the hero box (robust across screen sizes)
-    // Tuned to your statue/pedestal in Level3.jpg
     const hotspots = [
-      { key: "T1", ch: "T", x: 49.8, y: 24.9 }, // hood glow
-      { key: "R",  ch: "R", x: 44.7, y: 31.7 }, // left shoulder
-      { key: "U",  ch: "U", x: 54.9, y: 31.7 }, // right shoulder
-      { key: "T2", ch: "T", x: 49.8, y: 47.9 }, // pedestal glow
-      { key: "H",  ch: "H", x: 49.8, y: 54.7 }, // lower pedestal
+      { key: "T1", x: 49.8, y: 24.9 },
+      { key: "R",  x: 44.7, y: 31.7 },
+      { key: "U",  x: 54.9, y: 31.7 },
+      { key: "T2", x: 49.8, y: 47.9 },
+      { key: "H",  x: 49.8, y: 54.7 },
     ];
 
-    // reveal radius (in pixels) — larger = easier to find
     const RADIUS = 55;
 
     function setLantern(clientX, clientY){
@@ -379,31 +420,24 @@
         const dist = Math.sqrt(dx*dx + dy*dy);
 
         const el = glyphEls[h.key];
-        // place glyph at its hotspot (not at cursor)
-        // scatter positions (fixed per load)
-if (!el.dataset.sx){
-  el.dataset.sx = (5 + Math.random() * 90).toFixed(2);
-  el.dataset.sy = (8 + Math.random() * 84).toFixed(2);
-}
-el.style.left = (rect.left + (parseFloat(el.dataset.sx) / 100) * rect.width) + "px";
-el.style.top  = (rect.top  + (parseFloat(el.dataset.sy) / 100) * rect.height) + "px";
 
-
-        if (dist <= RADIUS){
-          el.classList.add("on");
-        } else {
-          el.classList.remove("on");
+        if (!el.dataset.sx){
+          el.dataset.sx = (5 + Math.random() * 90).toFixed(2);
+          el.dataset.sy = (8 + Math.random() * 84).toFixed(2);
         }
+        el.style.left = (rect.left + (parseFloat(el.dataset.sx) / 100) * rect.width) + "px";
+        el.style.top  = (rect.top  + (parseFloat(el.dataset.sy) / 100) * rect.height) + "px";
+
+        if (dist <= RADIUS) el.classList.add("on");
+        else el.classList.remove("on");
       }
     }
 
-    // Desktop mouse move
     window.addEventListener("mousemove", (e) => {
       setLantern(e.clientX, e.clientY);
       updateGlyphs(e.clientX, e.clientY);
     }, { passive:true });
 
-    // Mobile touch move
     window.addEventListener("touchmove", (e) => {
       if (!e.touches || !e.touches[0]) return;
       const t = e.touches[0];
@@ -411,7 +445,6 @@ el.style.top  = (rect.top  + (parseFloat(el.dataset.sy) / 100) * rect.height) + 
       updateGlyphs(t.clientX, t.clientY);
     }, { passive:true });
 
-    // Make lantern appear on first interaction (some browsers start at -9999px)
     window.addEventListener("touchstart", (e) => {
       const t = e.touches && e.touches[0];
       if (!t) return;
@@ -447,67 +480,194 @@ el.style.top  = (rect.top  + (parseFloat(el.dataset.sy) / 100) * rect.height) + 
       if (e.key === "Enter") check();
     });
   </script>
-  <!-- 🩸 Mordain Voice System -->
-<button id="muteBtn" aria-label="Toggle audio"
-  style="position:fixed;top:18px;right:18px;z-index:2147483647;
-  pointer-events:auto;cursor:pointer;
-  background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.25);
-  color:rgba(255,255,255,.85);padding:10px 12px;border-radius:999px;
-  font-family:'Cormorant Garamond',serif;backdrop-filter:blur(6px);">
-  🔊
-</button>
 
-<audio id="mordainVoice" preload="auto">
-  <source src="audio/mordain2.mp3" type="audio/mpeg">
-</audio>
+  <!-- 🩸 Single audio button controls BOTH tracks -->
+  <button id="muteBtn" aria-label="Toggle audio">🔊</button>
 
-<script>
-(() => {
-  const audio = document.getElementById("mordainVoice");
-  const btn = document.getElementById("muteBtn");
+  <!-- Mordain Voice -->
+  <audio id="mordainVoice" preload="auto" playsinline>
+    <source src="audio/mordain2.mp3" type="audio/mpeg">
+  </audio>
 
-  if (!audio || !btn) return;
+  <!-- Level 3 Ambience -->
+  <audio id="level3Ambience" loop preload="auto" playsinline>
+    <source src="audio/level3-ambience.mp3" type="audio/mpeg">
+  </audio>
 
-  // restore mute
-  const savedMuted = localStorage.getItem("ofs_mute") === "1";
-  audio.muted = savedMuted;
-  btn.textContent = audio.muted ? "🔇" : "🔊";
+  <script>
+  (() => {
+    const heroEl = document.getElementById("hero");
+    const bg = document.getElementById("bg");
+    const veil = document.getElementById("veil");
 
-  // intimate volume
-  audio.volume = 0.85;
+    const storyEl = document.getElementById("story");
+    const originalHTML = storyEl.innerHTML;
+    storyEl.innerHTML = "";
 
-  function restart(){
-    try{
-      audio.pause();
-      audio.currentTime = 0;
-      const p = audio.play();
-      if (p && p.catch) p.catch(()=>{});
-    }catch(e){}
-  }
+    const btn = document.getElementById("muteBtn");
+    const voice = document.getElementById("mordainVoice");
+    const amb = document.getElementById("level3Ambience");
 
-  // try when page appears
-  window.addEventListener("pageshow", () => {
-  if (!audio.muted) restart();
-});
+    if (!btn || !voice || !amb || !heroEl || !bg || !veil || !storyEl) return;
 
+    const VOICE_TARGET = 0.85;
+    const AMB_TARGET   = 0.20;
 
-  // button behavior
-  btn.addEventListener("click", () => {
-    audio.muted = !audio.muted;
-    localStorage.setItem("ofs_mute", audio.muted ? "1" : "0");
-    btn.textContent = audio.muted ? "🔇" : "🔊";
+    const savedMuted = localStorage.getItem("ofs_mute") === "1";
+    voice.muted = savedMuted;
+    amb.muted = savedMuted;
+    btn.textContent = savedMuted ? "🔇" : "🔊";
 
-    if (!audio.muted) restart();
-    else audio.pause();
-  });
+    voice.volume = 0;
+    amb.volume = 0;
 
-  // autoplay unlock
-  window.addEventListener("pointerdown", () => {
-    if (!audio.muted && audio.paused) restart();
-  }, { once:true });
+    function fadeTo(audio, target, step=0.02, interval=120){
+      try{
+        let v = audio.volume || 0;
+        const id = setInterval(() => {
+          v = Math.min(target, v + step);
+          audio.volume = v;
+          if (v >= target) clearInterval(id);
+        }, interval);
+      }catch(e){}
+    }
 
-})();
-</script>
+    async function playBoth(){
+      try{
+        voice.currentTime = 0;
+        amb.currentTime = 0;
+
+        const p1 = voice.play();
+        const p2 = amb.play();
+        if (p1 && p1.catch) p1.catch(()=>{});
+        if (p2 && p2.catch) p2.catch(()=>{});
+
+        if (!voice.muted){
+          voice.volume = 0;
+          amb.volume = 0;
+          fadeTo(voice, VOICE_TARGET, 0.02, 120);
+          fadeTo(amb,   AMB_TARGET,   0.012, 140);
+        }
+      }catch(e){}
+    }
+
+    function stopBoth(){
+      try{ voice.pause(); }catch(e){}
+      try{ amb.pause(); }catch(e){}
+    }
+
+    function revealVisuals(){
+      setTimeout(() => veil.classList.add("hide"), 350);
+      setTimeout(() => veil.remove(), 1400);
+
+      setTimeout(() => {
+        bg.classList.add("show");
+        heroEl.classList.add("reveal");
+      }, 450);
+    }
+
+    function wait(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+    // typewriter that preserves <br> and <em>
+    function typeHTML(el, html, cps){
+      return new Promise((resolve) => {
+        const tokens = html.match(/<\/?[^>]+>|[^<]+/g) || [];
+        let i = 0;
+        let charIndex = 0;
+        let out = "";
+
+        const interval = Math.max(12, Math.floor(1000 / Math.max(10, cps)));
+
+        const timer = setInterval(() => {
+          if (i >= tokens.length){
+            clearInterval(timer);
+            el.innerHTML = out;
+            document.body.classList.remove("typing");
+            resolve();
+            return;
+          }
+
+          const tok = tokens[i];
+
+          if (tok[0] === "<"){
+            out += tok;
+            i++;
+            el.innerHTML = out;
+            return;
+          }
+
+          const ch = tok[charIndex];
+          if (ch == null){
+            i++;
+            charIndex = 0;
+            return;
+          }
+
+          out += ch;
+          charIndex++;
+          el.innerHTML = out;
+        }, interval);
+
+        // click story to instantly finish typing
+        el.addEventListener("click", () => {
+          clearInterval(timer);
+          el.innerHTML = html;
+          document.body.classList.remove("typing");
+          resolve();
+        }, { once:true });
+      });
+    }
+
+    function computeCPS(){
+      const duration = (isFinite(voice.duration) && voice.duration > 1) ? voice.duration : 22;
+      const targetTime = Math.max(14, duration * 0.9);
+
+      const plain = originalHTML.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+      const total = plain.length || 260;
+
+      let cps = total / targetTime;
+      cps = Math.max(14, Math.min(28, cps));
+      return cps;
+    }
+
+    async function startTypewriter(){
+      await wait(700);
+      const cps = computeCPS();
+      await typeHTML(storyEl, originalHTML, cps);
+    }
+
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const newMuted = !voice.muted;
+      voice.muted = newMuted;
+      amb.muted = newMuted;
+
+      localStorage.setItem("ofs_mute", newMuted ? "1" : "0");
+      btn.textContent = newMuted ? "🔇" : "🔊";
+
+      if (!newMuted) playBoth();
+      else stopBoth();
+    }, true);
+
+    window.addEventListener("pageshow", async () => {
+      revealVisuals();
+
+      // voice can start while veil is still dark
+      if (!voice.muted) await playBoth();
+
+      // ALWAYS typewriter on load
+      startTypewriter();
+    });
+
+    // autoplay unlock on first tap
+    window.addEventListener("pointerdown", () => {
+      if (!voice.muted && (voice.paused || amb.paused)) playBoth();
+    }, { once:true });
+
+  })();
+  </script>
 
 </body>
 </html>
