@@ -32,7 +32,7 @@
     /* 🎬 Background layer (fade-in) */
     .bg{
       position:absolute; inset:0;
-      background-image: red;
+      background-image: url("level3.jpg"); /* ✅ FIXED */
       background-size: cover;
       background-position: center 40%;
       background-repeat: no-repeat;
@@ -626,9 +626,8 @@
       const total = plain.length || 260;
 
       let cps = total / targetTime;
-      cps = cps / 1.35;                 // ✅ slower typing
-cps = Math.max(10, Math.min(18, cps));  // ✅ clamp slower range
-
+      cps = cps / 1.35;
+      cps = Math.max(10, Math.min(18, cps));
       return cps;
     }
 
@@ -656,10 +655,8 @@ cps = Math.max(10, Math.min(18, cps));  // ✅ clamp slower range
     window.addEventListener("pageshow", async () => {
       revealVisuals();
 
-      // voice can start while veil is still dark
       if (!voice.muted) await playBoth();
 
-      // ALWAYS typewriter on load
       startTypewriter();
     });
 
