@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ONLYFORSAKEN</title>
 
-  <!-- ✅ Cooler title font (same “entry page vibe” type of gothic display font) -->
+  <!-- ✅ Keep your existing fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
@@ -19,16 +19,16 @@
       --shadow: rgba(0,0,0,0.55);
 
       /* ✅ Subtle per-letter hint colors (dim by default) */
-      --hint-o: rgba(120, 255, 170, 0.28);  /* faint green */
-      --hint-p: rgba(120, 190, 255, 0.28);  /* faint blue */
-      --hint-e: rgba(255, 120, 140, 0.28);  /* faint red */
-      --hint-n: rgba(200, 160, 255, 0.28);  /* faint violet */
+      --hint-o: rgba(120, 255, 170, 0.28);
+      --hint-p: rgba(120, 190, 255, 0.28);
+      --hint-e: rgba(255, 120, 140, 0.28);
+      --hint-n: rgba(200, 160, 255, 0.28);
     }
 
     *{ box-sizing:border-box; }
     html,body{ height:100%; margin:0; background:#000; font-family: Georgia, "Times New Roman", serif; }
 
-    /* HERO BACKGROUND */
+    /* HERO BACKGROUND (unchanged, image stays fixed) */
     .hero{
       min-height: 100vh;
       display:flex;
@@ -36,14 +36,12 @@
       justify-content:center;
       position:relative;
 
-      /* ✅ Put your image here */
       background-image: url("forsaken.jpg");
       background-size: cover;
       background-position: center 20%;
       background-repeat: no-repeat;
     }
 
-    /* Dark overlay so text reads */
     .hero::before{
       content:"";
       position:absolute; inset:0;
@@ -58,7 +56,6 @@
       filter: drop-shadow(0 12px 18px var(--shadow));
     }
 
-    /* ✅ TITLE: cooler / more “entry page” */
     .brand{
       font-family: "Cinzel Decorative", "Cinzel", Georgia, "Times New Roman", serif;
       letter-spacing: 0.18em;
@@ -67,25 +64,25 @@
       color: rgba(255,255,255,0.92);
       margin: 0 0 10px 0;
       user-select:none;
-
       text-shadow:
         0 0 14px rgba(255,255,255,0.12),
         0 10px 30px rgba(0,0,0,0.65);
     }
 
+    /* ✅ REPLACED COPY (cryptic, not obvious) */
     .sub{
       margin: 0 0 26px 0;
-      color: var(--muted);
-      letter-spacing: 0.14em;
+      color: rgba(255,255,255,0.52);
+      letter-spacing: 0.12em;
       text-transform: lowercase;
       font-size: 13px;
       user-select:none;
       font-family: "Cinzel", Georgia, "Times New Roman", serif;
     }
 
-    /* RIDDLE LINE */
+    /* RIDDLE LINE (same mechanism, just more “ritual plaque” vibe) */
     .riddle{
-      margin: 0 auto 22px;
+      margin: 0 auto 18px;
       display:inline-flex;
       gap: 14px;
       padding: 10px 16px;
@@ -95,16 +92,18 @@
       background: rgba(0,0,0,0.18);
       user-select:none;
     }
+
     .riddle .hint{
-      color: var(--faint);
-      letter-spacing: 0.10em;
+      color: rgba(255,255,255,0.20);
+      letter-spacing: 0.16em;
       text-transform: uppercase;
-      font-size: 11px;
+      font-size: 10px;
       margin-right: 10px;
       display:flex;
       align-items:center;
       font-family: "Cinzel", Georgia, "Times New Roman", serif;
     }
+
     .riddle .letters{
       display:inline-flex;
       gap: 10px;
@@ -120,7 +119,6 @@
       opacity: 0.10;
     }
 
-    /* ✅ Subtle hint tints (always lightly colored, but still dim) */
     .riddle .ch.hint{
       opacity: 0.18;
       color: rgba(255,255,255,0.22);
@@ -131,7 +129,6 @@
     .riddle .ch.hint[data-hint="e"]{ color: var(--hint-e); }
     .riddle .ch.hint[data-hint="n"]{ color: var(--hint-n); }
 
-    /* Default flash */
     .riddle .ch.on{
       opacity: 1;
       color: var(--glow);
@@ -139,9 +136,8 @@
       transform: translateY(-1px);
     }
 
-    /* ✅ When a hinted letter flashes, it keeps its own tint (subtle but noticeable) */
     .riddle .ch.hint.on{
-      color: rgba(255,255,255,0.88); /* base lift */
+      color: rgba(255,255,255,0.88);
       text-shadow: 0 0 18px rgba(255,255,255,0.10);
       transform: translateY(-1px);
     }
@@ -162,57 +158,162 @@
       text-shadow: 0 0 18px rgba(200, 160, 255, 0.18);
     }
 
-    /* PASSWORD BOX */
+    /* =========================
+       🗝 SAME “UNSEAL” ALTAR GATE AS LEVEL 4/5
+    ========================== */
+    .gateWrap{
+      width: min(560px, 92vw);
+      margin: 16px auto 0;
+      padding: 18px 16px 18px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(255,255,255,0.06), transparent 55%),
+        radial-gradient(circle at 82% 38%, rgba(160,60,40,0.10), transparent 62%),
+        linear-gradient(to bottom, rgba(0,0,0,0.28), rgba(0,0,0,0.10));
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(7px);
+      box-shadow:
+        0 22px 44px rgba(0,0,0,0.46),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      position: relative;
+      overflow:hidden;
+    }
+
+    .gateWrap::after{
+      content:"";
+      position:absolute;
+      left: 18px; right: 18px;
+      top: 46px;
+      height: 1px;
+      background: linear-gradient(90deg,
+        transparent,
+        rgba(232,210,170,0.14),
+        rgba(255,255,255,0.06),
+        rgba(232,210,170,0.12),
+        transparent
+      );
+      opacity: 0.85;
+      pointer-events:none;
+    }
+
+    .gateLabel{
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      font-size: 10px;
+      color: rgba(255,255,255,0.42);
+      margin: 0 0 14px;
+      user-select:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      text-shadow: 0 0 18px rgba(0,0,0,0.55);
+    }
+
+    .gateLabel .mark{
+      color: rgba(232, 210, 170, 0.52);
+      text-shadow: 0 0 16px rgba(160,60,40,0.20);
+      font-size: 12px;
+    }
+
     .gate{
       display:flex;
-      gap: 10px;
+      gap: 12px;
       justify-content:center;
       align-items:center;
       flex-wrap:wrap;
-      margin-top: 10px;
+      position: relative;
     }
 
     input[type="password"]{
-      width: min(320px, 86vw);
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(0,0,0,0.35);
-      color: var(--text);
+      width: min(340px, 86vw);
+      padding: 13px 16px;
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at 30% 28%, rgba(240,225,190,0.10), transparent 55%),
+        radial-gradient(circle at 70% 70%, rgba(140,60,40,0.08), transparent 60%),
+        linear-gradient(to bottom, rgba(18,14,12,0.68), rgba(8,7,7,0.78));
+      border: 1px solid rgba(255,255,255,0.16);
+      color: rgba(245,236,216,0.92);
       outline: none;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.16em;
       font-size: 14px;
-      font-family: "Cinzel", Georgia, "Times New Roman", serif;
+      font-family: "Cormorant Garamond", serif;
+      box-shadow:
+        inset 0 0 0 1px rgba(0,0,0,0.55),
+        inset 0 0 26px rgba(0,0,0,0.45);
+      transition: border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
+      -webkit-text-security: disc;
     }
-    input[type="password"]::placeholder{ color: rgba(255,255,255,0.28); }
+
+    input[type="password"]::placeholder{
+      color: rgba(232,210,170,0.35);
+      letter-spacing: 0.10em;
+    }
+
+    input[type="password"]:focus{
+      border-color: rgba(232, 210, 170, 0.30);
+      box-shadow:
+        0 0 0 3px rgba(232, 210, 170, 0.06),
+        0 0 28px rgba(160,60,40,0.12),
+        inset 0 0 0 1px rgba(0,0,0,0.55),
+        inset 0 0 28px rgba(0,0,0,0.50);
+      transform: translateY(-1px);
+    }
 
     button{
-      padding: 12px 16px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.06);
-      color: var(--text);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
+      padding: 13px 18px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.16);
       cursor:pointer;
-      transition: transform 120ms ease, background 120ms ease;
-      font-family: "Cinzel", Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.10), transparent 55%),
+        linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(0,0,0,0.18));
+      color: rgba(245,236,216,0.92);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-family: "Cormorant Garamond", serif;
+      box-shadow:
+        0 14px 26px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      transition: transform 180ms ease, border-color 220ms ease, box-shadow 220ms ease, filter 220ms ease;
+      position: relative;
+      overflow:hidden;
     }
-    button:hover{ background: rgba(255,255,255,0.10); }
-    button:active{ transform: translateY(1px); }
+
+    button::after{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(circle at 50% 20%, rgba(232,210,170,0.14), transparent 55%);
+      opacity: 0;
+      transition: opacity 220ms ease;
+      pointer-events:none;
+    }
+
+    button:hover{
+      border-color: rgba(232, 210, 170, 0.24);
+      box-shadow:
+        0 18px 34px rgba(0,0,0,0.42),
+        0 0 22px rgba(160,60,40,0.10),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+    }
+    button:hover::after{ opacity: 1; }
+    button:active{ transform: translateY(0px); }
 
     .msg{
       margin-top: 14px;
       min-height: 18px;
       color: rgba(255,255,255,0.55);
-      letter-spacing: 0.08em;
+      letter-spacing: 0.10em;
       font-size: 12px;
       font-family: "Cinzel", Georgia, "Times New Roman", serif;
+      user-select:none;
     }
 
-    .wrong{
-      animation: shake 340ms ease;
-    }
+    .wrong{ animation: shake 340ms ease; }
     @keyframes shake{
       0%{ transform: translateX(0); }
       20%{ transform: translateX(-6px); }
@@ -222,15 +323,28 @@
       100%{ transform: translateX(0); }
     }
 
-    /* Fade out on success */
-    .fadeOut{
-      animation: fade 650ms ease forwards;
-    }
-    @keyframes fade{
-      to{ opacity:0; transform: translateY(6px); }
+    .fadeOut{ animation: fade 650ms ease forwards; }
+    @keyframes fade{ to{ opacity:0; transform: translateY(6px); } }
+
+    /* ✅ Standard single mute button (same vibe as levels) */
+    #muteBtn{
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 2147483647;
+      pointer-events:auto;
+      cursor:pointer;
+      background: rgba(0,0,0,.45);
+      border: 1px solid rgba(255,255,255,.28);
+      color: rgba(255,255,255,.95);
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-family:'Cormorant Garamond',serif;
+      backdrop-filter: blur(6px);
+      -webkit-tap-highlight-color: transparent;
+      user-select:none;
     }
 
-    /* Desktop tweak if needed */
     @media (min-width: 1200px){
       .hero{ background-position: center 10%; }
     }
@@ -241,12 +355,16 @@
   <main class="hero">
     <section class="wrap" id="wrap">
       <h1 class="brand">ONLYFORSAKEN</h1>
-      <p class="sub">you already know the password.... are you sure you want to "open" the gates?</p>
+
+      <!-- ✅ More cryptic, less “obvious password prompt” -->
+      <p class="sub">
+        the gate does not ask for a word—<br>
+        it asks what you are willing to admit.
+      </p>
 
       <div class="riddle" aria-label="riddle">
-        <div class="hint">watch the light</div>
+        <div class="hint">observe the pulse</div>
 
-        <!-- ✅ Mark O/P/E/N as subtle colored hints -->
         <div class="letters" id="letters">
           <span class="ch hint" data-real="1" data-hint="o">O</span>
           <span class="ch" data-real="0">X</span>
@@ -260,50 +378,57 @@
         </div>
       </div>
 
-      <div class="gate" id="gate">
-        <input id="pw" type="password" placeholder="password…" autocomplete="off" />
-        <button id="btn">Enter</button>
+      <!-- ✅ SAME gate as Level 4/5 -->
+      <div class="gateWrap">
+        <div class="gateLabel"><span class="mark">⟡</span> Offer your answer <span class="mark">⟡</span></div>
+        <div class="gate" id="gate">
+          <input id="pw" type="password" placeholder="whisper it…" autocomplete="off" />
+          <button id="btn">UNSEAL</button>
+        </div>
       </div>
 
       <div class="msg" id="msg"></div>
     </section>
   </main>
 
+  <!-- ✅ Standard mute/unmute -->
+  <button id="muteBtn" aria-label="Toggle audio">🔊</button>
+
+  <!-- 🌫 Index ambience -->
+  <audio id="indexAmbience" loop preload="auto" playsinline>
+    <source src="audio/index-ambience.mp3" type="audio/mpeg">
+  </audio>
+
   <script>
-    // ✅ Your real password (unchanged)
+    // ✅ Your real password (UNCHANGED)
     const PASSWORD = "OPEN";
 
-    // Letter glow loop
+    // Letter glow loop (keep the same mechanic, just slightly calmer)
     const letters = Array.from(document.querySelectorAll("#letters .ch"));
     const real = letters.filter(el => el.dataset.real === "1");
     const decoy = letters.filter(el => el.dataset.real !== "1");
 
-    // Weighted random pick: real letters show more often than decoys
     function pickLetter(){
-      // 80% chance real, 20% chance decoy
       const pool = (Math.random() < 0.80) ? real : decoy;
       return pool[Math.floor(Math.random() * pool.length)];
     }
 
     function flash(){
       letters.forEach(el => el.classList.remove("on"));
-
       const chosen = pickLetter();
       chosen.classList.add("on");
-
-      // short flash window
-      const flashMs = 260 + Math.floor(Math.random() * 220); // 260–480ms
+      const flashMs = 320 + Math.floor(Math.random() * 240); // 320–560ms (slower, moodier)
       setTimeout(() => chosen.classList.remove("on"), flashMs);
     }
 
-    // random-ish timing so it feels alive
     function loop(){
       flash();
-      const nextMs = 650 + Math.floor(Math.random() * 650); // 650–1300ms
+      const nextMs = 860 + Math.floor(Math.random() * 820); // 860–1680ms (less “arcade”)
       setTimeout(loop, nextMs);
     }
     loop();
 
+    // Gate
     const wrap = document.getElementById("wrap");
     const pw = document.getElementById("pw");
     const btn = document.getElementById("btn");
@@ -316,84 +441,66 @@
       if (val === PASSWORD) {
         msg.textContent = "…";
         wrap.classList.add("fadeOut");
-
-        // Go to the next page
-        setTimeout(() => {
-          window.location.href = "entry.html";
-        }, 650);
+        setTimeout(() => { window.location.href = "entry.html"; }, 650);
       } else {
-        msg.textContent = "Wrong.";
+        msg.textContent = "Not yet.";
         wrap.classList.remove("wrong");
-        void wrap.offsetWidth; // restart animation
+        void wrap.offsetWidth;
         wrap.classList.add("wrong");
         pw.select();
       }
     }
 
     btn.addEventListener("click", check);
-    pw.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") check();
-    });
+    pw.addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
+
+    // ✅ Index ambience using the SAME mute key as the rest of the site
+    (() => {
+      const muteBtn = document.getElementById("muteBtn");
+      const amb = document.getElementById("indexAmbience");
+      if (!muteBtn || !amb) return;
+
+      const AMB_TARGET = 0.40; // vibe-level; you can tweak
+
+      const savedMuted = localStorage.getItem("ofs_mute") === "1";
+      amb.muted = savedMuted;
+      muteBtn.textContent = savedMuted ? "🔇" : "🔊";
+      amb.volume = AMB_TARGET;
+
+      async function playAmb(){
+        try{
+          amb.currentTime = 0;
+          const p = amb.play();
+          if (p && p.catch) p.catch(()=>{});
+        }catch(e){}
+      }
+
+      function stopAmb(){
+        try{ amb.pause(); }catch(e){}
+      }
+
+      muteBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const newMuted = !amb.muted;
+        amb.muted = newMuted;
+
+        localStorage.setItem("ofs_mute", newMuted ? "1" : "0");
+        muteBtn.textContent = newMuted ? "🔇" : "🔊";
+
+        if (!newMuted) playAmb();
+        else stopAmb();
+      }, true);
+
+      window.addEventListener("pageshow", () => {
+        if (!amb.muted) playAmb();
+      });
+
+      window.addEventListener("pointerdown", () => {
+        if (!amb.muted && amb.paused) playAmb();
+      }, { once:true });
+    })();
   </script>
-  <!-- 🩸 Index Ambient -->
-<button id="ambientBtn" type="button"
-  style="position:fixed;top:18px;right:18px;z-index:2147483647;
-  padding:10px 12px;border-radius:999px;
-  background:rgba(0,0,0,.45);
-  border:1px solid rgba(255,255,255,.28);
-  color:rgba(255,255,255,.95);
-  font-family:'Cormorant Garamond',serif;">
-  🔊 AMBIENT
-</button>
-
-<audio id="ambientSound" loop preload="auto" playsinline>
-  <source src="audio/index-ambience.mp3" type="audio/mpeg">
-</audio>
-
-<script>
-(() => {
-  const audio = document.getElementById("ambientSound");
-  const btn = document.getElementById("ambientBtn");
-  if (!audio || !btn) return;
-
-  const saved = localStorage.getItem("ofs_mute") === "1";
-  audio.muted = saved;
-  audio.volume = 0.6; // background level
-
-  function update(){
-    btn.textContent = audio.muted ? "🔇 MUTED" : "🔊 AMBIENT";
-  }
-  update();
-
-  async function start(){
-    try{
-      audio.currentTime = 0;
-      await audio.play();
-    }catch(e){}
-  }
-
-  window.addEventListener("pageshow", () => {
-    if (!audio.muted) start();
-  });
-
-  window.addEventListener("pointerdown", () => {
-    if (!audio.muted && audio.paused) start();
-  }, { once:true });
-
-  btn.addEventListener("click", () => {
-    audio.muted = !audio.muted;
-    localStorage.setItem("ofs_mute", audio.muted ? "1" : "0");
-    update();
-
-    if (!audio.muted) start();
-    else audio.pause();
-  });
-})();
-</script>
-
 </body>
 </html>
-
-
-
-
