@@ -32,7 +32,7 @@
     /* 🎬 Background layer (fade-in) */
     .bg{
       position:absolute; inset:0;
-      background-image: url("level3.jpg"); /* ✅ FIXED */
+      background-image: url("level3.jpg");
       background-size: cover;
       background-position: center 30%;
       background-repeat: no-repeat;
@@ -176,8 +176,11 @@
       color: var(--muted);
       margin: 0 auto 16px;
       max-width: 62ch;
-      animation: candleFlicker 5s infinite ease-in-out;
       min-height: 12.5em;
+
+      /* ✅ IMPORTANT: no candleFlicker here (this was causing the “fluffy” look) */
+      animation: none;
+      text-shadow: none;
     }
 
     .story em{
@@ -186,13 +189,14 @@
       text-shadow: 0 0 10px rgba(140,0,0,0.22);
     }
 
-    /* ✅ Fog reveal lines (Entry standard) */
+    /* ✅ Entry-style fog reveal */
     .fogline{
       display:block;
       margin: 0 0 10px;
-      opacity: 0.28;
-      filter: blur(10px);
+      opacity: 0.18;
+      filter: blur(14px);
       transform: translateY(6px);
+      will-change: filter, opacity, transform, -webkit-mask-position, mask-position;
 
       -webkit-mask-image: linear-gradient(90deg,
         rgba(0,0,0,0) 0%,
@@ -216,6 +220,15 @@
     .fogline.reveal{
       animation: fogClear var(--fogDur, 1200ms) ease forwards;
       animation-delay: var(--fogDelay, 0ms);
+    }
+
+    /* ✅ hard “final crisp” state (prevents any lingering softness) */
+    .fogline.final{
+      opacity: 1 !important;
+      filter: blur(0px) !important;
+      transform: translateY(0) !important;
+      -webkit-mask-position: -10% 0 !important;
+      mask-position: -10% 0 !important;
     }
 
     @keyframes fogClear{
@@ -348,7 +361,6 @@
       <div class="kicker">Level 3</div>
       <h1>The Eye That Follow</h1>
 
-      <!-- ✅ Same story container, now fog-line based (no typewriter) -->
       <p class="story" id="story">
         <span class="fogline">The corridor narrows like a throat. The air tastes of cold iron and old prayers.</span>
         <span class="fogline">Somewhere behind the stone, something drags its nails across a memory it does not own.</span>
@@ -559,30 +571,10 @@
     }
 
     function resetFog(){
-      fogLines.forEach(l => l.classList.remove("reveal"));
-    }
-
-    function revealFogLines(){
-      resetFog();
-
-      const duration = (isFinite(voice.duration) && voice.duration > 1) ? voice.duration : 22;
-      const totalMs = Math.max(14000, Math.floor(duration * 1.08 * 1000)); // slightly longer than voice
-
-      const perLine = Math.max(900, Math.floor(totalMs / Math.max(1, fogLines.length)));
-      fogLines.forEach((line, idx) => {
-        line.style.setProperty("--fogDelay", `${idx * Math.floor(perLine * 0.78)}ms`);
-        line.style.setProperty("--fogDur", `${Math.floor(perLine * 1.05)}ms`);
-        line.classList.add("reveal");
+      fogLines.forEach(l => {
+        l.classList.remove("reveal");
+        l.classList.remove("final");
       });
-
-      // click story to instantly reveal all
-      storyEl.addEventListener("click", () => {
-        fogLines.forEach(l => {
-          l.style.setProperty("--fogDelay", "0ms");
-          l.style.setProperty("--fogDur", "1ms");
-          l.classList.add("reveal");
-        });
-      }, { once:true });
     }
 
     function ensureMetadata(timeoutMs=900){
@@ -605,6 +597,35 @@
       });
     }
 
+    function revealFogLines(){
+      resetFog();
+
+      const duration = (isFinite(voice.duration) && voice.duration > 1) ? voice.duration : 22;
+      const totalMs = Math.max(14000, Math.floor(duration * 1.08 * 1000));
+
+      const perLine = Math.max(950, Math.floor(totalMs / Math.max(1, fogLines.length)));
+      fogLines.forEach((line, idx) => {
+        const delay = idx * Math.floor(perLine * 0.78);
+        const dur   = Math.floor(perLine * 1.05);
+
+        line.style.setProperty("--fogDelay", `${delay}ms`);
+        line.style.setProperty("--fogDur", `${dur}ms`);
+        line.classList.add("reveal");
+
+        // ✅ force crisp end-state
+        setTimeout(() => line.classList.add("final"), delay + dur + 60);
+      });
+
+      storyEl.addEventListener("click", () => {
+        fogLines.forEach(l => {
+          l.style.setProperty("--fogDelay", "0ms");
+          l.style.setProperty("--fogDur", "1ms");
+          l.classList.add("reveal");
+          l.classList.add("final");
+        });
+      }, { once:true });
+    }
+
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -621,10 +642,9 @@
     }, true);
 
     window.addEventListener("pageshow", async () => {
-      // reset for bfcache restores
       resetFog();
 
-      // ✅ Voice starts before visuals (when unmuted)
+      // ✅ voice starts before visuals when unmuted
       if (!voice.muted){
         await playBoth();
         setTimeout(revealVisuals, 220);
@@ -632,12 +652,10 @@
         revealVisuals();
       }
 
-      // fog reveal tied to voice duration
       await ensureMetadata(900);
       setTimeout(revealFogLines, 750);
     });
 
-    // autoplay unlock on first tap
     window.addEventListener("pointerdown", () => {
       if (!voice.muted && (voice.paused || amb.paused)) playBoth();
     }, { once:true });
