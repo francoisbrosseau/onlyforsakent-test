@@ -148,7 +148,11 @@
       text-align: left;
     }
 
-    .sigil{ color: inherit; text-decoration:none; border-bottom:0; }
+    /* ✅ ONLY CHANGE: subtle tint for password letters */
+    .sigil{
+      color: rgba(232, 210, 170, 0.78); /* warm bone */
+      text-shadow: 0 0 10px rgba(160, 60, 40, 0.18); /* faint ember */
+    }
 
     .fogLine{
       display:block;
@@ -318,7 +322,7 @@
       flex-direction: column;
       align-items:center;
       gap: 8px;
-      pointer-events: none; /* purely display */
+      pointer-events: none;
       user-select: none;
     }
 
@@ -383,7 +387,6 @@
     <section class="wrap" id="wrap">
       <h1>The Halls of the Whispering Stone</h1>
 
-      <!-- ✅ Story stays your content, just split into fog lines for reveal -->
       <div class="story" id="story">
         <span class="fogLine">The stairs spiral down far longer than they should.</span>
 
@@ -537,7 +540,7 @@
         if (!el) continue;
 
         if (item && String(item).trim()){
-          el.textContent = String(item).slice(0, 10); // short label
+          el.textContent = String(item).slice(0, 10);
           el.classList.add("filled");
         } else {
           el.textContent = "—";
@@ -546,11 +549,8 @@
       }
     }
 
-    // Minimal API for later levels
     window.ofsInv = {
-      get(){
-        return loadInv().slice();
-      },
+      get(){ return loadInv().slice(); },
       set(slotIndex, label){
         const inv = loadInv();
         if (slotIndex < 0 || slotIndex > 2) return inv;
@@ -562,7 +562,7 @@
       add(label){
         const inv = loadInv();
         const idx = inv.findIndex(x => !x);
-        if (idx === -1) return inv; // full
+        if (idx === -1) return inv;
         inv[idx] = label ? String(label) : "Item";
         saveInv(inv);
         renderInv(inv);
@@ -576,7 +576,6 @@
       }
     };
 
-    // initial render
     renderInv(loadInv());
 
     /* =========================
@@ -650,16 +649,13 @@
         }, 420);
       }
 
-      // ✅ Slower than entry/level3 baseline (locked)
       function startLineReveal(){
         const n = revealLines.length;
-
-        // optional: stretch if voice is LONG, never speed up
         const voiceDur = (isFinite(voice.duration) && voice.duration > 2) ? voice.duration : 0;
 
-        const MIN_TOTAL    = 60;  // overall minimum
-        const MIN_LINE_DUR = 4.5; // per line
-        const MIN_GAP      = 0.9; // between lines
+        const MIN_TOTAL    = 60;
+        const MIN_LINE_DUR = 4.5;
+        const MIN_GAP      = 0.9;
         const START_DELAY  = 1.2;
 
         const total = Math.max(MIN_TOTAL, voiceDur ? (voiceDur * 1.05) : 0);
