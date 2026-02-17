@@ -18,8 +18,10 @@
     *{ box-sizing:border-box; }
     html,body{ height:100%; margin:0; background:#000; }
 
+    body{ overflow-x:hidden; }
+
     .hero{
-      min-height:100vh;
+      height:100vh;
       position:relative;
       overflow:hidden;
       display:flex;
@@ -29,10 +31,10 @@
       font-family: Georgia, "Times New Roman", serif;
     }
 
-    /* 🎬 Background layer (fade-in) */
+    /* 🎬 Fixed background layer (fade-in) */
     .bg{
-      position:absolute; inset:0;
-      background-image: url("level3.jpg"); /* ✅ FIXED */
+      position:fixed; inset:0;
+      background-image: url("level3.jpg");
       background-size: cover;
       background-position: center 30%;
       background-repeat: no-repeat;
@@ -48,32 +50,30 @@
       transform: scale(1);
     }
 
-    /* Dark overlay */
-    .hero::before{
-      content:"";
-      position:absolute; inset:0;
+    /* Dark overlay (fixed) */
+    #overlay{
+      position:fixed; inset:0;
+      z-index:1;
+      pointer-events:none;
+      opacity:0;
+      transition: opacity 2200ms ease;
       background:
         radial-gradient(circle at 50% 40%, rgba(0,0,0,0.06), rgba(0,0,0,0.52)),
         linear-gradient(to bottom, rgba(0,0,0,0.14), rgba(0,0,0,0.62));
+    }
+    #overlay.reveal{ opacity:1; }
+
+    /* Grain (fixed) */
+    #grain{
+      position:fixed; inset:0;
       z-index:1;
       pointer-events:none;
-      opacity: 0;
+      opacity:0;
       transition: opacity 2200ms ease;
-    }
-    .hero.reveal::before{ opacity: 1; }
-
-    /* Grain */
-    .hero::after{
-      content:"";
-      position:absolute; inset:0;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
       mix-blend-mode: overlay;
-      opacity: 0;
-      pointer-events:none;
-      z-index:1;
-      transition: opacity 2200ms ease;
     }
-    .hero.reveal::after{ opacity: .10; }
+    #grain.reveal{ opacity:.10; }
 
     /* ✅ Lantern glow follows cursor */
     #lantern{
@@ -98,7 +98,6 @@
       transform: translate(-50%, -50%);
     }
 
-  
     /* ✅ Flicker letters */
     .glyph{
       position: absolute;
@@ -129,7 +128,7 @@
       100%{ opacity: 1; }
     }
 
-    /* UI panel */
+    /* UI wrap (scrolling story, no box behind text) */
     .wrap{
       position: relative;
       z-index: 3;
@@ -138,7 +137,21 @@
       text-align: center;
       filter: drop-shadow(0 16px 22px var(--shadow));
       pointer-events:auto;
+
+      max-height: 86vh;
+      overflow:auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.20) rgba(0,0,0,0);
     }
+    .wrap::-webkit-scrollbar{ width: 10px; }
+    .wrap::-webkit-scrollbar-thumb{
+      background: rgba(255,255,255,0.16);
+      border-radius: 999px;
+      border: 2px solid rgba(0,0,0,0);
+      background-clip: padding-box;
+    }
+    .wrap::-webkit-scrollbar-track{ background: rgba(0,0,0,0); }
 
     .kicker{
       letter-spacing: 0.24em;
@@ -179,12 +192,56 @@
       max-width: 62ch;
       animation: candleFlicker 5s infinite ease-in-out;
       min-height: 12.5em;
+      user-select:none;
     }
 
     .story em{
       font-style: normal;
       color: rgba(255,255,255,0.92);
       text-shadow: 0 0 10px rgba(140,0,0,0.22);
+    }
+
+    /* ✅ Fog reveal lines (left→right mask clearing blur) */
+    .fogline{
+      display:block;
+      margin: 0 0 10px;
+      opacity: 0.30;
+      filter: blur(9px);
+      transform: translateY(6px);
+
+      -webkit-mask-image: linear-gradient(90deg,
+        rgba(0,0,0,0) 0%,
+        rgba(0,0,0,1) 18%,
+        rgba(0,0,0,1) 82%,
+        rgba(0,0,0,0) 100%
+      );
+      -webkit-mask-size: 220% 100%;
+      -webkit-mask-position: 110% 0;
+
+      mask-image: linear-gradient(90deg,
+        rgba(0,0,0,0) 0%,
+        rgba(0,0,0,1) 18%,
+        rgba(0,0,0,1) 82%,
+        rgba(0,0,0,0) 100%
+      );
+      mask-size: 220% 100%;
+      mask-position: 110% 0;
+    }
+
+    .fogline.reveal{
+      animation: fogClear var(--fogDur, 1200ms) ease forwards;
+      animation-delay: var(--fogDelay, 0ms);
+    }
+
+    @keyframes fogClear{
+      to{
+        opacity: 1;
+        filter: blur(0px);
+        transform: translateY(0);
+
+        -webkit-mask-position: -10% 0;
+        mask-position: -10% 0;
+      }
     }
 
     .hint{
@@ -236,6 +293,7 @@
       color: rgba(255,255,255,0.55);
       letter-spacing: 0.08em;
       font-size: 12px;
+      user-select:none;
     }
 
     .wrong{ animation: shake 340ms ease; }
@@ -253,8 +311,8 @@
 
     @media (max-width: 600px){
       #lantern{ width: 300px; height: 300px; }
-      .flag{ left: 5%; top: 22%; }
       .glyph{ font-size: 44px; }
+      .wrap{ max-height: 84vh; padding: 36px 16px; }
     }
 
     /* ✅ Audio button (standard) */
@@ -287,20 +345,18 @@
       transition: opacity 900ms ease;
     }
     #veil.hide{ opacity: 0; }
-
-    body.typing .story{ user-select:none; }
   </style>
 </head>
 
-<body class="typing">
+<body>
+  <div class="bg" id="bg" aria-hidden="true"></div>
+  <div id="overlay" aria-hidden="true"></div>
+  <div id="grain" aria-hidden="true"></div>
   <div id="veil" aria-hidden="true"></div>
 
   <main class="hero" id="hero">
-    <div class="bg" id="bg" aria-hidden="true"></div>
-
-    
-
     <div id="lantern" aria-hidden="true"></div>
+
     <div class="glyph" id="g1" aria-hidden="true">T</div>
     <div class="glyph" id="g2" aria-hidden="true">R</div>
     <div class="glyph" id="g3" aria-hidden="true">U</div>
@@ -312,13 +368,17 @@
       <h1>The Eye That Follow</h1>
 
       <p class="story" id="story">
-        The corridor narrows like a throat. The air tastes of cold iron and old prayers.
-        Somewhere behind the stone, something drags its nails across a memory it does not own.
-        <br><br>
-        You pass a blackened statue—faceless, yet watching. Its shadow does not match the torchlight.
-        The deeper you walk, the more you feel it: a gaze that does not blink.
-        <br><br>
-        The castle offers no directions. Only hints… <em>if you dare to look where you shouldn’t.</em>
+        <span class="fogline">The corridor tightens like a throat, and every stone tastes of cold iron.</span>
+        <span class="fogline">Somewhere behind the walls, something drags its nails across a memory that isn’t yours.</span>
+
+        <span class="fogline">You pass a blackened statue — faceless, yet watching.</span>
+        <span class="fogline">Its shadow refuses the torchlight, bending the wrong way, as if it answers another sun.</span>
+
+        <span class="fogline">The deeper you descend, the more certain you become:</span>
+        <span class="fogline"><em>an eye is following you… and it does not blink.</em></span>
+
+        <span class="fogline">The castle offers no directions. Only hints—</span>
+        <span class="fogline"><em>if you dare to look where you shouldn’t.</em></span>
       </p>
 
       <div class="hint">Let the light guide you.</div>
@@ -376,6 +436,7 @@
 
         const el = glyphEls[h.key];
 
+        // scatter position (persistent per session)
         if (!el.dataset.sx){
           el.dataset.sx = (5 + Math.random() * 90).toFixed(2);
           el.dataset.sy = (8 + Math.random() * 84).toFixed(2);
@@ -451,19 +512,19 @@
 
   <script>
   (() => {
-    const heroEl = document.getElementById("hero");
     const bg = document.getElementById("bg");
     const veil = document.getElementById("veil");
+    const overlay = document.getElementById("overlay");
+    const grain = document.getElementById("grain");
 
     const storyEl = document.getElementById("story");
-    const originalHTML = storyEl.innerHTML;
-    storyEl.innerHTML = "";
+    const fogLines = storyEl ? Array.from(storyEl.querySelectorAll(".fogline")) : [];
 
     const btn = document.getElementById("muteBtn");
     const voice = document.getElementById("mordainVoice");
     const amb = document.getElementById("level3Ambience");
 
-    if (!btn || !voice || !amb || !heroEl || !bg || !veil || !storyEl) return;
+    if (!btn || !voice || !amb || !bg || !veil || !overlay || !grain || !storyEl) return;
 
     const VOICE_TARGET = 0.74;
     const AMB_TARGET   = 0.30;
@@ -512,84 +573,64 @@
     }
 
     function revealVisuals(){
-      setTimeout(() => veil.classList.add("hide"), 350);
-      setTimeout(() => veil.remove(), 1400);
+      // veil lifts AFTER audio kicks in (or immediately if muted)
+      setTimeout(() => veil.classList.add("hide"), 250);
+      setTimeout(() => { try{ veil.remove(); }catch(e){} }, 1400);
 
       setTimeout(() => {
         bg.classList.add("show");
-        heroEl.classList.add("reveal");
-      }, 450);
+        overlay.classList.add("reveal");
+        grain.classList.add("reveal");
+      }, 380);
     }
 
     function wait(ms){ return new Promise(r => setTimeout(r, ms)); }
 
-    // typewriter that preserves <br> and <em>
-    function typeHTML(el, html, cps){
-      return new Promise((resolve) => {
-        const tokens = html.match(/<\/?[^>]+>|[^<]+/g) || [];
-        let i = 0;
-        let charIndex = 0;
-        let out = "";
-
-        const interval = Math.max(12, Math.floor(1000 / Math.max(10, cps)));
-
-        const timer = setInterval(() => {
-          if (i >= tokens.length){
-            clearInterval(timer);
-            el.innerHTML = out;
-            document.body.classList.remove("typing");
-            resolve();
-            return;
-          }
-
-          const tok = tokens[i];
-
-          if (tok[0] === "<"){
-            out += tok;
-            i++;
-            el.innerHTML = out;
-            return;
-          }
-
-          const ch = tok[charIndex];
-          if (ch == null){
-            i++;
-            charIndex = 0;
-            return;
-          }
-
-          out += ch;
-          charIndex++;
-          el.innerHTML = out;
-        }, interval);
-
-        // click story to instantly finish typing
-        el.addEventListener("click", () => {
-          clearInterval(timer);
-          el.innerHTML = html;
-          document.body.classList.remove("typing");
-          resolve();
-        }, { once:true });
-      });
+    function resetFog(){
+      fogLines.forEach(l => l.classList.remove("reveal"));
     }
 
-    function computeCPS(){
+    function revealFogLines(){
+      resetFog();
+
       const duration = (isFinite(voice.duration) && voice.duration > 1) ? voice.duration : 22;
-      const targetTime = Math.max(14, duration * 0.9);
+      const totalMs = Math.max(14000, Math.floor(duration * 1.08 * 1000)); // slightly longer than voice
 
-      const plain = originalHTML.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
-      const total = plain.length || 260;
+      const perLine = Math.max(900, Math.floor(totalMs / Math.max(1, fogLines.length)));
+      fogLines.forEach((line, idx) => {
+        line.style.setProperty("--fogDelay", `${idx * Math.floor(perLine * 0.78)}ms`);
+        line.style.setProperty("--fogDur", `${Math.floor(perLine * 1.05)}ms`);
+        line.classList.add("reveal");
+      });
 
-      let cps = total / targetTime;
-      cps = cps / 1.35;
-      cps = Math.max(10, Math.min(18, cps));
-      return cps;
+      // click story to instantly reveal everything
+      storyEl.addEventListener("click", () => {
+        fogLines.forEach(l => {
+          l.style.setProperty("--fogDelay", "0ms");
+          l.style.setProperty("--fogDur", "1ms");
+          l.classList.add("reveal");
+        });
+      }, { once:true });
     }
 
-    async function startTypewriter(){
-      await wait(700);
-      const cps = computeCPS();
-      await typeHTML(storyEl, originalHTML, cps);
+    function ensureMetadata(timeoutMs=900){
+      return new Promise((resolve) => {
+        if (isFinite(voice.duration) && voice.duration > 1) return resolve();
+        let done = false;
+
+        const onMeta = () => {
+          if (done) return;
+          done = true;
+          resolve();
+        };
+
+        voice.addEventListener("loadedmetadata", onMeta, { once:true });
+        setTimeout(() => {
+          if (done) return;
+          done = true;
+          resolve();
+        }, timeoutMs);
+      });
     }
 
     btn.addEventListener("click", (e) => {
@@ -608,11 +649,24 @@
     }, true);
 
     window.addEventListener("pageshow", async () => {
-      revealVisuals();
+      // Reset visuals/fog for bfcache restores
+      bg.classList.remove("show");
+      overlay.classList.remove("reveal");
+      grain.classList.remove("reveal");
+      resetFog();
 
-      if (!voice.muted) await playBoth();
+      // ✅ Voice starts first
+      if (!voice.muted){
+        await playBoth();
+        setTimeout(revealVisuals, 220);
+      } else {
+        revealVisuals();
+      }
 
-      startTypewriter();
+      // ✅ Fog reveal tied to voice duration (slightly longer)
+      await wait(650);
+      await ensureMetadata(900);
+      revealFogLines();
     });
 
     // autoplay unlock on first tap
