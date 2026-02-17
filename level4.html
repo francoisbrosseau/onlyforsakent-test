@@ -14,7 +14,6 @@
       --hint: rgba(255,255,255,0.42);
       --shadow: rgba(0,0,0,0.72);
 
-      /* ✅ Crop/reframe background here */
       --bg-pos-desktop: center 45%;
       --bg-pos-mobile:  center 52%;
     }
@@ -22,11 +21,6 @@
     *{ box-sizing:border-box; }
     html,body{ height:100%; margin:0; background:#000; font-family: Georgia, "Times New Roman", serif; }
 
-    /* =========================
-       🎬 HERO / BACKGROUND (LOCKED)
-       - background fixed
-       - text scrolls
-    ========================== */
     .hero{
       min-height:100vh;
       position:relative;
@@ -41,14 +35,11 @@
       position: fixed;
       inset: 0;
       z-index: 0;
-
       background-image: url("level4.jpg");
       background-size: cover;
       background-repeat: no-repeat;
       background-position: var(--bg-pos-desktop);
-
       filter: brightness(1.18) contrast(1.16) saturate(1.05);
-
       transform: scale(1.01);
       opacity: 0;
       transition: opacity 2200ms ease, transform 2800ms ease;
@@ -60,7 +51,6 @@
       .bg{ background-position: var(--bg-pos-mobile); }
     }
 
-    /* Dark overlay (fades in) */
     .hero::before{
       content:"";
       position: fixed;
@@ -75,7 +65,6 @@
     }
     .hero.reveal::before{ opacity: 1; }
 
-    /* Grain (fades in) */
     .hero::after{
       content:"";
       position: fixed;
@@ -89,7 +78,6 @@
     }
     .hero.reveal::after{ opacity: .10; }
 
-    /* Veil */
     #veil{
       position: fixed;
       inset: 0;
@@ -101,14 +89,11 @@
     }
     #veil.hide{ opacity: 0; }
 
-    /* =========================
-       🕯 UI (LOCKED)
-    ========================== */
     .wrap{
       position: relative;
       z-index: 3;
       width: min(820px, 92vw);
-      padding: 42px 22px 108px; /* extra bottom space so inventory never overlaps */
+      padding: 42px 22px 108px;
       text-align: center;
       filter: drop-shadow(0 16px 22px var(--shadow));
       pointer-events:auto;
@@ -133,9 +118,6 @@
       user-select:none;
     }
 
-    /* =========================
-       🌫 ENTRY-STYLE FOG REVEAL
-    ========================== */
     .story{
       font-family: "Cormorant Garamond", serif;
       font-size: clamp(20px, 2.1vw, 24px);
@@ -148,7 +130,6 @@
       text-align: left;
     }
 
-    /* ✅ subtle tint for password letters in-text */
     .sigil{
       color: rgba(232, 210, 170, 0.78);
       text-shadow: 0 0 10px rgba(160, 60, 40, 0.18);
@@ -159,34 +140,20 @@
       margin: 0 0 0.55em 0;
       opacity: 0.85;
       filter: blur(2.1px);
-
       -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 60%);
       -webkit-mask-size: 240% 100%;
       -webkit-mask-position: 100% 0;
-
       mask-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 60%);
       mask-size: 240% 100%;
       mask-position: 100% 0;
     }
-
     .fogLine.run{
       animation: fogLineReveal var(--dur, 4.8s) ease forwards;
       animation-delay: var(--delay, 0s);
     }
-
     @keyframes fogLineReveal{
-      0%{
-        -webkit-mask-position: 100% 0;
-        mask-position: 100% 0;
-        filter: blur(2.1px);
-        opacity: 0.80;
-      }
-      100%{
-        -webkit-mask-position: 0% 0;
-        mask-position: 0% 0;
-        filter: blur(0px);
-        opacity: 1;
-      }
+      0%{ -webkit-mask-position: 100% 0; mask-position: 100% 0; filter: blur(2.1px); opacity: 0.80; }
+      100%{ -webkit-mask-position: 0% 0; mask-position: 0% 0; filter: blur(0px); opacity: 1; }
     }
 
     .hint{
@@ -233,108 +200,166 @@
     }
 
     /* =========================
-       🗝 Ritual Gate (sexier)
-       - subtle frame + “door” feel
-       - same layout, just more vibe
+       🗝 PASSWORD BOX (ONLY CHANGE)
+       - ritual slot
+       - no white “bank input”
+       - subtle rune underline + glow
     ========================== */
     .gateWrap{
       width: min(560px, 92vw);
       margin: 16px auto 0;
-      padding: 14px 14px 16px;
-      border-radius: 18px;
-      background: rgba(0,0,0,0.22);
+      padding: 18px 16px 18px;
+      border-radius: 22px;
+
+      /* “carved stone + smoke” */
+      background:
+        radial-gradient(circle at 18% 18%, rgba(255,255,255,0.06), transparent 55%),
+        radial-gradient(circle at 82% 38%, rgba(160,60,40,0.10), transparent 62%),
+        linear-gradient(to bottom, rgba(0,0,0,0.26), rgba(0,0,0,0.10));
+
       border: 1px solid rgba(255,255,255,0.12);
-      backdrop-filter: blur(6px);
-      box-shadow: 0 18px 34px rgba(0,0,0,0.38);
+      backdrop-filter: blur(7px);
+      box-shadow:
+        0 22px 44px rgba(0,0,0,0.46),
+        inset 0 1px 0 rgba(255,255,255,0.06);
       position: relative;
       overflow:hidden;
     }
 
-    .gateWrap::before{
+    /* faint “rune ring” line */
+    .gateWrap::after{
       content:"";
-      position:absolute; inset:-2px;
-      background: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.08), transparent 55%),
-                  radial-gradient(circle at 80% 30%, rgba(160,60,40,0.10), transparent 60%),
-                  linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
-      opacity: 0.55;
+      position:absolute;
+      left: 18px; right: 18px;
+      top: 46px;
+      height: 1px;
+      background: linear-gradient(90deg,
+        transparent,
+        rgba(232,210,170,0.14),
+        rgba(255,255,255,0.06),
+        rgba(232,210,170,0.12),
+        transparent
+      );
+      opacity: 0.85;
       pointer-events:none;
     }
 
     .gateLabel{
-      position: relative;
       font-family: "Cinzel Decorative", serif;
-      letter-spacing: 0.22em;
+      letter-spacing: 0.24em;
       text-transform: uppercase;
       font-size: 10px;
       color: rgba(255,255,255,0.42);
-      margin: 0 0 10px;
+      margin: 0 0 14px;
       user-select:none;
       display:flex;
       align-items:center;
       justify-content:center;
       gap: 10px;
+      position: relative;
+      text-shadow: 0 0 18px rgba(0,0,0,0.55);
     }
 
     .gateLabel .mark{
+      color: rgba(232, 210, 170, 0.52);
+      text-shadow: 0 0 16px rgba(160,60,40,0.20);
       font-size: 12px;
-      color: rgba(232, 210, 170, 0.55);
-      text-shadow: 0 0 12px rgba(160,60,40,0.18);
     }
 
     .gate{
-      position: relative;
       display:flex;
-      gap: 10px;
+      gap: 12px;
       justify-content:center;
       align-items:center;
       flex-wrap:wrap;
-      margin-top: 0;
+      position: relative;
     }
 
     input[type="password"]{
       width: min(340px, 86vw);
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(0,0,0,0.34);
-      color: var(--text);
+      padding: 13px 16px;
+      border-radius: 16px;
+
+      /* kill the white look */
+      background:
+        radial-gradient(circle at 25% 20%, rgba(255,255,255,0.06), transparent 58%),
+        rgba(0,0,0,0.42);
+
+      border: 1px solid rgba(255,255,255,0.16);
+      color: rgba(255,255,255,0.92);
       outline: none;
-      letter-spacing: 0.14em;
+
+      letter-spacing: 0.16em;
       font-size: 14px;
       font-family: "Cormorant Garamond", serif;
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.35);
+
+      box-shadow:
+        inset 0 0 0 1px rgba(0,0,0,0.45),
+        inset 0 0 22px rgba(0,0,0,0.35);
+
       transition: border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
+      -webkit-text-security: disc;
     }
-    input[type="password"]::placeholder{ color: rgba(255,255,255,0.28); letter-spacing: 0.10em; }
+
+    input[type="password"]::placeholder{
+      color: rgba(255,255,255,0.30);
+      letter-spacing: 0.10em;
+    }
 
     input[type="password"]:focus{
       border-color: rgba(232, 210, 170, 0.30);
       box-shadow:
         0 0 0 3px rgba(232, 210, 170, 0.06),
-        0 0 22px rgba(160,60,40,0.10),
-        inset 0 0 0 1px rgba(0,0,0,0.35);
+        0 0 26px rgba(160,60,40,0.12),
+        inset 0 0 0 1px rgba(0,0,0,0.45),
+        inset 0 0 24px rgba(0,0,0,0.38);
       transform: translateY(-1px);
     }
 
     button{
-      padding: 12px 16px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: linear-gradient(to bottom, rgba(255,255,255,0.07), rgba(0,0,0,0.10));
-      color: var(--text);
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
+      padding: 13px 18px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.16);
       cursor:pointer;
+
+      /* “wax seal / ember” vibe */
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.10), transparent 55%),
+        linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(0,0,0,0.18));
+
+      color: rgba(255,255,255,0.92);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
       font-family: "Cormorant Garamond", serif;
-      transition: transform 180ms ease, border-color 220ms ease, box-shadow 220ms ease, background 220ms ease;
+
+      box-shadow:
+        0 14px 26px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+
+      transition: transform 180ms ease, border-color 220ms ease, box-shadow 220ms ease, filter 220ms ease;
       position: relative;
+      overflow:hidden;
+    }
+
+    button::after{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(circle at 50% 20%, rgba(232,210,170,0.14), transparent 55%);
+      opacity: 0;
+      transition: opacity 220ms ease;
+      pointer-events:none;
     }
 
     button:hover{
-      border-color: rgba(232, 210, 170, 0.22);
-      box-shadow: 0 0 18px rgba(160,60,40,0.12);
+      border-color: rgba(232, 210, 170, 0.24);
+      box-shadow:
+        0 18px 34px rgba(0,0,0,0.42),
+        0 0 22px rgba(160,60,40,0.10),
+        inset 0 1px 0 rgba(255,255,255,0.08);
       transform: translateY(-1px);
+      filter: brightness(1.04);
     }
+    button:hover::after{ opacity: 1; }
     button:active{ transform: translateY(0px); }
 
     .msg{
@@ -359,7 +384,6 @@
     .fadeOut{ animation: fade 700ms ease forwards; }
     @keyframes fade{ to{ opacity:0; transform: translateY(6px); } }
 
-    /* ✅ Audio button (standard) */
     #muteBtn{
       position: fixed;
       top: 18px;
@@ -378,9 +402,6 @@
       user-select:none;
     }
 
-    /* =========================
-       🎒 INVENTORY (3 slots, persistent)
-    ========================== */
     #inventory{
       position: fixed;
       left: 50%;
@@ -535,7 +556,6 @@
     </section>
   </main>
 
-  <!-- 🎒 Inventory UI -->
   <div id="inventory" aria-hidden="true">
     <div id="invLabel">Inventory</div>
     <div id="invSlots">
@@ -545,15 +565,12 @@
     </div>
   </div>
 
-  <!-- 🔊 One button controls BOTH -->
   <button id="muteBtn" aria-label="Toggle audio">🔊</button>
 
-  <!-- Mordain Voice -->
   <audio id="mordainVoice" preload="auto" playsinline>
     <source src="audio/mordain-level4.mp3" type="audio/mpeg">
   </audio>
 
-  <!-- Level 4 Ambience -->
   <audio id="level4Ambience" loop preload="auto" playsinline>
     <source src="audio/level4-ambience.mp3" type="audio/mpeg">
   </audio>
@@ -586,9 +603,6 @@
     btn.addEventListener("click", check);
     pw.addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
 
-    /* =========================
-       🎒 Inventory persistence (3 slots)
-    ========================== */
     const INV_KEY = "ofs_inventory";
 
     function loadInv(){
@@ -649,9 +663,6 @@
 
     renderInv(loadInv());
 
-    /* =========================
-       🎬 Visuals + 🔊 Audio + 🌫 Slow Fog Reveal (slightly slower)
-    ========================== */
     (() => {
       const heroEl = document.getElementById("hero");
       const bg = document.getElementById("bg");
@@ -724,11 +735,10 @@
         const n = revealLines.length;
         const voiceDur = (isFinite(voice.duration) && voice.duration > 2) ? voice.duration : 0;
 
-        /* ✅ slight slow-down (not too much) */
-        const MIN_TOTAL    = 68;  // was 60
-        const MIN_LINE_DUR = 5.0; // was 4.5
-        const MIN_GAP      = 1.05;// was 0.9
-        const START_DELAY  = 1.25;// was 1.2
+        const MIN_TOTAL    = 68;
+        const MIN_LINE_DUR = 5.0;
+        const MIN_GAP      = 1.05;
+        const START_DELAY  = 1.25;
 
         const total = Math.max(MIN_TOTAL, voiceDur ? (voiceDur * 1.07) : 0);
 
