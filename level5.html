@@ -14,7 +14,6 @@
       --hint: rgba(255,255,255,0.42);
       --shadow: rgba(0,0,0,0.72);
 
-      /* ✅ Background framing */
       --bg-pos-desktop: center 42%;
       --bg-pos-mobile:  center 54%;
     }
@@ -22,13 +21,6 @@
     *{ box-sizing:border-box; }
     html,body{ height:100%; margin:0; background:#000; font-family: Georgia, "Times New Roman", serif; }
 
-    /* =========================
-       🎬 HERO / BACKGROUND (LOCKED)
-       - background fixed
-       - veil fade
-       - bg fade-in
-       - grain fade
-    ========================== */
     .hero{
       min-height:100vh;
       position:relative;
@@ -43,12 +35,10 @@
       position: fixed;
       inset: 0;
       z-index: 0;
-
       background-image: url("level5.jpg");
       background-size: cover;
       background-repeat: no-repeat;
       background-position: var(--bg-pos-desktop);
-
       filter: brightness(1.14) contrast(1.16) saturate(1.05);
       transform: scale(1.01);
       opacity: 0;
@@ -99,9 +89,6 @@
     }
     #veil.hide{ opacity: 0; }
 
-    /* =========================
-       🕯 UI (LOCKED)
-    ========================== */
     .wrap{
       position: relative;
       z-index: 3;
@@ -143,25 +130,19 @@
       text-align: left;
     }
 
-    /* ✅ subtle colored sigils (optional hints inside story) */
     .sigil{
       color: rgba(232, 210, 170, 0.78);
       text-shadow: 0 0 10px rgba(160, 60, 40, 0.18);
     }
 
-    /* =========================
-       🌫 FOG REVEAL (LOCKED)
-    ========================== */
     .fogLine{
       display:block;
       margin: 0 0 0.55em 0;
       opacity: 0.85;
       filter: blur(2.1px);
-
       -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 60%);
       -webkit-mask-size: 240% 100%;
       -webkit-mask-position: 100% 0;
-
       mask-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 60%);
       mask-size: 240% 100%;
       mask-position: 100% 0;
@@ -219,12 +200,12 @@
     }
 
     /* =========================
-       🗝 PASSWORD BOX (LOCKED — EXACT LEVEL 4)
+       🗝 GATE WRAP (LOCKED LOOK)
     ========================== */
     .gateWrap{
       width: min(560px, 92vw);
       margin: 16px auto 0;
-      padding: 18px 16px 18px;
+      padding: 18px 16px 16px;
       border-radius: 22px;
       background:
         radial-gradient(circle at 18% 18%, rgba(255,255,255,0.06), transparent 55%),
@@ -277,91 +258,137 @@
       font-size: 12px;
     }
 
-    .gate{
+    /* =========================
+       🧩 DRAG LETTER BOARD (SIGIL)
+    ========================== */
+    .sigilBoard{
       display:flex;
-      gap: 12px;
+      flex-direction: column;
+      gap: 14px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slots{
+      display:flex;
+      gap: 10px;
       justify-content:center;
       align-items:center;
       flex-wrap:wrap;
-      position: relative;
     }
 
-    input[type="password"]{
-      width: min(340px, 86vw);
-      padding: 13px 16px;
+    .slotBox{
+      width: 56px;
+      height: 56px;
       border-radius: 16px;
-      background:
-        radial-gradient(circle at 30% 28%, rgba(240,225,190,0.10), transparent 55%),
-        radial-gradient(circle at 70% 70%, rgba(140,60,40,0.08), transparent 60%),
-        linear-gradient(to bottom, rgba(18,14,12,0.68), rgba(8,7,7,0.78));
       border: 1px solid rgba(255,255,255,0.16);
-      color: rgba(245,236,216,0.92);
-      outline: none;
-      letter-spacing: 0.16em;
-      font-size: 14px;
-      font-family: "Cormorant Garamond", serif;
+      background:
+        radial-gradient(circle at 30% 28%, rgba(240,225,190,0.06), transparent 58%),
+        linear-gradient(to bottom, rgba(18,14,12,0.62), rgba(8,7,7,0.76));
       box-shadow:
         inset 0 0 0 1px rgba(0,0,0,0.55),
-        inset 0 0 26px rgba(0,0,0,0.45);
-      transition: border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
-      -webkit-text-security: disc;
+        inset 0 0 22px rgba(0,0,0,0.42);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color: rgba(245,236,216,0.72);
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.12em;
+      font-size: 18px;
+      user-select:none;
+      position: relative;
+      transition: transform 160ms ease, border-color 200ms ease, box-shadow 200ms ease, filter 200ms ease;
     }
 
-    input[type="password"]::placeholder{
-      color: rgba(232,210,170,0.35);
-      letter-spacing: 0.10em;
-    }
-
-    input[type="password"]:focus{
+    .slotBox.active{
       border-color: rgba(232, 210, 170, 0.30);
       box-shadow:
         0 0 0 3px rgba(232, 210, 170, 0.06),
-        0 0 28px rgba(160,60,40,0.12),
+        0 0 22px rgba(160,60,40,0.10),
         inset 0 0 0 1px rgba(0,0,0,0.55),
-        inset 0 0 28px rgba(0,0,0,0.50);
+        inset 0 0 24px rgba(0,0,0,0.50);
       transform: translateY(-1px);
+      filter: brightness(1.04);
     }
 
-    button{
-      padding: 13px 18px;
+    .slotBox.filled{
+      color: rgba(245,236,216,0.92);
+      border-color: rgba(255,255,255,0.22);
+      text-shadow: 0 0 14px rgba(120,0,0,0.18);
+    }
+
+    .tiles{
+      display:flex;
+      gap: 10px;
+      justify-content:center;
+      align-items:center;
+      flex-wrap:wrap;
+      padding-top: 2px;
+    }
+
+    .tile{
+      width: 56px;
+      height: 56px;
       border-radius: 16px;
       border: 1px solid rgba(255,255,255,0.16);
-      cursor:pointer;
       background:
         radial-gradient(circle at 30% 30%, rgba(255,255,255,0.10), transparent 55%),
         linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(0,0,0,0.18));
       color: rgba(245,236,216,0.92);
-      letter-spacing: 0.16em;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      font-family: "Cormorant Garamond", serif;
+      font-family: "Cinzel Decorative", serif;
+      font-size: 18px;
       box-shadow:
         0 14px 26px rgba(0,0,0,0.35),
         inset 0 1px 0 rgba(255,255,255,0.08);
-      transition: transform 180ms ease, border-color 220ms ease, box-shadow 220ms ease, filter 220ms ease;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      user-select:none;
+      cursor: grab;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 160ms ease, border-color 200ms ease, filter 200ms ease, box-shadow 200ms ease;
       position: relative;
-      overflow:hidden;
+      touch-action: none;
     }
 
-    button::after{
-      content:"";
-      position:absolute; inset:-2px;
-      background: radial-gradient(circle at 50% 20%, rgba(232,210,170,0.14), transparent 55%);
-      opacity: 0;
-      transition: opacity 220ms ease;
-      pointer-events:none;
-    }
-
-    button:hover{
+    .tile:active{ cursor: grabbing; }
+    .tile:hover{
       border-color: rgba(232, 210, 170, 0.24);
+      transform: translateY(-1px);
+      filter: brightness(1.04);
       box-shadow:
         0 18px 34px rgba(0,0,0,0.42),
         0 0 22px rgba(160,60,40,0.10),
         inset 0 1px 0 rgba(255,255,255,0.08);
-      transform: translateY(-1px);
-      filter: brightness(1.04);
     }
-    button:hover::after{ opacity: 1; }
-    button:active{ transform: translateY(0px); }
+
+    .tile.used{
+      opacity: 0.38;
+      filter: grayscale(0.3);
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .tile.selected{
+      outline: 2px solid rgba(232, 210, 170, 0.22);
+      box-shadow:
+        0 0 0 4px rgba(232, 210, 170, 0.06),
+        0 0 22px rgba(160,60,40,0.12),
+        0 18px 34px rgba(0,0,0,0.42),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    .subHint{
+      font-family: "Cormorant Garamond", serif;
+      color: rgba(232,210,170,0.40);
+      letter-spacing: 0.10em;
+      font-size: 12px;
+      user-select:none;
+      text-align:center;
+      margin-top: 2px;
+    }
 
     .msg{
       margin-top: 14px;
@@ -385,7 +412,6 @@
     .fadeOut{ animation: fade 700ms ease forwards; }
     @keyframes fade{ to{ opacity:0; transform: translateY(6px); } }
 
-    /* ✅ Audio button (LOCKED) */
     #muteBtn{
       position: fixed;
       top: 18px;
@@ -404,7 +430,6 @@
       user-select:none;
     }
 
-    /* ✅ Inventory (LOCKED) */
     #inventory{
       position: fixed;
       left: 50%;
@@ -467,6 +492,8 @@
     @media (max-width: 520px){
       #invSlots{ gap: 8px; padding: 9px 10px; }
       .slot{ width: 48px; height: 48px; border-radius: 13px; }
+
+      .slotBox, .tile{ width: 52px; height: 52px; border-radius: 15px; }
     }
   </style>
 </head>
@@ -478,50 +505,83 @@
     <div class="bg" id="bg" aria-hidden="true"></div>
 
     <section class="wrap" id="wrap">
-      <h1>The Chamber of Unspoken Teeth</h1>
+      <h1>The Hall of Marks</h1>
 
-      <!-- ✅ Replace these fogLine lines with your locked Level 5 story anytime -->
       <div class="story" id="story">
-        <span class="fogLine">The stairwell ends in a room that should not fit beneath the castle.</span>
-
         <span class="fogLine">
-          The ceiling is too low. The corners are too sharp. The stone is wet—warm in places, like a tongue pressed to it.
+          The descent turns cruel. The air grows tight and heavy, like the corridor is learning how to breathe through you.
         </span>
 
         <span class="fogLine">
-          Along the walls: rows of iron hooks, each one polished by hands that didn’t leave with the rest of their bodies.
-          Something has been dragged here many times. Slowly. Deliberately.
+          The walls are no longer carved— they are <em>scored</em>. Lines, circles, hooks. Symbols half-erased, then cut again,
+          as if someone kept changing their mind about what should be summoned.
         </span>
 
         <span class="fogLine">
-          In the center stands a basin of black marble. Inside it, a film of dark residue clings like old blood that refused to dry.
-          The air tastes metallic… and intimate.
+          You pass a recess in the stone where something once knelt for days. The floor is dented by ribs.
+          Above it, the rock is stained dark— not splatter… <em>press</em>. Skin held there until it agreed.
         </span>
 
         <span class="fogLine">
-          You hear a sound—soft, patient—like fingernails testing the underside of the room.
-          Then a whisper slips into your ear: not words… a <em>count</em>.
+          A whisper rides your ear—warm and wrong—like a mouth behind the mortar:
+          “Marks don’t decorate… they <em>bind</em>.”
         </span>
 
         <span class="fogLine">
-          On the far side, a door without hinges waits in silence.
-          Its surface is scratched with a single demand, written as if by a broken tooth:
-          <span class="sigil">“NAME WHAT STAYS WHEN YOU STOP BREATHING.”</span>
+          The corridor tightens into a chamber where the only light comes from thin cuts in the stone,
+          each cut shaped like a letter pretending it isn’t one.
+        </span>
+
+        <span class="fogLine">
+          In the center: a slab, black and polished. Something was placed on it, then taken away in pieces.
+          The surface is etched with a vow that makes your tongue ache to read:
+          <span class="sigil">S</span>ometimes the dead obey.
+        </span>
+
+        <span class="fogLine">
+          The next line is scratched deeper, as if the writer’s hand slipped— or was pushed:
+          I will not stop until it answers <span class="sigil">I</span>.
+        </span>
+
+        <span class="fogLine">
+          A final cut circles the slab like a leash. The stone feels hungry when you step inside it.
+          Something in the dark seems to lean closer, waiting for a <span class="sigil">G</span>esture.
+        </span>
+
+        <span class="fogLine">
+          The door ahead has no handle. Only a symbol-space, empty as a wound—asking for a name that is not a name.
+          A mark used to command, to ward, to seal. The kind of thing priests pretend isn’t real.
+          You feel it in your bones: it wants the <span class="sigil">I</span>nk of certainty.
+        </span>
+
+        <span class="fogLine">
+          Your breath fogs the stone and for a moment the damp outlines a final letter by itself—patient, inevitable:
+          <span class="sigil">L</span>.
         </span>
       </div>
 
-      <div class="hint">Answer like the stone wants you to.</div>
+      <div class="hint">Do not answer with a word. Answer with a mark.</div>
 
       <div class="sep"></div>
 
       <div class="riddleTitle">Riddle</div>
-      <div class="riddleText">NAME WHAT STAYS WHEN YOU STOP BREATHING.</div>
+      <div class="riddleText">WHAT DO YOU CALL A SYMBOL USED TO BIND, WARD, OR SEAL?</div>
 
-      <div class="gateWrap">
-        <div class="gateLabel"><span class="mark">⟡</span> Offer your answer <span class="mark">⟡</span></div>
-        <div class="gate">
-          <input id="pw" type="password" placeholder="whisper it…" autocomplete="off" />
-          <button id="btn">UNSEAL</button>
+      <div class="gateWrap" id="gateWrap">
+        <div class="gateLabel"><span class="mark">⟡</span> Arrange the mark <span class="mark">⟡</span></div>
+
+        <div class="sigilBoard" id="sigilBoard">
+          <div class="slots" id="slots" aria-label="Sigil slots">
+            <div class="slotBox" data-slot="0" aria-label="Slot 1"></div>
+            <div class="slotBox" data-slot="1" aria-label="Slot 2"></div>
+            <div class="slotBox" data-slot="2" aria-label="Slot 3"></div>
+            <div class="slotBox" data-slot="3" aria-label="Slot 4"></div>
+            <div class="slotBox" data-slot="4" aria-label="Slot 5"></div>
+          </div>
+
+          <div class="tiles" id="tiles" aria-label="Sigil tiles"></div>
+
+          <div class="subHint" id="subHint">Drag… or tap a letter, then tap a slot.</div>
         </div>
       </div>
 
@@ -540,33 +600,140 @@
 
   <button id="muteBtn" aria-label="Toggle audio">🔊</button>
 
-  <!-- 🩸 Mordain Voice (you will supply the file) -->
   <audio id="mordainVoice" preload="auto" playsinline>
     <source src="audio/mordain-level5.mp3" type="audio/mpeg">
   </audio>
 
-  <!-- 🌫 Level 5 Ambience (you will supply the file) -->
   <audio id="level5Ambience" loop preload="auto" playsinline>
     <source src="audio/level5-ambience.mp3" type="audio/mpeg">
   </audio>
 
   <script>
     /* =========================
-       🚪 Gate (set Level 5 answer here)
-       NOTE: I set a default answer so the page works immediately.
+       ✅ Level 5 Mechanic: Drag/Place tiles to spell SIGIL
     ========================== */
-    const ACCEPTED = new Set(["SILENCE"]);
+    const TARGET = "SIGIL";
+    const ACCEPTED = new Set([TARGET, "SIJIL"]); // optional alt spelling support
 
     const wrap = document.getElementById("wrap");
-    const pw = document.getElementById("pw");
-    const btn = document.getElementById("btn");
     const msg = document.getElementById("msg");
 
-    function check(){
-      const val = (pw.value || "").trim().toUpperCase();
-      if (!val) return;
+    const tilesEl = document.getElementById("tiles");
+    const slotEls = Array.from(document.querySelectorAll(".slotBox"));
 
-      if (ACCEPTED.has(val)){
+    let selectedTileId = null;
+    const slotState = Array(5).fill(null); // stores tileId or null
+
+    function shuffle(arr){
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function createTile(letter, idx){
+      const id = `tile_${letter}_${idx}_${Math.random().toString(16).slice(2)}`;
+      const el = document.createElement("div");
+      el.className = "tile";
+      el.textContent = letter;
+      el.setAttribute("draggable", "true");
+      el.dataset.letter = letter;
+      el.dataset.id = id;
+
+      el.addEventListener("dragstart", (e) => {
+        if (el.classList.contains("used")) { e.preventDefault(); return; }
+        e.dataTransfer.setData("text/plain", id);
+        e.dataTransfer.effectAllowed = "move";
+      });
+
+      // Mobile / fallback: tap to select
+      el.addEventListener("click", () => {
+        if (el.classList.contains("used")) return;
+
+        // toggle selection
+        document.querySelectorAll(".tile.selected").forEach(t => t.classList.remove("selected"));
+        if (selectedTileId === id){
+          selectedTileId = null;
+        } else {
+          selectedTileId = id;
+          el.classList.add("selected");
+        }
+      });
+
+      tilesEl.appendChild(el);
+      return el;
+    }
+
+    function getTileById(id){
+      return document.querySelector(`.tile[data-id="${CSS.escape(id)}"]`);
+    }
+
+    function clearSelected(){
+      selectedTileId = null;
+      document.querySelectorAll(".tile.selected").forEach(t => t.classList.remove("selected"));
+    }
+
+    function placeTileIntoSlot(tileId, slotIndex){
+      const tile = getTileById(tileId);
+      if (!tile) return;
+
+      // already used? block
+      if (tile.classList.contains("used")) return;
+
+      // if slot already has a tile, kick it back to pool
+      const existing = slotState[slotIndex];
+      if (existing){
+        const oldTile = getTileById(existing);
+        if (oldTile){
+          oldTile.classList.remove("used");
+          oldTile.style.visibility = "";
+        }
+      }
+
+      // if this tile is already placed in another slot, remove from that slot
+      const prevIndex = slotState.findIndex(x => x === tileId);
+      if (prevIndex !== -1){
+        slotState[prevIndex] = null;
+        slotEls[prevIndex].textContent = "";
+        slotEls[prevIndex].classList.remove("filled");
+      }
+
+      // place
+      slotState[slotIndex] = tileId;
+      slotEls[slotIndex].textContent = tile.dataset.letter;
+      slotEls[slotIndex].classList.add("filled");
+
+      // mark tile used (keep it in pool but faded)
+      tile.classList.add("used");
+      tile.classList.remove("selected");
+      tile.style.visibility = "visible";
+
+      clearSelected();
+      checkSolved();
+    }
+
+    function readSlots(){
+      let out = "";
+      for (let i = 0; i < slotEls.length; i++){
+        out += (slotEls[i].textContent || "");
+      }
+      return out.toUpperCase().trim();
+    }
+
+    let solved = false;
+    function checkSolved(){
+      if (solved) return;
+
+      const current = readSlots();
+      if (current.length < 5){
+        msg.textContent = "";
+        return;
+      }
+
+      if (ACCEPTED.has(current)){
+        solved = true;
         msg.textContent = "…";
         setTimeout(() => wrap.classList.add("fadeOut"), 650);
         setTimeout(() => window.location.href = "level6.html", 1350);
@@ -575,12 +742,55 @@
         wrap.classList.remove("wrong");
         void wrap.offsetWidth;
         wrap.classList.add("wrong");
-        pw.select();
       }
     }
 
-    btn.addEventListener("click", check);
-    pw.addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
+    // Slots accept drag/drop + tap-to-place
+    slotEls.forEach((slotEl, idx) => {
+      slotEl.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        slotEl.classList.add("active");
+      });
+
+      slotEl.addEventListener("dragleave", () => slotEl.classList.remove("active"));
+
+      slotEl.addEventListener("drop", (e) => {
+        e.preventDefault();
+        slotEl.classList.remove("active");
+        const tileId = e.dataTransfer.getData("text/plain");
+        if (!tileId) return;
+        placeTileIntoSlot(tileId, idx);
+      });
+
+      // Tap fallback
+      slotEl.addEventListener("click", () => {
+        if (!selectedTileId) return;
+        placeTileIntoSlot(selectedTileId, idx);
+      });
+    });
+
+    // Build tiles (random order)
+    const letters = shuffle(TARGET.split(""));
+    letters.forEach((ch, i) => createTile(ch, i));
+
+    /* Optional: double-tap a filled slot to remove its letter */
+    slotEls.forEach((slotEl, idx) => {
+      slotEl.addEventListener("dblclick", () => {
+        if (solved) return;
+        const existing = slotState[idx];
+        if (!existing) return;
+
+        const oldTile = getTileById(existing);
+        if (oldTile){
+          oldTile.classList.remove("used");
+          oldTile.style.visibility = "";
+        }
+        slotState[idx] = null;
+        slotEl.textContent = "";
+        slotEl.classList.remove("filled");
+        msg.textContent = "";
+      });
+    });
 
     /* =========================
        🎒 Inventory (LOCKED)
@@ -647,9 +857,9 @@
 
     /* =========================
        🎬 Visuals + 🔊 Audio + 🌫 Fog Reveal (LOCKED)
-       - faster voice fade-in (so first words hit)
-       - ambience fades gently
-       - pacing matches Level 4 “slightly slower”
+       - voice fade hits fast (so first word is audible)
+       - ambience gentle
+       - same pacing floor as Level 4
     ========================== */
     (() => {
       const heroEl = document.getElementById("hero");
@@ -674,7 +884,18 @@
       voice.volume = 0;
       amb.volume = 0;
 
-      function fadeTo(audio, target, step=0.06, interval=80){
+      function fadeTo(audio, target, step=0.10, interval=65){
+        try{
+          let v = audio.volume || 0;
+          const id = setInterval(() => {
+            v = Math.min(target, v + step);
+            audio.volume = v;
+            if (v >= target) clearInterval(id);
+          }, interval);
+        }catch(e){}
+      }
+
+      function fadeToSoft(audio, target, step=0.018, interval=120){
         try{
           let v = audio.volume || 0;
           const id = setInterval(() => {
@@ -696,12 +917,10 @@
           if (p2 && p2.catch) p2.catch(()=>{});
 
           if (!voice.muted){
-            // ✅ Voice comes in fast (fix “barely hear first words”)
             voice.volume = 0;
             amb.volume = 0;
-
-            fadeTo(voice, VOICE_TARGET, 0.10, 65);  // faster + stronger
-            fadeTo(amb,   AMB_TARGET,   0.018, 120); // gentler
+            fadeTo(voice, VOICE_TARGET, 0.10, 65);
+            fadeToSoft(amb, AMB_TARGET, 0.018, 120);
           }
         }catch(e){}
       }
@@ -725,7 +944,6 @@
         const n = revealLines.length;
         const voiceDur = (isFinite(voice.duration) && voice.duration > 2) ? voice.duration : 0;
 
-        // ✅ locked “slightly slower” cinematic pace
         const MIN_TOTAL    = 74;
         const MIN_LINE_DUR = 5.8;
         const MIN_GAP      = 1.15;
@@ -770,6 +988,7 @@
       window.addEventListener("pointerdown", () => {
         if (!voice.muted && (voice.paused || amb.paused)) playBoth();
       }, { once:true });
+
     })();
   </script>
 </body>
