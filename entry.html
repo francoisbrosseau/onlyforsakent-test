@@ -11,8 +11,12 @@
   <style>
     :root{
       --text: rgba(255,255,255,0.90);
-      --muted: rgba(255,255,255,0.70);
+      --muted: rgba(255,255,255,0.78);
       --shadow: rgba(0,0,0,0.65);
+
+      /* ✅ Background framing (tweakable without hunting code) */
+      --bg-pos-desktop: center 24%;
+      --bg-pos-mobile:  center 36%;
     }
 
     *{ box-sizing:border-box; }
@@ -20,8 +24,9 @@
 
     /* =========================
        🎬 HERO / BACKGROUND (LOCKED)
-       - image stays fixed, text scrolls
-       - background fades in
+       - background fixed
+       - fades in
+       - reframed for desktop + mobile
     ========================== */
     .hero{
       min-height:100vh;
@@ -43,10 +48,11 @@
       background-size: cover;
       background-repeat: no-repeat;
 
-      /* ✅ less “stretched-looking” framing */
-      background-position: center 30%;
+      /* ✅ reframing */
+      background-position: var(--bg-pos-desktop);
 
-      transform: scale(1.02);
+      /* ✅ less zoomy feel */
+      transform: scale(1.01);
       opacity: 0;
       transition: opacity 2200ms ease, transform 2800ms ease;
       will-change: opacity, transform;
@@ -56,14 +62,18 @@
       transform: scale(1);
     }
 
+    @media (max-width: 700px){
+      .bg{ background-position: var(--bg-pos-mobile); }
+    }
+
     /* Dark overlay (fades in) */
     .hero::before{
       content:"";
       position: fixed;
       inset:0;
       background:
-        radial-gradient(circle at center, rgba(0,0,0,0.10), rgba(0,0,0,0.58)),
-        linear-gradient(to bottom, rgba(0,0,0,0.26), rgba(0,0,0,0.62));
+        radial-gradient(circle at center, rgba(0,0,0,0.10), rgba(0,0,0,0.60)),
+        linear-gradient(to bottom, rgba(0,0,0,0.28), rgba(0,0,0,0.64));
       z-index: 1;
       pointer-events:none;
       opacity: 0;
@@ -85,7 +95,7 @@
     }
     .hero.reveal::after{ opacity: .14; }
 
-    /* 🎬 Veil (brief darkness on load) */
+    /* 🎬 Veil */
     #veil{
       position: fixed;
       inset: 0;
@@ -98,8 +108,7 @@
     #veil.hide{ opacity: 0; }
 
     /* =========================
-       👻 Floating Letters
-       IMPORTANT: ONLY letters from DESCEND
+       👻 Floating Letters (ONLY DESCEND)
     ========================== */
     #specters{
       position: fixed;
@@ -117,16 +126,14 @@
       opacity: 0;
       transform: translate(-50%, -50%) scale(1);
       filter: blur(0.2px);
-      animation: floatFade 1.8s ease forwards;
+      animation: floatFade 1.9s ease forwards;
       user-select:none;
       will-change: transform, opacity;
     }
-
     .glyph.flash{
       color: rgba(255,255,255,0.92);
       text-shadow: 0 0 30px rgba(255,255,255,0.38);
     }
-
     @keyframes floatFade{
       0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.98); }
       20%  { opacity: 0.95; }
@@ -174,9 +181,9 @@
     }
 
     /* =========================
-       🌫 STORY REVEAL (NOT TICK-TICK)
-       - text exists instantly
-       - a “fog mask” reveals it smoothly left→right
+       🌫 LINE-BY-LINE FOG REVEAL (NOT WHOLE BLOCK)
+       - each line reveals left→right
+       - feels “in the head” (blur clears as it reveals)
     ========================== */
     .story{
       font-family: "Cormorant Garamond", serif;
@@ -187,20 +194,19 @@
       margin: 0 auto 22px;
       max-width: 56ch;
       animation: candleFlicker 5s infinite ease-in-out;
+      text-align: left;
     }
-
     .story em{
       font-style: normal;
       color: #d2c7b3;
       text-shadow: 0 0 10px rgba(120,0,0,0.35);
     }
 
-    /* Fog mask reveal */
-    .storyReveal{
-      display: inline-block;
-      text-align: left;
-      max-width: 56ch;
-      margin: 0 auto 22px;
+    .fogLine{
+      display:block;
+      margin: 0 0 0.55em 0;
+      opacity: 0.85;
+      filter: blur(2.1px);
 
       /* start hidden by mask */
       -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 60%);
@@ -210,21 +216,19 @@
       mask-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 60%);
       mask-size: 240% 100%;
       mask-position: 100% 0;
-
-      filter: blur(2.2px);
-      opacity: 0.95;
     }
 
-    .storyReveal.run{
-      animation: fogReveal var(--revealDur, 22s) ease forwards;
+    .fogLine.run{
+      animation: fogLineReveal var(--dur, 3s) ease forwards;
+      animation-delay: var(--delay, 0s);
     }
 
-    @keyframes fogReveal{
+    @keyframes fogLineReveal{
       0%{
         -webkit-mask-position: 100% 0;
         mask-position: 100% 0;
-        filter: blur(2.2px);
-        opacity: 0.88;
+        filter: blur(2.1px);
+        opacity: 0.80;
       }
       100%{
         -webkit-mask-position: 0% 0;
@@ -246,6 +250,7 @@
       transition: opacity 450ms ease, transform 450ms ease;
       text-shadow: 0 0 18px rgba(255,255,255,0.12);
       user-select: none;
+      text-align:center;
     }
     .final.show{ opacity: 1; transform: translateY(0); }
 
@@ -330,45 +335,41 @@
       -webkit-tap-highlight-color: transparent;
       user-select:none;
     }
-
-    /* Mobile framing tweak */
-    @media (max-width: 700px){
-      .bg{ background-position: center 38%; }
-    }
   </style>
 </head>
 
 <body>
-  <!-- 🎬 Veil -->
   <div id="veil" aria-hidden="true"></div>
 
   <main class="hero" id="hero">
-    <!-- 🎬 Background layer -->
     <div class="bg" id="bg" aria-hidden="true"></div>
-
-    <!-- 👻 Letters layer -->
     <div id="specters" aria-hidden="true"></div>
 
     <section class="wrap" id="wrap">
       <div class="kicker">Level 1</div>
       <h1>The Castle Remembers</h1>
 
-      <!-- ✅ Story reveal wrapper (fog reveal), NOT tick-typewriter -->
-      <div class="storyReveal" id="storyReveal">
-        <p class="story" id="storyText">
+      <!-- ✅ Story (line-by-line fog reveal) -->
+      <div class="story" id="story">
+        <span class="fogLine">
           The door shuts without a sound—yet the air grows heavier, as if the stone itself
           has been holding its breath for centuries.
-          <br><br>
+        </span>
+
+        <span class="fogLine">
           Ahead: arches drowned in soot, prayer-candles still warm, and a corridor that
           shouldn’t exist. Each step feels borrowed. Each heartbeat feels <em>counted</em>.
-          <br><br>
+        </span>
+
+        <span class="fogLine">
           You came for the relic they buried in the dark—an ancient gem with a name that
-          was erased from every tongue that spoke it. They say it doesn’t shine.
-          It <em>stares</em>.
-          <br><br>
+          was erased from every tongue that spoke it. They say it doesn’t shine. It <em>stares</em>.
+        </span>
+
+        <span class="fogLine">
           If you want it, you will not be guided by signs or maps.
           Only by what you see and trust.
-        </p>
+        </span>
       </div>
 
       <p class="final" id="finalLine">So it knows your name.</p>
@@ -384,32 +385,25 @@
     </section>
   </main>
 
-  <!-- ✅ Single audio button controls BOTH tracks (voice + ambience) -->
+  <!-- ✅ One button controls BOTH -->
   <button id="muteBtn" aria-label="Toggle audio">🔊</button>
 
-  <!-- 🩸 Mordain Voice (ENTRY) -->
-  <!-- NOTE: if your filename is different, change src below -->
+  <!-- 🩸 Mordain Voice -->
   <audio id="mordainVoice" preload="auto" playsinline>
     <source src="audio/mordain-whisper.mp3" type="audio/mpeg">
   </audio>
 
-  <!-- 🌫 Entry Ambience (LOOP) -->
-  <!-- NOTE: change this if your file name is different -->
+  <!-- 🌫 Entry Ambience -->
   <audio id="entryAmbience" loop preload="auto" playsinline>
     <source src="audio/entry-ambience.mp3" type="audio/mpeg">
   </audio>
 
   <script>
-    /* =========================
-       ✅ PASSWORD
-    ========================== */
     const PASSWORD = "DESCEND";
 
     /* =========================
-       👻 DESCEND LETTER FLASH SYSTEM
-       - ONLY letters from DESCEND
-       - slower + longer flashes
-       - NO random junk letters
+       👻 DESCEND LETTER FLASHES (ONLY DESCEND)
+       slower + longer
     ========================== */
     const sequence = [
       { ch: "D", flashes: 1 },
@@ -428,16 +422,13 @@
       el.className = "glyph" + (isFlash ? " flash" : "");
       el.textContent = ch;
 
-      // edge/peripheral positioning (keeps it “searchable”)
       const r = Math.random();
       let x, y;
 
       if (r < 0.50) {
-        // left/right bands
         x = (r < 0.25) ? (4 + Math.random() * 14) : (82 + Math.random() * 14);
         y = 10 + Math.random() * 80;
       } else {
-        // top/bottom bands
         y = (r < 0.75) ? (5 + Math.random() * 14) : (81 + Math.random() * 14);
         x = 12 + Math.random() * 76;
       }
@@ -466,8 +457,8 @@
     async function flashLetterNTimes(letter, n){
       for (let i = 0; i < n; i++){
         spawnGlyph(letter, true);
-        await wait(680);  // ✅ longer ON
-        await wait(420);  // ✅ longer OFF
+        await wait(680);  // ON (longer)
+        await wait(420);  // OFF (longer)
       }
     }
 
@@ -476,15 +467,15 @@
         const randomized = shuffle(sequence);
         for (const item of randomized){
           await flashLetterNTimes(item.ch, item.flashes);
-          await wait(1650); // ✅ more time between groups
+          await wait(1650);
         }
-        await wait(2400);   // ✅ more time between cycles
+        await wait(2400);
       }
     }
     runSequenceForever();
 
     /* =========================
-       🚪 GATE LOGIC
+       🚪 Gate
     ========================== */
     const wrap = document.getElementById("wrap");
     const pw = document.getElementById("pw");
@@ -512,32 +503,29 @@
     pw.addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
 
     /* =========================
-       🎬 VISUAL REVEAL (veil + bg fade-in)
-       + 🌫 STORY fog reveal timing
-       + 🔊 AUDIO: voice + ambience (button controls both)
+       🎬 Visuals + 🔊 Audio + 🌫 Line Reveal
     ========================== */
     (() => {
       const heroEl = document.getElementById("hero");
       const bg = document.getElementById("bg");
       const veil = document.getElementById("veil");
 
-      const revealWrap = document.getElementById("storyReveal");
+      const revealLines = Array.from(document.querySelectorAll(".fogLine"));
 
-      const btn = document.getElementById("muteBtn");
+      const muteBtn = document.getElementById("muteBtn");
       const voice = document.getElementById("mordainVoice");
       const amb = document.getElementById("entryAmbience");
 
-      if (!btn || !voice || !amb || !heroEl || !bg || !veil || !revealWrap) return;
+      if (!muteBtn || !voice || !amb || !heroEl || !bg || !veil || !revealLines.length) return;
 
-      // ✅ MIX (entry ambience was too quiet → bump it)
+      // ✅ MIX (entry ambience louder)
       const VOICE_TARGET = 0.74;
-      const AMB_TARGET   = 0.40; // louder than before so you can hear it
+      const AMB_TARGET   = 0.40;
 
-      // restore mute state
       const savedMuted = localStorage.getItem("ofs_mute") === "1";
       voice.muted = savedMuted;
       amb.muted = savedMuted;
-      btn.textContent = savedMuted ? "🔇" : "🔊";
+      muteBtn.textContent = savedMuted ? "🔇" : "🔊";
 
       voice.volume = 0;
       amb.volume = 0;
@@ -555,13 +543,11 @@
 
       async function playBoth(){
         try{
-          // restart both on each load (dev-friendly)
           voice.currentTime = 0;
           amb.currentTime = 0;
 
           const p1 = voice.play();
           const p2 = amb.play();
-
           if (p1 && p1.catch) p1.catch(()=>{});
           if (p2 && p2.catch) p2.catch(()=>{});
 
@@ -580,36 +566,38 @@
       }
 
       function revealVisuals(){
-        // keep it dark briefly
         setTimeout(() => veil.classList.add("hide"), 380);
         setTimeout(() => veil.remove(), 1500);
 
-        // bg + overlays fade in
         setTimeout(() => {
           bg.classList.add("show");
           heroEl.classList.add("reveal");
         }, 420);
       }
 
-      function setFogDuration(){
-        // use voice duration if available; otherwise a nice slow default
+      function startLineReveal(){
+        // Use voice duration if available; otherwise fixed slow vibe
         const dur = (isFinite(voice.duration) && voice.duration > 2) ? voice.duration : 24;
 
-        // reveal slightly slower than voice (more “in your head”)
-        const revealDur = Math.max(18, dur * 1.05);
-        revealWrap.style.setProperty("--revealDur", revealDur.toFixed(2) + "s");
+        // total reveal time slightly longer than voice (feels “possessing”)
+        const total = Math.max(16, dur * 1.05);
+
+        // line-by-line schedule
+        const n = revealLines.length;
+        const gap = Math.max(0.35, (total / n) * 0.22);     // spacing between lines
+        const lineDur = Math.max(2.6, (total / n) * 1.05);  // how long each line reveals
+
+        // start while veil still fading
+        const startDelay = 0.9;
+
+        revealLines.forEach((line, i) => {
+          line.style.setProperty("--dur", `${lineDur.toFixed(2)}s`);
+          line.style.setProperty("--delay", `${(startDelay + i * gap).toFixed(2)}s`);
+          line.classList.add("run");
+        });
       }
 
-      function startFogReveal(){
-        // start while veil is still fading (voice already talking)
-        setTimeout(() => {
-          setFogDuration();
-          revealWrap.classList.add("run");
-        }, 900);
-      }
-
-      // button toggles both
-      btn.addEventListener("click", (e) => {
+      muteBtn.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
 
@@ -618,27 +606,22 @@
         amb.muted = newMuted;
 
         localStorage.setItem("ofs_mute", newMuted ? "1" : "0");
-        btn.textContent = newMuted ? "🔇" : "🔊";
+        muteBtn.textContent = newMuted ? "🔇" : "🔊";
 
         if (!newMuted) playBoth();
         else stopBoth();
       }, true);
 
-      // On load / reload / back-forward cache restore
       window.addEventListener("pageshow", async () => {
         revealVisuals();
-
-        // voice can start while still dark
         if (!voice.muted) await playBoth();
-
-        // start fog reveal every load
-        startFogReveal();
+        startLineReveal();
       });
 
-      // Autoplay unlock (first tap anywhere)
       window.addEventListener("pointerdown", () => {
         if (!voice.muted && (voice.paused || amb.paused)) playBoth();
       }, { once:true });
+
     })();
   </script>
 </body>
