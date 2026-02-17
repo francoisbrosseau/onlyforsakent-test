@@ -15,7 +15,6 @@
       --hint: rgba(255,255,255,0.42);
       --shadow: rgba(0,0,0,0.72);
 
-      /* (Optional) you can reframe like Entry if you want later */
       --bg-pos-desktop: center 30%;
       --bg-pos-mobile:  center 38%;
     }
@@ -25,8 +24,6 @@
 
     /* =========================
        🎬 HERO / BACKGROUND (ENTRY STYLE)
-       - background fixed
-       - fades in
     ========================== */
     .hero{
       min-height:100vh;
@@ -164,7 +161,7 @@
       position: relative;
       z-index: 3;
       width: min(820px, 92vw);
-      padding: 42px 22px;
+      padding: 42px 22px 112px;
       text-align: center;
       filter: drop-shadow(0 16px 22px var(--shadow));
       pointer-events:auto;
@@ -200,7 +197,6 @@
 
     /* =========================
        🌫 ENTRY-IDENTICAL LINE-BY-LINE FOG REVEAL
-       (same as your Entry.html)
     ========================== */
     .story{
       font-family: "Cormorant Garamond", serif;
@@ -255,7 +251,7 @@
     }
 
     .hint{
-      margin: 14px auto 22px;
+      margin: 14px auto 18px;
       max-width: 64ch;
       color: var(--hint);
       font-size: 12px;
@@ -265,38 +261,154 @@
       text-align:center;
     }
 
+    /* =========================
+       🗝 GATE (LEVEL 4 STYLE)
+    ========================== */
+    .gateWrap{
+      width: min(560px, 92vw);
+      margin: 12px auto 0;
+      padding: 18px 16px 18px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(255,255,255,0.06), transparent 55%),
+        radial-gradient(circle at 82% 38%, rgba(160,60,40,0.10), transparent 62%),
+        linear-gradient(to bottom, rgba(0,0,0,0.28), rgba(0,0,0,0.10));
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(7px);
+      box-shadow:
+        0 22px 44px rgba(0,0,0,0.46),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      position: relative;
+      overflow:hidden;
+    }
+
+    .gateWrap::after{
+      content:"";
+      position:absolute;
+      left: 18px; right: 18px;
+      top: 46px;
+      height: 1px;
+      background: linear-gradient(90deg,
+        transparent,
+        rgba(232,210,170,0.14),
+        rgba(255,255,255,0.06),
+        rgba(232,210,170,0.12),
+        transparent
+      );
+      opacity: 0.85;
+      pointer-events:none;
+    }
+
+    .gateLabel{
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      font-size: 10px;
+      color: rgba(255,255,255,0.42);
+      margin: 0 0 14px;
+      user-select:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      text-shadow: 0 0 18px rgba(0,0,0,0.55);
+    }
+
+    .gateLabel .mark{
+      color: rgba(232, 210, 170, 0.52);
+      text-shadow: 0 0 16px rgba(160,60,40,0.20);
+      font-size: 12px;
+    }
+
     .gate{
       display:flex;
-      gap: 10px;
+      gap: 12px;
       justify-content:center;
       align-items:center;
       flex-wrap:wrap;
-      margin-top: 6px;
+      position: relative;
     }
 
     input[type="password"]{
       width: min(340px, 86vw);
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(0,0,0,0.34);
-      color: var(--text);
+      padding: 13px 16px;
+      border-radius: 16px;
+
+      background:
+        radial-gradient(circle at 30% 28%, rgba(240,225,190,0.10), transparent 55%),
+        radial-gradient(circle at 70% 70%, rgba(140,60,40,0.08), transparent 60%),
+        linear-gradient(to bottom, rgba(18,14,12,0.68), rgba(8,7,7,0.78));
+
+      border: 1px solid rgba(255,255,255,0.16);
+      color: rgba(245,236,216,0.92);
       outline: none;
-      letter-spacing: 0.12em;
+
+      letter-spacing: 0.16em;
       font-size: 14px;
+      font-family: "Cormorant Garamond", serif;
+
+      box-shadow:
+        inset 0 0 0 1px rgba(0,0,0,0.55),
+        inset 0 0 26px rgba(0,0,0,0.45);
+      transition: border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
+      -webkit-text-security: disc;
     }
-    input[type="password"]::placeholder{ color: rgba(255,255,255,0.28); }
+
+    input[type="password"]::placeholder{
+      color: rgba(232,210,170,0.35);
+      letter-spacing: 0.10em;
+    }
+
+    input[type="password"]:focus{
+      border-color: rgba(232, 210, 170, 0.30);
+      box-shadow:
+        0 0 0 3px rgba(232, 210, 170, 0.06),
+        0 0 28px rgba(160,60,40,0.12),
+        inset 0 0 0 1px rgba(0,0,0,0.55),
+        inset 0 0 28px rgba(0,0,0,0.50);
+      transform: translateY(-1px);
+    }
 
     button{
-      padding: 12px 16px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.06);
-      color: var(--text);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
+      padding: 13px 18px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.16);
       cursor:pointer;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.10), transparent 55%),
+        linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(0,0,0,0.18));
+      color: rgba(245,236,216,0.92);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-family: "Cormorant Garamond", serif;
+      box-shadow:
+        0 14px 26px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      transition: transform 180ms ease, border-color 220ms ease, box-shadow 220ms ease, filter 220ms ease;
+      position: relative;
+      overflow:hidden;
     }
+
+    button::after{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(circle at 50% 20%, rgba(232,210,170,0.14), transparent 55%);
+      opacity: 0;
+      transition: opacity 220ms ease;
+      pointer-events:none;
+    }
+
+    button:hover{
+      border-color: rgba(232, 210, 170, 0.24);
+      box-shadow:
+        0 18px 34px rgba(0,0,0,0.42),
+        0 0 22px rgba(160,60,40,0.10),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+    }
+    button:hover::after{ opacity: 1; }
+    button:active{ transform: translateY(0px); }
 
     .msg{
       margin-top: 14px;
@@ -363,7 +475,6 @@
       <div class="kicker">Level 3</div>
       <h1>The Eye That Follow</h1>
 
-      <!-- ✅ Story (ENTRY-IDENTICAL fogLine reveal) -->
       <div class="story" id="story">
         <span class="fogLine">
           The corridor narrows like a throat. The air tastes of cold iron and old prayers.
@@ -386,9 +497,12 @@
 
       <div class="hint">Let the light guide you.</div>
 
-      <div class="gate">
-        <input id="pw" type="password" placeholder="password…" autocomplete="off" />
-        <button id="btn">ENTER</button>
+      <div class="gateWrap">
+        <div class="gateLabel"><span class="mark">⟡</span> Offer your answer <span class="mark">⟡</span></div>
+        <div class="gate">
+          <input id="pw" type="password" placeholder="whisper it…" autocomplete="off" />
+          <button id="btn">UNSEAL</button>
+        </div>
       </div>
 
       <div class="msg" id="msg"></div>
@@ -499,22 +613,19 @@
     });
   </script>
 
-  <!-- ✅ One button controls BOTH -->
   <button id="muteBtn" aria-label="Toggle audio">🔊</button>
 
-  <!-- 🩸 Mordain Voice -->
   <audio id="mordainVoice" preload="auto" playsinline>
     <source src="audio/mordain2.mp3" type="audio/mpeg">
   </audio>
 
-  <!-- 🌫 Level 3 Ambience -->
   <audio id="level3Ambience" loop preload="auto" playsinline>
     <source src="audio/level3-ambience.mp3" type="audio/mpeg">
   </audio>
 
   <script>
     /* =========================
-       🎬 Visuals + 🔊 Audio + 🌫 Line Reveal (ENTRY-IDENTICAL)
+       🎬 Visuals + 🔊 Audio + 🌫 Line Reveal (ENTRY-STYLE, slightly slower)
     ========================== */
     (() => {
       const heroEl = document.getElementById("hero");
@@ -529,7 +640,6 @@
 
       if (!muteBtn || !voice || !amb || !heroEl || !bg || !veil || !revealLines.length) return;
 
-      // ✅ MIX (Level 3 baseline)
       const VOICE_TARGET = 0.74;
       const AMB_TARGET   = 0.30;
 
@@ -587,18 +697,26 @@
       }
 
       function startLineReveal(){
-        const dur = (isFinite(voice.duration) && voice.duration > 2) ? voice.duration : 24;
-        const total = Math.max(16, dur * 1.05);
+        const voiceDur = (isFinite(voice.duration) && voice.duration > 2) ? voice.duration : 0;
+
+        // ✅ touch slower than your current Level 3 (not a different vibe)
+        const MIN_TOTAL    = 56;   // a little slower
+        const MIN_LINE_DUR = 4.6;  // was ~3-ish typical
+        const MIN_GAP      = 0.95; // more breathing room
+        const START_DELAY  = 1.15; // start a bit later
 
         const n = revealLines.length;
-        const gap = Math.max(0.35, (total / n) * 0.22);
-        const lineDur = Math.max(2.6, (total / n) * 1.05);
+        const total = Math.max(MIN_TOTAL, voiceDur ? (voiceDur * 1.08) : 0);
 
-        const startDelay = 0.9;
+        let gap = (total / n) * 0.22;
+        let lineDur = (total / n) * 1.05;
+
+        gap = Math.max(MIN_GAP, gap);
+        lineDur = Math.max(MIN_LINE_DUR, lineDur);
 
         revealLines.forEach((line, i) => {
           line.style.setProperty("--dur", `${lineDur.toFixed(2)}s`);
-          line.style.setProperty("--delay", `${(startDelay + i * gap).toFixed(2)}s`);
+          line.style.setProperty("--delay", `${(START_DELAY + i * gap).toFixed(2)}s`);
           line.classList.add("run");
         });
       }
