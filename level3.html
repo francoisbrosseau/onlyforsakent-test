@@ -51,16 +51,12 @@
       transition: opacity 2200ms ease, transform 2800ms ease;
       will-change: opacity, transform;
     }
-    .bg.show{
-      opacity: 1;
-      transform: scale(1);
-    }
+    .bg.show{ opacity: 1; transform: scale(1); }
 
     @media (max-width: 700px){
       .bg{ background-position: var(--bg-pos-mobile); }
     }
 
-    /* Dark overlay (fades in) */
     .hero::before{
       content:"";
       position: fixed;
@@ -75,7 +71,6 @@
     }
     .hero.reveal::before{ opacity: 1; }
 
-    /* Subtle grain (fades in) */
     .hero::after{
       content:"";
       position: fixed;
@@ -161,7 +156,7 @@
       position: relative;
       z-index: 3;
       width: min(820px, 92vw);
-      padding: 42px 22px 112px;
+      padding: 42px 22px;
       text-align: center;
       filter: drop-shadow(0 16px 22px var(--shadow));
       pointer-events:auto;
@@ -262,13 +257,17 @@
     }
 
     /* =========================
-       🗝 GATE (LEVEL 4 STYLE)
+       🗝 GATE (LEVEL 4 LOOK) — ISOLATED
+       Nothing can override this now.
     ========================== */
-    .gateWrap{
+    .seal{
       width: min(560px, 92vw);
-      margin: 12px auto 0;
+      margin: 14px auto 0;
       padding: 18px 16px 18px;
       border-radius: 22px;
+      position: relative;
+      overflow:hidden;
+
       background:
         radial-gradient(circle at 18% 18%, rgba(255,255,255,0.06), transparent 55%),
         radial-gradient(circle at 82% 38%, rgba(160,60,40,0.10), transparent 62%),
@@ -278,11 +277,9 @@
       box-shadow:
         0 22px 44px rgba(0,0,0,0.46),
         inset 0 1px 0 rgba(255,255,255,0.06);
-      position: relative;
-      overflow:hidden;
     }
 
-    .gateWrap::after{
+    .seal::after{
       content:"";
       position:absolute;
       left: 18px; right: 18px;
@@ -299,7 +296,7 @@
       pointer-events:none;
     }
 
-    .gateLabel{
+    .sealLabel{
       font-family: "Cinzel Decorative", serif;
       letter-spacing: 0.24em;
       text-transform: uppercase;
@@ -313,14 +310,13 @@
       gap: 10px;
       text-shadow: 0 0 18px rgba(0,0,0,0.55);
     }
-
-    .gateLabel .mark{
+    .sealLabel .mark{
       color: rgba(232, 210, 170, 0.52);
       text-shadow: 0 0 16px rgba(160,60,40,0.20);
       font-size: 12px;
     }
 
-    .gate{
+    .sealRow{
       display:flex;
       gap: 12px;
       justify-content:center;
@@ -329,7 +325,7 @@
       position: relative;
     }
 
-    input[type="password"]{
+    .sealInput{
       width: min(340px, 86vw);
       padding: 13px 16px;
       border-radius: 16px;
@@ -351,15 +347,12 @@
         inset 0 0 0 1px rgba(0,0,0,0.55),
         inset 0 0 26px rgba(0,0,0,0.45);
       transition: border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
-      -webkit-text-security: disc;
     }
-
-    input[type="password"]::placeholder{
+    .sealInput::placeholder{
       color: rgba(232,210,170,0.35);
       letter-spacing: 0.10em;
     }
-
-    input[type="password"]:focus{
+    .sealInput:focus{
       border-color: rgba(232, 210, 170, 0.30);
       box-shadow:
         0 0 0 3px rgba(232, 210, 170, 0.06),
@@ -369,11 +362,12 @@
       transform: translateY(-1px);
     }
 
-    button{
+    .sealBtn{
       padding: 13px 18px;
       border-radius: 16px;
       border: 1px solid rgba(255,255,255,0.16);
       cursor:pointer;
+
       background:
         radial-gradient(circle at 30% 30%, rgba(255,255,255,0.10), transparent 55%),
         linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(0,0,0,0.18));
@@ -381,6 +375,7 @@
       letter-spacing: 0.16em;
       text-transform: uppercase;
       font-family: "Cormorant Garamond", serif;
+
       box-shadow:
         0 14px 26px rgba(0,0,0,0.35),
         inset 0 1px 0 rgba(255,255,255,0.08);
@@ -389,7 +384,7 @@
       overflow:hidden;
     }
 
-    button::after{
+    .sealBtn::after{
       content:"";
       position:absolute; inset:-2px;
       background: radial-gradient(circle at 50% 20%, rgba(232,210,170,0.14), transparent 55%);
@@ -398,7 +393,7 @@
       pointer-events:none;
     }
 
-    button:hover{
+    .sealBtn:hover{
       border-color: rgba(232, 210, 170, 0.24);
       box-shadow:
         0 18px 34px rgba(0,0,0,0.42),
@@ -407,8 +402,8 @@
       transform: translateY(-1px);
       filter: brightness(1.04);
     }
-    button:hover::after{ opacity: 1; }
-    button:active{ transform: translateY(0px); }
+    .sealBtn:hover::after{ opacity: 1; }
+    .sealBtn:active{ transform: translateY(0px); }
 
     .msg{
       margin-top: 14px;
@@ -497,11 +492,12 @@
 
       <div class="hint">Let the light guide you.</div>
 
-      <div class="gateWrap">
-        <div class="gateLabel"><span class="mark">⟡</span> Offer your answer <span class="mark">⟡</span></div>
-        <div class="gate">
-          <input id="pw" type="password" placeholder="whisper it…" autocomplete="off" />
-          <button id="btn">UNSEAL</button>
+      <!-- ✅ LEVEL 4 GATE STYLE (isolated) -->
+      <div class="seal">
+        <div class="sealLabel"><span class="mark">⟡</span> Offer your answer <span class="mark">⟡</span></div>
+        <div class="sealRow">
+          <input id="pw" class="sealInput" type="password" placeholder="whisper it…" autocomplete="off" />
+          <button id="btn" class="sealBtn" type="button">UNSEAL</button>
         </div>
       </div>
 
@@ -699,11 +695,11 @@
       function startLineReveal(){
         const voiceDur = (isFinite(voice.duration) && voice.duration > 2) ? voice.duration : 0;
 
-        // ✅ touch slower than your current Level 3 (not a different vibe)
-        const MIN_TOTAL    = 56;   // a little slower
-        const MIN_LINE_DUR = 4.6;  // was ~3-ish typical
-        const MIN_GAP      = 0.95; // more breathing room
-        const START_DELAY  = 1.15; // start a bit later
+        // Slightly slower than before (not drastic)
+        const MIN_TOTAL    = 58;
+        const MIN_LINE_DUR = 4.8;
+        const MIN_GAP      = 1.00;
+        const START_DELAY  = 1.20;
 
         const n = revealLines.length;
         const total = Math.max(MIN_TOTAL, voiceDur ? (voiceDur * 1.08) : 0);
