@@ -24,9 +24,6 @@
 
     /* =========================
        🎬 HERO / BACKGROUND (LOCKED)
-       - background fixed
-       - fades in
-       - reframed for desktop + mobile
     ========================== */
     .hero{
       min-height:100vh;
@@ -43,15 +40,11 @@
       inset: 0;
       z-index: 0;
 
-      /* ✅ BACKGROUND IMAGE */
       background-image: url("entry.jpg");
       background-size: cover;
       background-repeat: no-repeat;
-
-      /* ✅ reframing */
       background-position: var(--bg-pos-desktop);
 
-      /* ✅ less zoomy feel */
       transform: scale(1.01);
       opacity: 0;
       transition: opacity 2200ms ease, transform 2800ms ease;
@@ -181,7 +174,7 @@
     }
 
     /* =========================
-       🌫 LINE-BY-LINE FOG REVEAL (NOT WHOLE BLOCK)
+       🌫 LINE-BY-LINE FOG REVEAL
     ========================== */
     .story{
       font-family: "Cormorant Garamond", serif;
@@ -206,7 +199,6 @@
       opacity: 0.85;
       filter: blur(2.1px);
 
-      /* start hidden by mask */
       -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 60%);
       -webkit-mask-size: 240% 100%;
       -webkit-mask-position: 100% 0;
@@ -262,112 +254,70 @@
     }
 
     /* =========================
-       🗝 ANTIQUE SEAL GATE (LOCKED CORE)
-       (DO NOT CHANGE ACROSS PAGES)
+       ✅ LOCKED PASSWORD GATE (SAME AS L3/L4)
+       - keep these exact classes on every page
+       - antique / carved-stone vibe
     ========================== */
     .seal{
-      margin-top: 6px;
       display:flex;
-      gap: 12px;
-      justify-content:center;
-      align-items:stretch;
-      flex-wrap:wrap;
-    }
-
-    .sealLabel{
-      width: 100%;
-      text-align:center;
-      font-family: "Cinzel Decorative", serif;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      font-size: 11px;
-      color: rgba(255,255,255,0.32);
-      user-select:none;
-      margin: 0 0 6px;
-      text-shadow: 0 0 18px rgba(0,0,0,0.65);
-    }
-
-    .sealField{
-      display:flex;
-      align-items:center;
       gap: 10px;
-      padding: 10px 12px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background:
-        radial-gradient(circle at 30% 20%, rgba(255,220,160,0.08), rgba(0,0,0,0) 55%),
-        linear-gradient(180deg, rgba(10,8,7,0.62), rgba(0,0,0,0.28));
-      box-shadow:
-        0 18px 30px rgba(0,0,0,0.45),
-        inset 0 1px 0 rgba(255,255,255,0.06);
-      backdrop-filter: blur(6px);
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .sealMark{
-      width: 34px;
-      height: 34px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.12);
-      background:
-        radial-gradient(circle at 35% 30%, rgba(255,255,255,0.10), rgba(0,0,0,0) 58%),
-        linear-gradient(145deg, rgba(120,0,0,0.18), rgba(0,0,0,0.22));
-      box-shadow:
-        0 10px 18px rgba(0,0,0,0.45),
-        inset 0 1px 0 rgba(255,255,255,0.06);
-      position: relative;
-      flex: 0 0 auto;
-    }
-    .sealMark::after{
-      content:"";
-      position:absolute;
-      inset: 9px 10px 10px 9px;
-      border-radius: 10px;
-      border: 1px dashed rgba(255,255,255,0.12);
-      opacity: .9;
+      justify-content:center;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-top: 4px;
     }
 
     .sealInput{
       width: min(360px, 86vw);
-      padding: 10px 6px;
-      border: 0;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
       outline: none;
-      background: transparent;
-      color: rgba(255,255,255,0.92);
+
       font-family: "Cormorant Garamond", serif;
-      letter-spacing: 0.18em;
       font-size: 14px;
-      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.92);
+
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255,235,190,0.07), rgba(0,0,0,0) 60%),
+        linear-gradient(180deg, rgba(18,14,12,0.58), rgba(0,0,0,0.28));
+      box-shadow:
+        0 16px 26px rgba(0,0,0,0.45),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      backdrop-filter: blur(6px);
     }
     .sealInput::placeholder{
-      color: rgba(255,255,255,0.22);
-      letter-spacing: 0.14em;
-      text-transform: none;
+      color: rgba(255,255,255,0.24);
+      letter-spacing: 0.10em;
     }
-
-    .sealField:focus-within{
+    .sealInput:focus{
       border-color: rgba(255,255,255,0.22);
       box-shadow:
-        0 20px 34px rgba(0,0,0,0.55),
+        0 18px 32px rgba(0,0,0,0.55),
         inset 0 1px 0 rgba(255,255,255,0.08),
-        0 0 0 1px rgba(180,120,60,0.14);
+        0 0 0 1px rgba(180,120,60,0.12);
     }
 
     .sealBtn{
       padding: 12px 18px;
-      border-radius: 16px;
+      border-radius: 14px;
       border: 1px solid rgba(255,255,255,0.16);
+
       background:
         radial-gradient(circle at 30% 20%, rgba(255,255,255,0.10), rgba(0,0,0,0) 55%),
         linear-gradient(180deg, rgba(35,28,24,0.72), rgba(0,0,0,0.28));
       color: rgba(255,255,255,0.92);
+
       font-family: "Cinzel Decorative", serif;
       letter-spacing: 0.22em;
       text-transform: uppercase;
       cursor:pointer;
+
       box-shadow:
-        0 18px 28px rgba(0,0,0,0.46),
+        0 16px 26px rgba(0,0,0,0.46),
         inset 0 1px 0 rgba(255,255,255,0.08);
+
       transition: transform 160ms ease, filter 160ms ease, border-color 160ms ease;
       user-select:none;
     }
@@ -434,7 +384,6 @@
       <div class="kicker">Level 1</div>
       <h1>The Castle Remembers</h1>
 
-      <!-- ✅ Story (line-by-line fog reveal) -->
       <div class="story" id="story">
         <span class="fogLine">
           The door shuts without a sound—yet the air grows heavier, as if the stone itself
@@ -461,15 +410,9 @@
 
       <div class="hint">the dark speaks in numbers</div>
 
-      <!-- ✅ LOCKED GATE (same everywhere) -->
-      <div class="seal" aria-label="Seal Gate">
-        <div class="sealLabel">Unseal the way</div>
-
-        <div class="sealField">
-          <div class="sealMark" aria-hidden="true"></div>
-          <input id="pw" class="sealInput" type="password" placeholder="whisper the password…" autocomplete="off" />
-        </div>
-
+      <!-- ✅ SAME GATE AS L3/L4 -->
+      <div class="seal">
+        <input id="pw" class="sealInput" type="password" placeholder="password…" autocomplete="off" />
         <button id="btn" class="sealBtn" type="button">UNSEAL</button>
       </div>
 
@@ -549,8 +492,8 @@
     async function flashLetterNTimes(letter, n){
       for (let i = 0; i < n; i++){
         spawnGlyph(letter, true);
-        await wait(680);  // ON (longer)
-        await wait(420);  // OFF (longer)
+        await wait(680);
+        await wait(420);
       }
     }
 
@@ -596,7 +539,7 @@
 
     /* =========================
        🎬 Visuals + 🔊 Audio + 🌫 Line Reveal
-       CHANGE: Voice fade-in is FAST (no swallowed first word)
+       (fast voice fade-in so first words aren't swallowed)
     ========================== */
     (() => {
       const heroEl = document.getElementById("hero");
@@ -622,7 +565,6 @@
       voice.volume = 0;
       amb.volume = 0;
 
-      // Faster fade helper
       function fadeTo(audio, target, step=0.12, interval=45){
         try{
           let v = audio.volume || 0;
@@ -639,7 +581,6 @@
           voice.currentTime = 0;
           amb.currentTime = 0;
 
-          // Make voice audible immediately
           if (!voice.muted){
             voice.volume = Math.min(VOICE_TARGET, 0.55);
             amb.volume   = Math.min(AMB_TARGET,   0.22);
