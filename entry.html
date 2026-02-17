@@ -5,19 +5,24 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ONLYFORSAKEN — Level 1</title>
 
+  <!-- ✅ Fonts (LOCKED) -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
     :root{
       --text: rgba(255,255,255,0.90);
-      --muted: rgba(255,255,255,0.52);
+      --muted: rgba(255,255,255,0.70);
       --shadow: rgba(0,0,0,0.65);
     }
 
     *{ box-sizing:border-box; }
     html,body{ height:100%; margin:0; background:#000; font-family: Georgia, "Times New Roman", serif; }
 
-    /* HERO */
+    /* =========================
+       🎬 HERO / BACKGROUND (LOCKED)
+       - image stays fixed, text scrolls
+       - background fades in
+    ========================== */
     .hero{
       min-height:100vh;
       position:relative;
@@ -25,41 +30,79 @@
       display:flex;
       align-items:center;
       justify-content:center;
+      background:#000;
+    }
 
-      /* ✅ Your background image */
+    .bg{
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+
+      /* ✅ BACKGROUND IMAGE */
       background-image: url("entry.jpg");
       background-size: cover;
-      background-position: center 30%;
       background-repeat: no-repeat;
+
+      /* ✅ less “stretched-looking” framing */
+      background-position: center 30%;
+
+      transform: scale(1.02);
+      opacity: 0;
+      transition: opacity 2200ms ease, transform 2800ms ease;
+      will-change: opacity, transform;
+    }
+    .bg.show{
+      opacity: 1;
+      transform: scale(1);
     }
 
-    /* Dark overlay */
+    /* Dark overlay (fades in) */
     .hero::before{
       content:"";
-      position:absolute;
+      position: fixed;
       inset:0;
       background:
-        radial-gradient(circle at center, rgba(0,0,0,0.10), rgba(0,0,0,0.55)),
-        linear-gradient(to bottom, rgba(0,0,0,0.25), rgba(0,0,0,0.55));
+        radial-gradient(circle at center, rgba(0,0,0,0.10), rgba(0,0,0,0.58)),
+        linear-gradient(to bottom, rgba(0,0,0,0.26), rgba(0,0,0,0.62));
       z-index: 1;
       pointer-events:none;
+      opacity: 0;
+      transition: opacity 2200ms ease;
     }
+    .hero.reveal::before{ opacity: 1; }
 
-    /* Subtle grain */
+    /* Subtle grain (fades in) */
     .hero::after{
       content:"";
-      position:absolute;
+      position: fixed;
       inset:0;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.20'/%3E%3C/svg%3E");
       mix-blend-mode: overlay;
-      opacity: .14;
+      opacity: 0;
       pointer-events:none;
       z-index: 1;
+      transition: opacity 2200ms ease;
     }
+    .hero.reveal::after{ opacity: .14; }
 
-    /* Floating letters layer */
+    /* 🎬 Veil (brief darkness on load) */
+    #veil{
+      position: fixed;
+      inset: 0;
+      background: #000;
+      opacity: 1;
+      z-index: 2147483646;
+      pointer-events:none;
+      transition: opacity 900ms ease;
+    }
+    #veil.hide{ opacity: 0; }
+
+    /* =========================
+       👻 Floating Letters
+       IMPORTANT: ONLY letters from DESCEND
+    ========================== */
     #specters{
-      position:absolute;
+      position: fixed;
       inset:0;
       pointer-events:none;
       z-index: 2;
@@ -74,23 +117,25 @@
       opacity: 0;
       transform: translate(-50%, -50%) scale(1);
       filter: blur(0.2px);
-      animation: floatFade 1.3s ease forwards;
+      animation: floatFade 1.8s ease forwards;
       user-select:none;
       will-change: transform, opacity;
     }
 
     .glyph.flash{
       color: rgba(255,255,255,0.92);
-      text-shadow: 0 0 28px rgba(255,255,255,0.35);
+      text-shadow: 0 0 30px rgba(255,255,255,0.38);
     }
 
     @keyframes floatFade{
       0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.98); }
       20%  { opacity: 0.95; }
-      100% { opacity: 0; transform: translate(-50%, -55%) scale(1.03); }
+      100% { opacity: 0; transform: translate(-50%, -58%) scale(1.03); }
     }
 
-    /* UI */
+    /* =========================
+       🕯 UI (LOCKED)
+    ========================== */
     .wrap{
       position: relative;
       z-index: 3;
@@ -125,14 +170,20 @@
       color: #e8e2d6;
       margin: 0 0 14px;
       animation: candleFlicker 3.5s infinite ease-in-out;
+      user-select:none;
     }
 
+    /* =========================
+       🌫 STORY REVEAL (NOT TICK-TICK)
+       - text exists instantly
+       - a “fog mask” reveals it smoothly left→right
+    ========================== */
     .story{
       font-family: "Cormorant Garamond", serif;
-      font-size: 17px;
-      line-height: 1.65;
-      letter-spacing: 0.03em;
-      color: rgba(255,255,255,0.75);
+      font-size: clamp(20px, 2.1vw, 24px);
+      line-height: 1.75;
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.78);
       margin: 0 auto 22px;
       max-width: 56ch;
       animation: candleFlicker 5s infinite ease-in-out;
@@ -142,6 +193,45 @@
       font-style: normal;
       color: #d2c7b3;
       text-shadow: 0 0 10px rgba(120,0,0,0.35);
+    }
+
+    /* Fog mask reveal */
+    .storyReveal{
+      display: inline-block;
+      text-align: left;
+      max-width: 56ch;
+      margin: 0 auto 22px;
+
+      /* start hidden by mask */
+      -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 60%);
+      -webkit-mask-size: 240% 100%;
+      -webkit-mask-position: 100% 0;
+
+      mask-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 60%);
+      mask-size: 240% 100%;
+      mask-position: 100% 0;
+
+      filter: blur(2.2px);
+      opacity: 0.95;
+    }
+
+    .storyReveal.run{
+      animation: fogReveal var(--revealDur, 22s) ease forwards;
+    }
+
+    @keyframes fogReveal{
+      0%{
+        -webkit-mask-position: 100% 0;
+        mask-position: 100% 0;
+        filter: blur(2.2px);
+        opacity: 0.88;
+      }
+      100%{
+        -webkit-mask-position: 0% 0;
+        mask-position: 0% 0;
+        filter: blur(0px);
+        opacity: 1;
+      }
     }
 
     .final{
@@ -222,50 +312,64 @@
     .fadeOut{ animation: fade 700ms ease forwards; }
     @keyframes fade{ to{ opacity:0; transform: translateY(6px); } }
 
-    /* Ensure the mute button is always clickable above everything */
+    /* ✅ Audio button (LOCKED STANDARD) */
     #muteBtn{
       position: fixed;
       top: 18px;
       right: 18px;
-      z-index: 999999;
-      pointer-events: auto;
-      cursor: pointer;
-      background: rgba(0,0,0,.35);
-      border: 1px solid rgba(255,255,255,.25);
-      color: rgba(255,255,255,.85);
+      z-index: 2147483647;
+      pointer-events:auto;
+      cursor:pointer;
+      background: rgba(0,0,0,.45);
+      border: 1px solid rgba(255,255,255,.28);
+      color: rgba(255,255,255,.95);
       padding: 10px 12px;
       border-radius: 999px;
-      font-family: 'Cormorant Garamond', serif;
+      font-family:'Cormorant Garamond',serif;
       backdrop-filter: blur(6px);
       -webkit-tap-highlight-color: transparent;
       user-select:none;
+    }
+
+    /* Mobile framing tweak */
+    @media (max-width: 700px){
+      .bg{ background-position: center 38%; }
     }
   </style>
 </head>
 
 <body>
+  <!-- 🎬 Veil -->
+  <div id="veil" aria-hidden="true"></div>
 
-  <main class="hero">
+  <main class="hero" id="hero">
+    <!-- 🎬 Background layer -->
+    <div class="bg" id="bg" aria-hidden="true"></div>
+
+    <!-- 👻 Letters layer -->
     <div id="specters" aria-hidden="true"></div>
 
     <section class="wrap" id="wrap">
       <div class="kicker">Level 1</div>
       <h1>The Castle Remembers</h1>
 
-      <p class="story">
-        The door shuts without a sound—yet the air grows heavier, as if the stone itself
-        has been holding its breath for centuries.
-        <br><br>
-        Ahead: arches drowned in soot, prayer-candles still warm, and a corridor that
-        shouldn’t exist. Each step feels borrowed. Each heartbeat feels <em>counted</em>.
-        <br><br>
-        You came for the relic they buried in the dark—an ancient gem with a name that
-        was erased from every tongue that spoke it. They say it doesn’t shine.
-        It <em>stares</em>.
-        <br><br>
-        If you want it, you will not be guided by signs or maps.
-        Only by what you see and trust.
-      </p>
+      <!-- ✅ Story reveal wrapper (fog reveal), NOT tick-typewriter -->
+      <div class="storyReveal" id="storyReveal">
+        <p class="story" id="storyText">
+          The door shuts without a sound—yet the air grows heavier, as if the stone itself
+          has been holding its breath for centuries.
+          <br><br>
+          Ahead: arches drowned in soot, prayer-candles still warm, and a corridor that
+          shouldn’t exist. Each step feels borrowed. Each heartbeat feels <em>counted</em>.
+          <br><br>
+          You came for the relic they buried in the dark—an ancient gem with a name that
+          was erased from every tongue that spoke it. They say it doesn’t shine.
+          It <em>stares</em>.
+          <br><br>
+          If you want it, you will not be guided by signs or maps.
+          Only by what you see and trust.
+        </p>
+      </div>
 
       <p class="final" id="finalLine">So it knows your name.</p>
 
@@ -280,13 +384,33 @@
     </section>
   </main>
 
+  <!-- ✅ Single audio button controls BOTH tracks (voice + ambience) -->
+  <button id="muteBtn" aria-label="Toggle audio">🔊</button>
+
+  <!-- 🩸 Mordain Voice (ENTRY) -->
+  <!-- NOTE: if your filename is different, change src below -->
+  <audio id="mordainVoice" preload="auto" playsinline>
+    <source src="audio/mordain-whisper.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- 🌫 Entry Ambience (LOOP) -->
+  <!-- NOTE: change this if your file name is different -->
+  <audio id="entryAmbience" loop preload="auto" playsinline>
+    <source src="audio/entry-ambience.mp3" type="audio/mpeg">
+  </audio>
+
   <script>
+    /* =========================
+       ✅ PASSWORD
+    ========================== */
     const PASSWORD = "DESCEND";
 
-    // ✅ Only these letters are EVER allowed to appear (flash OR decoy)
-    const ALLOWED = "DESCEND";
-
-    // D(1), E(2), S(3), C(4), E(5), N(6), D(7)
+    /* =========================
+       👻 DESCEND LETTER FLASH SYSTEM
+       - ONLY letters from DESCEND
+       - slower + longer flashes
+       - NO random junk letters
+    ========================== */
     const sequence = [
       { ch: "D", flashes: 1 },
       { ch: "E", flashes: 2 },
@@ -304,28 +428,20 @@
       el.className = "glyph" + (isFlash ? " flash" : "");
       el.textContent = ch;
 
-      // Peripheral positioning (edges)
-      const pickEdgeBand = () => {
-        const r = Math.random();
+      // edge/peripheral positioning (keeps it “searchable”)
+      const r = Math.random();
+      let x, y;
 
-        // Left or right edge
-        if (r < 0.50) {
-          const x = (r < 0.25)
-            ? (4 + Math.random() * 14)    // left 4–18%
-            : (82 + Math.random() * 14);  // right 82–96%
-          const y = 10 + Math.random() * 80;
-          return { x, y };
-        }
+      if (r < 0.50) {
+        // left/right bands
+        x = (r < 0.25) ? (4 + Math.random() * 14) : (82 + Math.random() * 14);
+        y = 10 + Math.random() * 80;
+      } else {
+        // top/bottom bands
+        y = (r < 0.75) ? (5 + Math.random() * 14) : (81 + Math.random() * 14);
+        x = 12 + Math.random() * 76;
+      }
 
-        // Top or bottom edge
-        const y = (r < 0.75)
-          ? (5 + Math.random() * 14)      // top 5–19%
-          : (81 + Math.random() * 14);    // bottom 81–95%
-        const x = 12 + Math.random() * 76;
-        return { x, y };
-      };
-
-      const { x, y } = pickEdgeBand();
       el.style.left = x + "%";
       el.style.top  = y + "%";
 
@@ -333,7 +449,7 @@
       el.style.transform = `translate(-50%, -50%) rotate(${rot}deg)`;
 
       specters.appendChild(el);
-      setTimeout(() => el.remove(), 1700);
+      setTimeout(() => el.remove(), 2100);
     }
 
     function wait(ms){ return new Promise(r => setTimeout(r, ms)); }
@@ -347,42 +463,29 @@
       return a;
     }
 
-    // ✅ Easier: slower + longer flashes
     async function flashLetterNTimes(letter, n){
       for (let i = 0; i < n; i++){
         spawnGlyph(letter, true);
-        await wait(820);  // longer ON
-        await wait(520);  // longer OFF
+        await wait(680);  // ✅ longer ON
+        await wait(420);  // ✅ longer OFF
       }
     }
 
-    // ✅ Decoys are allowed, but ONLY from "DESCEND" (no K/V/etc)
-    function startAmbientDecoys(){
-      setInterval(() => {
-        if (Math.random() < 0.18) { // slightly less spammy
-          const ch = ALLOWED[Math.floor(Math.random() * ALLOWED.length)];
-          spawnGlyph(ch, false);
-        }
-      }, 1300);
-    }
-
     async function runSequenceForever(){
-      startAmbientDecoys();
-
       while(true){
         const randomized = shuffle(sequence);
-
         for (const item of randomized){
           await flashLetterNTimes(item.ch, item.flashes);
-          await wait(2200); // slower between groups
+          await wait(1650); // ✅ more time between groups
         }
-
-        await wait(3600); // slower between cycles
+        await wait(2400);   // ✅ more time between cycles
       }
     }
     runSequenceForever();
 
-    // Gate logic
+    /* =========================
+       🚪 GATE LOGIC
+    ========================== */
     const wrap = document.getElementById("wrap");
     const pw = document.getElementById("pw");
     const btn = document.getElementById("btn");
@@ -405,84 +508,138 @@
         pw.select();
       }
     }
-
     btn.addEventListener("click", check);
-    pw.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") check();
-    });
+    pw.addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
+
+    /* =========================
+       🎬 VISUAL REVEAL (veil + bg fade-in)
+       + 🌫 STORY fog reveal timing
+       + 🔊 AUDIO: voice + ambience (button controls both)
+    ========================== */
+    (() => {
+      const heroEl = document.getElementById("hero");
+      const bg = document.getElementById("bg");
+      const veil = document.getElementById("veil");
+
+      const revealWrap = document.getElementById("storyReveal");
+
+      const btn = document.getElementById("muteBtn");
+      const voice = document.getElementById("mordainVoice");
+      const amb = document.getElementById("entryAmbience");
+
+      if (!btn || !voice || !amb || !heroEl || !bg || !veil || !revealWrap) return;
+
+      // ✅ MIX (entry ambience was too quiet → bump it)
+      const VOICE_TARGET = 0.74;
+      const AMB_TARGET   = 0.40; // louder than before so you can hear it
+
+      // restore mute state
+      const savedMuted = localStorage.getItem("ofs_mute") === "1";
+      voice.muted = savedMuted;
+      amb.muted = savedMuted;
+      btn.textContent = savedMuted ? "🔇" : "🔊";
+
+      voice.volume = 0;
+      amb.volume = 0;
+
+      function fadeTo(audio, target, step=0.02, interval=120){
+        try{
+          let v = audio.volume || 0;
+          const id = setInterval(() => {
+            v = Math.min(target, v + step);
+            audio.volume = v;
+            if (v >= target) clearInterval(id);
+          }, interval);
+        }catch(e){}
+      }
+
+      async function playBoth(){
+        try{
+          // restart both on each load (dev-friendly)
+          voice.currentTime = 0;
+          amb.currentTime = 0;
+
+          const p1 = voice.play();
+          const p2 = amb.play();
+
+          if (p1 && p1.catch) p1.catch(()=>{});
+          if (p2 && p2.catch) p2.catch(()=>{});
+
+          if (!voice.muted){
+            voice.volume = 0;
+            amb.volume = 0;
+            fadeTo(voice, VOICE_TARGET, 0.02, 120);
+            fadeTo(amb,   AMB_TARGET,   0.012, 140);
+          }
+        }catch(e){}
+      }
+
+      function stopBoth(){
+        try{ voice.pause(); }catch(e){}
+        try{ amb.pause(); }catch(e){}
+      }
+
+      function revealVisuals(){
+        // keep it dark briefly
+        setTimeout(() => veil.classList.add("hide"), 380);
+        setTimeout(() => veil.remove(), 1500);
+
+        // bg + overlays fade in
+        setTimeout(() => {
+          bg.classList.add("show");
+          heroEl.classList.add("reveal");
+        }, 420);
+      }
+
+      function setFogDuration(){
+        // use voice duration if available; otherwise a nice slow default
+        const dur = (isFinite(voice.duration) && voice.duration > 2) ? voice.duration : 24;
+
+        // reveal slightly slower than voice (more “in your head”)
+        const revealDur = Math.max(18, dur * 1.05);
+        revealWrap.style.setProperty("--revealDur", revealDur.toFixed(2) + "s");
+      }
+
+      function startFogReveal(){
+        // start while veil is still fading (voice already talking)
+        setTimeout(() => {
+          setFogDuration();
+          revealWrap.classList.add("run");
+        }, 900);
+      }
+
+      // button toggles both
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const newMuted = !voice.muted;
+        voice.muted = newMuted;
+        amb.muted = newMuted;
+
+        localStorage.setItem("ofs_mute", newMuted ? "1" : "0");
+        btn.textContent = newMuted ? "🔇" : "🔊";
+
+        if (!newMuted) playBoth();
+        else stopBoth();
+      }, true);
+
+      // On load / reload / back-forward cache restore
+      window.addEventListener("pageshow", async () => {
+        revealVisuals();
+
+        // voice can start while still dark
+        if (!voice.muted) await playBoth();
+
+        // start fog reveal every load
+        startFogReveal();
+      });
+
+      // Autoplay unlock (first tap anywhere)
+      window.addEventListener("pointerdown", () => {
+        if (!voice.muted && (voice.paused || amb.paused)) playBoth();
+      }, { once:true });
+    })();
   </script>
-
-  <!-- Audio + Mute button placed at end so everything exists -->
-  <button id="muteBtn" aria-label="Toggle audio">🔊</button>
-
-  <audio id="mordainVoice" autoplay preload="auto" playsinline>
-    <source id="mordainSrc" src="audio/mordain-whisper.mp3" type="audio/mpeg">
-  </audio>
-
-  <script>
-  (() => {
-    const audio = document.getElementById("mordainVoice");
-    const btn = document.getElementById("muteBtn");
-    const srcEl = document.getElementById("mordainSrc");
-    const baseSrc = "audio/mordain-whisper.mp3";
-
-    if (!audio || !btn) return;
-
-    const savedMuted = localStorage.getItem("ofs_mute") === "1";
-    audio.muted = savedMuted;
-    btn.textContent = audio.muted ? "🔇" : "🔊";
-
-    const TARGET = 0.85;
-    audio.volume = 0;
-
-    function fadeIn(){
-      let v = 0;
-      audio.volume = 0;
-      const id = setInterval(() => {
-        v = Math.min(TARGET, v + 0.02);
-        audio.volume = v;
-        if (v >= TARGET) clearInterval(id);
-      }, 120);
-    }
-
-    function restart({ bustCache } = { bustCache: false }){
-      try{
-        audio.pause();
-        audio.currentTime = 0;
-
-        if (bustCache && srcEl) {
-          srcEl.src = baseSrc + "?v=" + Date.now();
-          audio.load();
-        }
-
-        const p = audio.play();
-        if (p && p.catch) p.catch(()=>{});
-        if (!audio.muted) fadeIn();
-      }catch(e){}
-    }
-
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      audio.muted = !audio.muted;
-      localStorage.setItem("ofs_mute", audio.muted ? "1" : "0");
-      btn.textContent = audio.muted ? "🔇" : "🔊";
-
-      if (!audio.muted) restart({ bustCache:false });
-      else audio.pause();
-    }, true);
-
-    window.addEventListener("pageshow", () => {
-      if (!audio.muted) restart({ bustCache:true });
-    });
-
-    window.addEventListener("pointerdown", () => {
-      if (!audio.muted && audio.paused) restart({ bustCache:false });
-    }, { once:true });
-
-  })();
-  </script>
-
 </body>
 </html>
