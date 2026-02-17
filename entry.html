@@ -283,6 +283,9 @@
   <script>
     const PASSWORD = "DESCEND";
 
+    // ✅ Only these letters are EVER allowed to appear (flash OR decoy)
+    const ALLOWED = "DESCEND";
+
     // D(1), E(2), S(3), C(4), E(5), N(6), D(7)
     const sequence = [
       { ch: "D", flashes: 1 },
@@ -344,22 +347,23 @@
       return a;
     }
 
-    // ✅ UPDATED: slower + longer for ALL letters
+    // ✅ Easier: slower + longer flashes
     async function flashLetterNTimes(letter, n){
       for (let i = 0; i < n; i++){
         spawnGlyph(letter, true);
-        await wait(720);  // longer ON
-        await wait(420);  // longer OFF
+        await wait(820);  // longer ON
+        await wait(520);  // longer OFF
       }
     }
 
+    // ✅ Decoys are allowed, but ONLY from "DESCEND" (no K/V/etc)
     function startAmbientDecoys(){
       setInterval(() => {
-        if (Math.random() < 0.22) {
-          const junk = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-          spawnGlyph(junk[Math.floor(Math.random() * junk.length)], false);
+        if (Math.random() < 0.18) { // slightly less spammy
+          const ch = ALLOWED[Math.floor(Math.random() * ALLOWED.length)];
+          spawnGlyph(ch, false);
         }
-      }, 1100);
+      }, 1300);
     }
 
     async function runSequenceForever(){
@@ -370,10 +374,10 @@
 
         for (const item of randomized){
           await flashLetterNTimes(item.ch, item.flashes);
-          await wait(2000); // ✅ slower between groups
+          await wait(2200); // slower between groups
         }
 
-        await wait(3200); // ✅ slower between cycles
+        await wait(3600); // slower between cycles
       }
     }
     runSequenceForever();
@@ -417,7 +421,6 @@
 
   <script>
   (() => {
-    // Grab existing elements (works even if you pasted other scripts)
     const audio = document.getElementById("mordainVoice");
     const btn = document.getElementById("muteBtn");
     const srcEl = document.getElementById("mordainSrc");
@@ -425,12 +428,10 @@
 
     if (!audio || !btn) return;
 
-    // Restore mute state
     const savedMuted = localStorage.getItem("ofs_mute") === "1";
     audio.muted = savedMuted;
     btn.textContent = audio.muted ? "🔇" : "🔊";
 
-    // Keep it intimate
     const TARGET = 0.85;
     audio.volume = 0;
 
@@ -449,7 +450,6 @@
         audio.pause();
         audio.currentTime = 0;
 
-        // optional cache bust (dev-friendly)
         if (bustCache && srcEl) {
           srcEl.src = baseSrc + "?v=" + Date.now();
           audio.load();
@@ -477,7 +477,6 @@
       if (!audio.muted) restart({ bustCache:true });
     });
 
-    // autoplay unlock on first tap
     window.addEventListener("pointerdown", () => {
       if (!audio.muted && audio.paused) restart({ bustCache:false });
     }, { once:true });
