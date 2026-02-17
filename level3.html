@@ -18,10 +18,8 @@
     *{ box-sizing:border-box; }
     html,body{ height:100%; margin:0; background:#000; }
 
-    body{ overflow-x:hidden; }
-
     .hero{
-      height:100vh;
+      min-height:100vh;
       position:relative;
       overflow:hidden;
       display:flex;
@@ -31,10 +29,10 @@
       font-family: Georgia, "Times New Roman", serif;
     }
 
-    /* 🎬 Fixed background layer (fade-in) */
+    /* 🎬 Background layer (fade-in) */
     .bg{
-      position:fixed; inset:0;
-      background-image: url("level3.jpg");
+      position:absolute; inset:0;
+      background-image: url("level3.jpg"); /* ✅ FIXED */
       background-size: cover;
       background-position: center 30%;
       background-repeat: no-repeat;
@@ -50,30 +48,32 @@
       transform: scale(1);
     }
 
-    /* Dark overlay (fixed) */
-    #overlay{
-      position:fixed; inset:0;
-      z-index:1;
-      pointer-events:none;
-      opacity:0;
-      transition: opacity 2200ms ease;
+    /* Dark overlay */
+    .hero::before{
+      content:"";
+      position:absolute; inset:0;
       background:
         radial-gradient(circle at 50% 40%, rgba(0,0,0,0.06), rgba(0,0,0,0.52)),
         linear-gradient(to bottom, rgba(0,0,0,0.14), rgba(0,0,0,0.62));
-    }
-    #overlay.reveal{ opacity:1; }
-
-    /* Grain (fixed) */
-    #grain{
-      position:fixed; inset:0;
       z-index:1;
       pointer-events:none;
-      opacity:0;
+      opacity: 0;
       transition: opacity 2200ms ease;
+    }
+    .hero.reveal::before{ opacity: 1; }
+
+    /* Grain */
+    .hero::after{
+      content:"";
+      position:absolute; inset:0;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
       mix-blend-mode: overlay;
+      opacity: 0;
+      pointer-events:none;
+      z-index:1;
+      transition: opacity 2200ms ease;
     }
-    #grain.reveal{ opacity:.10; }
+    .hero.reveal::after{ opacity: .10; }
 
     /* ✅ Lantern glow follows cursor */
     #lantern{
@@ -128,7 +128,7 @@
       100%{ opacity: 1; }
     }
 
-    /* UI wrap (scrolling story, no box behind text) */
+    /* UI panel */
     .wrap{
       position: relative;
       z-index: 3;
@@ -137,21 +137,7 @@
       text-align: center;
       filter: drop-shadow(0 16px 22px var(--shadow));
       pointer-events:auto;
-
-      max-height: 86vh;
-      overflow:auto;
-      overscroll-behavior: contain;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255,255,255,0.20) rgba(0,0,0,0);
     }
-    .wrap::-webkit-scrollbar{ width: 10px; }
-    .wrap::-webkit-scrollbar-thumb{
-      background: rgba(255,255,255,0.16);
-      border-radius: 999px;
-      border: 2px solid rgba(0,0,0,0);
-      background-clip: padding-box;
-    }
-    .wrap::-webkit-scrollbar-track{ background: rgba(0,0,0,0); }
 
     .kicker{
       letter-spacing: 0.24em;
@@ -192,7 +178,6 @@
       max-width: 62ch;
       animation: candleFlicker 5s infinite ease-in-out;
       min-height: 12.5em;
-      user-select:none;
     }
 
     .story em{
@@ -201,12 +186,12 @@
       text-shadow: 0 0 10px rgba(140,0,0,0.22);
     }
 
-    /* ✅ Fog reveal lines (left→right mask clearing blur) */
+    /* ✅ Fog reveal lines (Entry standard) */
     .fogline{
       display:block;
       margin: 0 0 10px;
-      opacity: 0.30;
-      filter: blur(9px);
+      opacity: 0.28;
+      filter: blur(10px);
       transform: translateY(6px);
 
       -webkit-mask-image: linear-gradient(90deg,
@@ -238,7 +223,6 @@
         opacity: 1;
         filter: blur(0px);
         transform: translateY(0);
-
         -webkit-mask-position: -10% 0;
         mask-position: -10% 0;
       }
@@ -293,7 +277,6 @@
       color: rgba(255,255,255,0.55);
       letter-spacing: 0.08em;
       font-size: 12px;
-      user-select:none;
     }
 
     .wrong{ animation: shake 340ms ease; }
@@ -312,7 +295,6 @@
     @media (max-width: 600px){
       #lantern{ width: 300px; height: 300px; }
       .glyph{ font-size: 44px; }
-      .wrap{ max-height: 84vh; padding: 36px 16px; }
     }
 
     /* ✅ Audio button (standard) */
@@ -349,12 +331,11 @@
 </head>
 
 <body>
-  <div class="bg" id="bg" aria-hidden="true"></div>
-  <div id="overlay" aria-hidden="true"></div>
-  <div id="grain" aria-hidden="true"></div>
   <div id="veil" aria-hidden="true"></div>
 
   <main class="hero" id="hero">
+    <div class="bg" id="bg" aria-hidden="true"></div>
+
     <div id="lantern" aria-hidden="true"></div>
 
     <div class="glyph" id="g1" aria-hidden="true">T</div>
@@ -367,18 +348,15 @@
       <div class="kicker">Level 3</div>
       <h1>The Eye That Follow</h1>
 
+      <!-- ✅ Same story container, now fog-line based (no typewriter) -->
       <p class="story" id="story">
-        <span class="fogline">The corridor tightens like a throat, and every stone tastes of cold iron.</span>
-        <span class="fogline">Somewhere behind the walls, something drags its nails across a memory that isn’t yours.</span>
-
-        <span class="fogline">You pass a blackened statue — faceless, yet watching.</span>
-        <span class="fogline">Its shadow refuses the torchlight, bending the wrong way, as if it answers another sun.</span>
-
-        <span class="fogline">The deeper you descend, the more certain you become:</span>
-        <span class="fogline"><em>an eye is following you… and it does not blink.</em></span>
-
-        <span class="fogline">The castle offers no directions. Only hints—</span>
-        <span class="fogline"><em>if you dare to look where you shouldn’t.</em></span>
+        <span class="fogline">The corridor narrows like a throat. The air tastes of cold iron and old prayers.</span>
+        <span class="fogline">Somewhere behind the stone, something drags its nails across a memory it does not own.</span>
+        <span class="fogline">&nbsp;</span>
+        <span class="fogline">You pass a blackened statue—faceless, yet watching. Its shadow does not match the torchlight.</span>
+        <span class="fogline">The deeper you walk, the more you feel it: a gaze that does not blink.</span>
+        <span class="fogline">&nbsp;</span>
+        <span class="fogline">The castle offers no directions. Only hints… <em>if you dare to look where you shouldn’t.</em></span>
       </p>
 
       <div class="hint">Let the light guide you.</div>
@@ -436,7 +414,6 @@
 
         const el = glyphEls[h.key];
 
-        // scatter position (persistent per session)
         if (!el.dataset.sx){
           el.dataset.sx = (5 + Math.random() * 90).toFixed(2);
           el.dataset.sy = (8 + Math.random() * 84).toFixed(2);
@@ -512,10 +489,9 @@
 
   <script>
   (() => {
+    const heroEl = document.getElementById("hero");
     const bg = document.getElementById("bg");
     const veil = document.getElementById("veil");
-    const overlay = document.getElementById("overlay");
-    const grain = document.getElementById("grain");
 
     const storyEl = document.getElementById("story");
     const fogLines = storyEl ? Array.from(storyEl.querySelectorAll(".fogline")) : [];
@@ -524,7 +500,7 @@
     const voice = document.getElementById("mordainVoice");
     const amb = document.getElementById("level3Ambience");
 
-    if (!btn || !voice || !amb || !bg || !veil || !overlay || !grain || !storyEl) return;
+    if (!btn || !voice || !amb || !heroEl || !bg || !veil || !storyEl) return;
 
     const VOICE_TARGET = 0.74;
     const AMB_TARGET   = 0.30;
@@ -573,18 +549,14 @@
     }
 
     function revealVisuals(){
-      // veil lifts AFTER audio kicks in (or immediately if muted)
-      setTimeout(() => veil.classList.add("hide"), 250);
+      setTimeout(() => veil.classList.add("hide"), 350);
       setTimeout(() => { try{ veil.remove(); }catch(e){} }, 1400);
 
       setTimeout(() => {
         bg.classList.add("show");
-        overlay.classList.add("reveal");
-        grain.classList.add("reveal");
-      }, 380);
+        heroEl.classList.add("reveal");
+      }, 450);
     }
-
-    function wait(ms){ return new Promise(r => setTimeout(r, ms)); }
 
     function resetFog(){
       fogLines.forEach(l => l.classList.remove("reveal"));
@@ -603,7 +575,7 @@
         line.classList.add("reveal");
       });
 
-      // click story to instantly reveal everything
+      // click story to instantly reveal all
       storyEl.addEventListener("click", () => {
         fogLines.forEach(l => {
           l.style.setProperty("--fogDelay", "0ms");
@@ -649,13 +621,10 @@
     }, true);
 
     window.addEventListener("pageshow", async () => {
-      // Reset visuals/fog for bfcache restores
-      bg.classList.remove("show");
-      overlay.classList.remove("reveal");
-      grain.classList.remove("reveal");
+      // reset for bfcache restores
       resetFog();
 
-      // ✅ Voice starts first
+      // ✅ Voice starts before visuals (when unmuted)
       if (!voice.muted){
         await playBoth();
         setTimeout(revealVisuals, 220);
@@ -663,10 +632,9 @@
         revealVisuals();
       }
 
-      // ✅ Fog reveal tied to voice duration (slightly longer)
-      await wait(650);
+      // fog reveal tied to voice duration
       await ensureMetadata(900);
-      revealFogLines();
+      setTimeout(revealFogLines, 750);
     });
 
     // autoplay unlock on first tap
