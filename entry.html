@@ -14,7 +14,7 @@
       --muted: rgba(255,255,255,0.78);
       --shadow: rgba(0,0,0,0.65);
 
-      /* ✅ Background framing */
+      /* ✅ Background framing (tweakable without hunting code) */
       --bg-pos-desktop: center 24%;
       --bg-pos-mobile:  center 36%;
     }
@@ -39,10 +39,12 @@
       position: fixed;
       inset: 0;
       z-index: 0;
+
       background-image: url("entry.jpg");
       background-size: cover;
       background-repeat: no-repeat;
       background-position: var(--bg-pos-desktop);
+
       transform: scale(1.01);
       opacity: 0;
       transition: opacity 2200ms ease, transform 2800ms ease;
@@ -84,6 +86,7 @@
     }
     .hero.reveal::after{ opacity: .14; }
 
+    /* 🎬 Veil */
     #veil{
       position: fixed;
       inset: 0;
@@ -168,6 +171,9 @@
       user-select:none;
     }
 
+    /* =========================
+       🌫 LINE-BY-LINE FOG REVEAL
+    ========================== */
     .story{
       font-family: "Cormorant Garamond", serif;
       font-size: clamp(20px, 2.1vw, 24px);
@@ -244,57 +250,151 @@
     }
 
     /* =========================
-       ✅ SAME PASSWORD GATE AS LEVEL 3/4 (LOCK THIS)
-       - DO NOT change these classes on any page
+       ✅ PASSWORD BOX — EXACT COPY FROM LEVEL 4
     ========================== */
-    .seal{
+    .gateWrap{
+      width: min(560px, 92vw);
+      margin: 16px auto 0;
+      padding: 18px 16px 18px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(255,255,255,0.06), transparent 55%),
+        radial-gradient(circle at 82% 38%, rgba(160,60,40,0.10), transparent 62%),
+        linear-gradient(to bottom, rgba(0,0,0,0.28), rgba(0,0,0,0.10));
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(7px);
+      box-shadow:
+        0 22px 44px rgba(0,0,0,0.46),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      position: relative;
+      overflow:hidden;
+    }
+
+    .gateWrap::after{
+      content:"";
+      position:absolute;
+      left: 18px; right: 18px;
+      top: 46px;
+      height: 1px;
+      background: linear-gradient(90deg,
+        transparent,
+        rgba(232,210,170,0.14),
+        rgba(255,255,255,0.06),
+        rgba(232,210,170,0.12),
+        transparent
+      );
+      opacity: 0.85;
+      pointer-events:none;
+    }
+
+    .gateLabel{
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      font-size: 10px;
+      color: rgba(255,255,255,0.42);
+      margin: 0 0 14px;
+      user-select:none;
       display:flex;
+      align-items:center;
+      justify-content:center;
       gap: 10px;
+      text-shadow: 0 0 18px rgba(0,0,0,0.55);
+    }
+
+    .gateLabel .mark{
+      color: rgba(232, 210, 170, 0.52);
+      text-shadow: 0 0 16px rgba(160,60,40,0.20);
+      font-size: 12px;
+    }
+
+    .gate{
+      display:flex;
+      gap: 12px;
       justify-content:center;
       align-items:center;
       flex-wrap:wrap;
-      margin-top: 4px;
+      position: relative;
     }
 
-    .sealInput{
+    input[type="password"]{
       width: min(340px, 86vw);
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.12);
+      padding: 13px 16px;
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at 30% 28%, rgba(240,225,190,0.10), transparent 55%),
+        radial-gradient(circle at 70% 70%, rgba(140,60,40,0.08), transparent 60%),
+        linear-gradient(to bottom, rgba(18,14,12,0.68), rgba(8,7,7,0.78));
+      border: 1px solid rgba(255,255,255,0.16);
+      color: rgba(245,236,216,0.92);
       outline: none;
-
-      font-family: "Cormorant Garamond", serif;
+      letter-spacing: 0.16em;
       font-size: 14px;
-      letter-spacing: 0.12em;
-      color: rgba(255,255,255,0.92);
-
-      background: rgba(0,0,0,0.34);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
-      backdrop-filter: blur(6px);
-    }
-    .sealInput::placeholder{
-      color: rgba(255,255,255,0.28);
-    }
-    .sealInput:focus{
-      border-color: rgba(255,255,255,0.22);
+      font-family: "Cormorant Garamond", serif;
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.08),
-        0 0 0 1px rgba(255,255,255,0.06);
+        inset 0 0 0 1px rgba(0,0,0,0.55),
+        inset 0 0 26px rgba(0,0,0,0.45);
+      transition: border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
+      -webkit-text-security: disc;
     }
 
-    .sealBtn{
-      padding: 12px 16px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.06);
-      color: rgba(255,255,255,0.92);
+    input[type="password"]::placeholder{
+      color: rgba(232,210,170,0.35);
+      letter-spacing: 0.10em;
+    }
 
-      font-family: "Cinzel Decorative", serif;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
+    input[type="password"]:focus{
+      border-color: rgba(232, 210, 170, 0.30);
+      box-shadow:
+        0 0 0 3px rgba(232, 210, 170, 0.06),
+        0 0 28px rgba(160,60,40,0.12),
+        inset 0 0 0 1px rgba(0,0,0,0.55),
+        inset 0 0 28px rgba(0,0,0,0.50);
+      transform: translateY(-1px);
+    }
+
+    button{
+      padding: 13px 18px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.16);
       cursor:pointer;
-      user-select:none;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.10), transparent 55%),
+        linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(0,0,0,0.18));
+      color: rgba(245,236,216,0.92);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-family: "Cormorant Garamond", serif;
+      box-shadow:
+        0 14px 26px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      transition: transform 180ms ease, border-color 220ms ease, box-shadow 220ms ease, filter 220ms ease;
+      position: relative;
+      overflow:hidden;
     }
+
+    button::after{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(circle at 50% 20%, rgba(232,210,170,0.14), transparent 55%);
+      opacity: 0;
+      transition: opacity 220ms ease;
+      pointer-events:none;
+    }
+
+    button:hover{
+      border-color: rgba(232, 210, 170, 0.24);
+      box-shadow:
+        0 18px 34px rgba(0,0,0,0.42),
+        0 0 22px rgba(160,60,40,0.10),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+    }
+    button:hover::after{ opacity: 1; }
+    button:active{ transform: translateY(0px); }
+
+    /* ========================= */
 
     .msg{
       margin-top: 14px;
@@ -375,22 +475,28 @@
 
       <div class="hint">the dark speaks in numbers</div>
 
-      <!-- ✅ SAME GATE COMPONENT -->
-      <div class="seal">
-        <input id="pw" class="sealInput" type="password" placeholder="password…" autocomplete="off" />
-        <button id="btn" class="sealBtn" type="button">UNSEAL</button>
+      <!-- ✅ Gate (EXACT Level 4 gate) -->
+      <div class="gateWrap">
+        <div class="gateLabel"><span class="mark">⟡</span> Offer your answer <span class="mark">⟡</span></div>
+        <div class="gate">
+          <input id="pw" type="password" placeholder="whisper it…" autocomplete="off" />
+          <button id="btn" type="button">UNSEAL</button>
+        </div>
       </div>
 
       <div class="msg" id="msg"></div>
     </section>
   </main>
 
+  <!-- ✅ One button controls BOTH -->
   <button id="muteBtn" aria-label="Toggle audio">🔊</button>
 
+  <!-- 🩸 Mordain Voice -->
   <audio id="mordainVoice" preload="auto" playsinline>
     <source src="audio/mordain-whisper.mp3" type="audio/mpeg">
   </audio>
 
+  <!-- 🌫 Entry Ambience -->
   <audio id="entryAmbience" loop preload="auto" playsinline>
     <source src="audio/entry-ambience.mp3" type="audio/mpeg">
   </audio>
@@ -400,6 +506,7 @@
 
     /* =========================
        👻 DESCEND LETTER FLASHES (ONLY DESCEND)
+       slower + longer
     ========================== */
     const sequence = [
       { ch: "D", flashes: 1 },
@@ -453,8 +560,8 @@
     async function flashLetterNTimes(letter, n){
       for (let i = 0; i < n; i++){
         spawnGlyph(letter, true);
-        await wait(680);
-        await wait(420);
+        await wait(680);  // ON (longer)
+        await wait(420);  // OFF (longer)
       }
     }
 
@@ -495,13 +602,11 @@
         pw.select();
       }
     }
-
     btn.addEventListener("click", check);
     pw.addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
 
     /* =========================
        🎬 Visuals + 🔊 Audio + 🌫 Line Reveal
-       ✅ fast fade-in for voice so first words are audible
     ========================== */
     (() => {
       const heroEl = document.getElementById("hero");
@@ -527,7 +632,8 @@
       voice.volume = 0;
       amb.volume = 0;
 
-      function fadeTo(audio, target, step=0.14, interval=40){
+      /* ✅ Faster fade-in so first words don't get swallowed */
+      function fadeTo(audio, target, step=0.12, interval=55){
         try{
           let v = audio.volume || 0;
           const id = setInterval(() => {
@@ -551,8 +657,8 @@
           if (!voice.muted){
             voice.volume = Math.min(VOICE_TARGET, 0.62);
             amb.volume   = Math.min(AMB_TARGET,   0.24);
-            fadeTo(voice, VOICE_TARGET, 0.14, 40);
-            fadeTo(amb,   AMB_TARGET,   0.07, 70);
+            fadeTo(voice, VOICE_TARGET, 0.12, 55);
+            fadeTo(amb,   AMB_TARGET,   0.06, 80);
           }
         }catch(e){}
       }
