@@ -181,7 +181,7 @@
     }
 
     /* =========================
-       🌫 LINE-BY-LINE FOG REVEAL
+       🌫 LINE-BY-LINE FOG REVEAL (NOT WHOLE BLOCK)
     ========================== */
     .story{
       font-family: "Cormorant Garamond", serif;
@@ -206,6 +206,7 @@
       opacity: 0.85;
       filter: blur(2.1px);
 
+      /* start hidden by mask */
       -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 60%);
       -webkit-mask-size: 240% 100%;
       -webkit-mask-position: 100% 0;
@@ -252,7 +253,7 @@
     .final.show{ opacity: 1; transform: translateY(0); }
 
     .hint{
-      margin: 18px auto 18px;
+      margin: 18px auto 24px;
       color: rgba(255,255,255,0.36);
       letter-spacing: 0.14em;
       text-transform: uppercase;
@@ -262,9 +263,10 @@
 
     /* =========================
        🗝 ANTIQUE SEAL GATE (LOCKED CORE)
+       (DO NOT CHANGE ACROSS PAGES)
     ========================== */
     .seal{
-      margin-top: 8px;
+      margin-top: 6px;
       display:flex;
       gap: 12px;
       justify-content:center;
@@ -432,6 +434,7 @@
       <div class="kicker">Level 1</div>
       <h1>The Castle Remembers</h1>
 
+      <!-- ✅ Story (line-by-line fog reveal) -->
       <div class="story" id="story">
         <span class="fogLine">
           The door shuts without a sound—yet the air grows heavier, as if the stone itself
@@ -458,7 +461,7 @@
 
       <div class="hint">the dark speaks in numbers</div>
 
-      <!-- ✅ ANTIQUE SEAL GATE (UNSEAL) -->
+      <!-- ✅ LOCKED GATE (same everywhere) -->
       <div class="seal" aria-label="Seal Gate">
         <div class="sealLabel">Unseal the way</div>
 
@@ -593,7 +596,7 @@
 
     /* =========================
        🎬 Visuals + 🔊 Audio + 🌫 Line Reveal
-       CHANGE: much faster voice fade-in (so “YES” is audible)
+       CHANGE: Voice fade-in is FAST (no swallowed first word)
     ========================== */
     (() => {
       const heroEl = document.getElementById("hero");
@@ -608,7 +611,6 @@
 
       if (!muteBtn || !voice || !amb || !heroEl || !bg || !veil || !revealLines.length) return;
 
-      // ✅ MIX (entry ambience louder)
       const VOICE_TARGET = 0.74;
       const AMB_TARGET   = 0.40;
 
@@ -620,8 +622,8 @@
       voice.volume = 0;
       amb.volume = 0;
 
-      // ✅ Faster fade helper (or near-instant)
-      function fadeTo(audio, target, step=0.10, interval=55){
+      // Faster fade helper
+      function fadeTo(audio, target, step=0.12, interval=45){
         try{
           let v = audio.volume || 0;
           const id = setInterval(() => {
@@ -637,10 +639,10 @@
           voice.currentTime = 0;
           amb.currentTime = 0;
 
-          // ✅ Make voice audible immediately, then snap to target fast
+          // Make voice audible immediately
           if (!voice.muted){
-            voice.volume = Math.min(VOICE_TARGET, 0.55); // immediate “presence”
-            amb.volume   = Math.min(AMB_TARGET,   0.20);
+            voice.volume = Math.min(VOICE_TARGET, 0.55);
+            amb.volume   = Math.min(AMB_TARGET,   0.22);
           }
 
           const p1 = voice.play();
@@ -649,7 +651,7 @@
           if (p2 && p2.catch) p2.catch(()=>{});
 
           if (!voice.muted){
-            fadeTo(voice, VOICE_TARGET, 0.12, 45); // ~0.2–0.3s to full
+            fadeTo(voice, VOICE_TARGET, 0.12, 45);
             fadeTo(amb,   AMB_TARGET,   0.06, 70);
           }
         }catch(e){}
