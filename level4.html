@@ -14,6 +14,7 @@
       --hint: rgba(255,255,255,0.42);
       --shadow: rgba(0,0,0,0.72);
 
+      /* ✅ Crop/reframe background here */
       --bg-pos-desktop: center 45%;
       --bg-pos-mobile:  center 52%;
     }
@@ -21,6 +22,11 @@
     *{ box-sizing:border-box; }
     html,body{ height:100%; margin:0; background:#000; font-family: Georgia, "Times New Roman", serif; }
 
+    /* =========================
+       🎬 HERO / BACKGROUND (LOCKED)
+       - background fixed
+       - text scrolls
+    ========================== */
     .hero{
       min-height:100vh;
       position:relative;
@@ -46,6 +52,7 @@
       transform: scale(1.01);
       opacity: 0;
       transition: opacity 2200ms ease, transform 2800ms ease;
+      will-change: opacity, transform;
     }
     .bg.show{ opacity: 1; transform: scale(1); }
 
@@ -53,6 +60,7 @@
       .bg{ background-position: var(--bg-pos-mobile); }
     }
 
+    /* Dark overlay (fades in) */
     .hero::before{
       content:"";
       position: fixed;
@@ -67,6 +75,7 @@
     }
     .hero.reveal::before{ opacity: 1; }
 
+    /* Grain (fades in) */
     .hero::after{
       content:"";
       position: fixed;
@@ -80,6 +89,7 @@
     }
     .hero.reveal::after{ opacity: .10; }
 
+    /* Veil */
     #veil{
       position: fixed;
       inset: 0;
@@ -91,13 +101,17 @@
     }
     #veil.hide{ opacity: 0; }
 
+    /* =========================
+       🕯 UI (LOCKED)
+    ========================== */
     .wrap{
       position: relative;
       z-index: 3;
       width: min(820px, 92vw);
-      padding: 42px 22px 54px;
+      padding: 42px 22px 96px; /* extra bottom space so inventory never overlaps */
       text-align: center;
       filter: drop-shadow(0 16px 22px var(--shadow));
+      pointer-events:auto;
     }
 
     @keyframes candleFlicker {
@@ -116,8 +130,12 @@
       color: #e8e2d6;
       margin: 0 0 14px;
       animation: candleFlicker 3.5s infinite ease-in-out;
+      user-select:none;
     }
 
+    /* =========================
+       🌫 ENTRY-STYLE FOG REVEAL (SLOWER)
+    ========================== */
     .story{
       font-family: "Cormorant Garamond", serif;
       font-size: clamp(20px, 2.1vw, 24px);
@@ -129,6 +147,8 @@
       animation: candleFlicker 5s infinite ease-in-out;
       text-align: left;
     }
+
+    .sigil{ color: inherit; text-decoration:none; border-bottom:0; }
 
     .fogLine{
       display:block;
@@ -146,7 +166,7 @@
     }
 
     .fogLine.run{
-      animation: fogLineReveal var(--dur, 4s) ease forwards;
+      animation: fogLineReveal var(--dur, 4.5s) ease forwards;
       animation-delay: var(--delay, 0s);
     }
 
@@ -172,8 +192,43 @@
       font-size: 12px;
       letter-spacing: 0.16em;
       text-transform: uppercase;
+      user-select:none;
+      text-align:center;
     }
 
+    .sep{
+      height:1px;
+      width:min(560px, 92vw);
+      margin: 18px auto 14px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent);
+      opacity: .85;
+    }
+
+    .riddleTitle{
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: 11px;
+      color: rgba(255,255,255,0.34);
+      margin: 0 0 8px;
+      user-select:none;
+    }
+
+    .riddleText{
+      font-family: "Cormorant Garamond", serif;
+      font-size: 16px;
+      line-height: 1.35;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      text-align:center;
+      color: rgba(255,255,255,0.22);
+      text-shadow: 0 1px 0 rgba(0,0,0,0.85), 0 -1px 0 rgba(255,255,255,0.06);
+      max-width: 62ch;
+      margin: 0 auto;
+      user-select:none;
+    }
+
+    /* Gate */
     .gate{
       display:flex;
       gap: 10px;
@@ -195,6 +250,7 @@
       font-size: 14px;
       font-family: "Cormorant Garamond", serif;
     }
+    input[type="password"]::placeholder{ color: rgba(255,255,255,0.28); }
 
     button{
       padding: 12px 16px;
@@ -214,6 +270,7 @@
       color: rgba(255,255,255,0.55);
       letter-spacing: 0.08em;
       font-size: 12px;
+      user-select:none;
     }
 
     .wrong{ animation: shake 340ms ease; }
@@ -229,41 +286,169 @@
     .fadeOut{ animation: fade 700ms ease forwards; }
     @keyframes fade{ to{ opacity:0; transform: translateY(6px); } }
 
+    /* ✅ Audio button (standard) */
     #muteBtn{
       position: fixed;
       top: 18px;
       right: 18px;
       z-index: 2147483647;
+      pointer-events:auto;
+      cursor:pointer;
       background: rgba(0,0,0,.45);
       border: 1px solid rgba(255,255,255,.28);
       color: rgba(255,255,255,.95);
       padding: 10px 12px;
       border-radius: 999px;
       font-family:'Cormorant Garamond',serif;
-      cursor:pointer;
+      backdrop-filter: blur(6px);
+      -webkit-tap-highlight-color: transparent;
+      user-select:none;
+    }
+
+    /* =========================
+       🎒 INVENTORY (3 slots, persistent)
+    ========================== */
+    #inventory{
+      position: fixed;
+      left: 50%;
+      bottom: 14px;
+      transform: translateX(-50%);
+      z-index: 2147483645;
+      display:flex;
+      flex-direction: column;
+      align-items:center;
+      gap: 8px;
+      pointer-events: none; /* purely display */
+      user-select: none;
+    }
+
+    #invLabel{
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-size: 10px;
+      color: rgba(255,255,255,0.40);
+      text-shadow: 0 0 18px rgba(0,0,0,0.65);
+      opacity: 0.95;
+    }
+
+    #invSlots{
+      display:flex;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.28);
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 18px 34px rgba(0,0,0,0.40);
+    }
+
+    .slot{
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255,255,255,0.10), rgba(0,0,0,0.12) 60%),
+        rgba(0,0,0,0.18);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color: rgba(255,255,255,0.58);
+      font-family: "Cormorant Garamond", serif;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 16px rgba(0,0,0,0.75);
+    }
+
+    .slot.filled{
+      color: rgba(255,255,255,0.90);
+      border-color: rgba(255,255,255,0.22);
+      text-shadow: 0 0 14px rgba(120,0,0,0.28);
+    }
+
+    @media (max-width: 520px){
+      #invSlots{ gap: 8px; padding: 9px 10px; }
+      .slot{ width: 48px; height: 48px; border-radius: 13px; }
     }
   </style>
 </head>
 
 <body>
-  <div id="veil"></div>
+  <div id="veil" aria-hidden="true"></div>
 
   <main class="hero" id="hero">
-    <div class="bg" id="bg"></div>
+    <div class="bg" id="bg" aria-hidden="true"></div>
 
     <section class="wrap" id="wrap">
       <h1>The Halls of the Whispering Stone</h1>
 
+      <!-- ✅ Story stays your content, just split into fog lines for reveal -->
       <div class="story" id="story">
         <span class="fogLine">The stairs spiral down far longer than they should.</span>
-        <span class="fogLine">Your footsteps echo, but the echo returns a fraction too late—like something is repeating them after you.</span>
-        <span class="fogLine">At the bottom, the stairwell opens into a corridor carved from black rock.</span>
-        <span class="fogLine">The walls are covered with shapes that almost look like faces.</span>
-        <span class="fogLine">Halfway down, the whispers begin.</span>
-        <span class="fogLine">At the far end stands a door of pale marble.</span>
+
+        <span class="fogLine">
+          Your footsteps echo, but the echo returns a fraction too late—like something is repeating them after you.
+          The air tastes of dust and old iron.
+        </span>
+
+        <span class="fogLine">
+          At the bottom, the stairwell opens into a corridor carved from black rock. No torches. No windows.
+          Yet you can see.
+        </span>
+
+        <span class="fogLine">
+          The walls are covered with shapes that almost look like faces, stretching outward from the stone,
+          mouths open in silent warnings. Their eyes follow you as you walk.
+        </span>
+
+        <span class="fogLine">
+          Halfway down, the whispers begin. Not loud enough to understand—layered, desperate, overlapping.
+          Some beg. Some laugh. Some repeat the same word again and again.
+        </span>
+
+        <span class="fogLine">
+          At the far end stands a door of pale marble, untouched by age. Letters carve themselves into its surface,
+          as if written by an invisible claw. The whispers stop. One voice remains:
+        </span>
+
+        <span class="fogLine">
+          “If you wish to go further, you must answer.
+          Speak the thing that is taken from you the moment you try to hold it.”
+        </span>
+
+        <span class="fogLine">
+          The corridor feels <span class="sigil">B</span>lessed and cursed at once—like it was built to listen.
+          Your chest rises, then stills, as if the stone is counting.
+          The marble waits, patient as <span class="sigil">R</span>uins.
+        </span>
+
+        <span class="fogLine">
+          You try to steady yourself, but the air refuses to belong to you.
+          The walls drink warmth with every step, and even the silence feels <span class="sigil">E</span>arned.
+        </span>
+
+        <span class="fogLine">
+          A thin fog curls along the floor, slipping around your ankles like a warning you can’t <span class="sigil">A</span>void.
+          Somewhere behind the stone faces, something sighs.
+        </span>
+
+        <span class="fogLine">
+          Instinct says to hold on—but the moment you grip it, it leaves you. Always. Without <span class="sigil">T</span>ouch.
+        </span>
+
+        <span class="fogLine">
+          The last whisper is close enough to feel against your skin—
+          a reminder that even courage needs a <span class="sigil">H</span>ollow space to enter.
+        </span>
       </div>
 
       <div class="hint">Read like the castle writes.</div>
+
+      <div class="sep"></div>
+
+      <div class="riddleTitle">Riddle</div>
+      <div class="riddleText">WHAT IS TAKEN FROM YOU THE MOMENT YOU TRY TO HOLD IT?</div>
 
       <div class="gate">
         <input id="pw" type="password" placeholder="password…" autocomplete="off" />
@@ -274,35 +459,250 @@
     </section>
   </main>
 
-  <button id="muteBtn">🔊</button>
+  <!-- 🎒 Inventory UI -->
+  <div id="inventory" aria-hidden="true">
+    <div id="invLabel">Inventory</div>
+    <div id="invSlots">
+      <div class="slot" id="slot0">—</div>
+      <div class="slot" id="slot1">—</div>
+      <div class="slot" id="slot2">—</div>
+    </div>
+  </div>
 
+  <!-- 🔊 One button controls BOTH -->
+  <button id="muteBtn" aria-label="Toggle audio">🔊</button>
+
+  <!-- Mordain Voice -->
   <audio id="mordainVoice" preload="auto" playsinline>
     <source src="audio/mordain-level4.mp3" type="audio/mpeg">
   </audio>
 
+  <!-- Level 4 Ambience -->
   <audio id="level4Ambience" loop preload="auto" playsinline>
     <source src="audio/level4-ambience.mp3" type="audio/mpeg">
   </audio>
 
   <script>
-    const revealLines = Array.from(document.querySelectorAll(".fogLine"));
+    // Password: accept both
+    const ACCEPTED = new Set(["BREATHE", "BREATH"]);
 
-    function startLineReveal(){
-      const n = revealLines.length;
+    const wrap = document.getElementById("wrap");
+    const pw = document.getElementById("pw");
+    const btn = document.getElementById("btn");
+    const msg = document.getElementById("msg");
 
-      const MIN_TOTAL = 60;      // MUCH slower total
-      const MIN_LINE_DUR = 4.5;  // slower per line
-      const MIN_GAP = 0.9;       // more breathing
-      const START_DELAY = 1.2;
+    function check(){
+      const val = (pw.value || "").trim().toUpperCase();
+      if (!val) return;
 
-      revealLines.forEach((line, i) => {
-        line.style.setProperty("--dur", `${MIN_LINE_DUR}s`);
-        line.style.setProperty("--delay", `${(START_DELAY + i * MIN_GAP)}s`);
-        line.classList.add("run");
-      });
+      if (ACCEPTED.has(val)){
+        msg.textContent = "…";
+        setTimeout(() => wrap.classList.add("fadeOut"), 650);
+        setTimeout(() => window.location.href = "level5.html", 1350);
+      } else {
+        msg.textContent = "Not yet.";
+        wrap.classList.remove("wrong");
+        void wrap.offsetWidth;
+        wrap.classList.add("wrong");
+        pw.select();
+      }
     }
 
-    window.addEventListener("load", startLineReveal);
+    btn.addEventListener("click", check);
+    pw.addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
+
+    /* =========================
+       🎒 Inventory persistence (3 slots)
+       localStorage key: ofs_inventory  -> JSON array length 3
+    ========================== */
+    const INV_KEY = "ofs_inventory";
+
+    function loadInv(){
+      try{
+        const raw = localStorage.getItem(INV_KEY);
+        const parsed = raw ? JSON.parse(raw) : null;
+        if (Array.isArray(parsed) && parsed.length === 3) return parsed;
+      }catch(e){}
+      return [null, null, null];
+    }
+
+    function saveInv(inv){
+      try{ localStorage.setItem(INV_KEY, JSON.stringify(inv)); }catch(e){}
+    }
+
+    function renderInv(inv){
+      for (let i = 0; i < 3; i++){
+        const el = document.getElementById("slot" + i);
+        const item = inv[i];
+        if (!el) continue;
+
+        if (item && String(item).trim()){
+          el.textContent = String(item).slice(0, 10); // short label
+          el.classList.add("filled");
+        } else {
+          el.textContent = "—";
+          el.classList.remove("filled");
+        }
+      }
+    }
+
+    // Minimal API for later levels
+    window.ofsInv = {
+      get(){
+        return loadInv().slice();
+      },
+      set(slotIndex, label){
+        const inv = loadInv();
+        if (slotIndex < 0 || slotIndex > 2) return inv;
+        inv[slotIndex] = label ? String(label) : null;
+        saveInv(inv);
+        renderInv(inv);
+        return inv;
+      },
+      add(label){
+        const inv = loadInv();
+        const idx = inv.findIndex(x => !x);
+        if (idx === -1) return inv; // full
+        inv[idx] = label ? String(label) : "Item";
+        saveInv(inv);
+        renderInv(inv);
+        return inv;
+      },
+      clear(){
+        const inv = [null,null,null];
+        saveInv(inv);
+        renderInv(inv);
+        return inv;
+      }
+    };
+
+    // initial render
+    renderInv(loadInv());
+
+    /* =========================
+       🎬 Visuals + 🔊 Audio + 🌫 Slow Fog Reveal (LOCKED)
+    ========================== */
+    (() => {
+      const heroEl = document.getElementById("hero");
+      const bg = document.getElementById("bg");
+      const veil = document.getElementById("veil");
+      const revealLines = Array.from(document.querySelectorAll(".fogLine"));
+
+      const muteBtn = document.getElementById("muteBtn");
+      const voice = document.getElementById("mordainVoice");
+      const amb = document.getElementById("level4Ambience");
+
+      if (!muteBtn || !voice || !amb || !heroEl || !bg || !veil || !revealLines.length) return;
+
+      const VOICE_TARGET = 0.74;
+      const AMB_TARGET   = 0.30;
+
+      const savedMuted = localStorage.getItem("ofs_mute") === "1";
+      voice.muted = savedMuted;
+      amb.muted = savedMuted;
+      muteBtn.textContent = savedMuted ? "🔇" : "🔊";
+
+      voice.volume = 0;
+      amb.volume = 0;
+
+      function fadeTo(audio, target, step=0.02, interval=120){
+        try{
+          let v = audio.volume || 0;
+          const id = setInterval(() => {
+            v = Math.min(target, v + step);
+            audio.volume = v;
+            if (v >= target) clearInterval(id);
+          }, interval);
+        }catch(e){}
+      }
+
+      async function playBoth(){
+        try{
+          voice.currentTime = 0;
+          amb.currentTime = 0;
+
+          const p1 = voice.play();
+          const p2 = amb.play();
+          if (p1 && p1.catch) p1.catch(()=>{});
+          if (p2 && p2.catch) p2.catch(()=>{});
+
+          if (!voice.muted){
+            voice.volume = 0;
+            amb.volume = 0;
+            fadeTo(voice, VOICE_TARGET, 0.02, 120);
+            fadeTo(amb,   AMB_TARGET,   0.012, 140);
+          }
+        }catch(e){}
+      }
+
+      function stopBoth(){
+        try{ voice.pause(); }catch(e){}
+        try{ amb.pause(); }catch(e){}
+      }
+
+      function revealVisuals(){
+        setTimeout(() => veil.classList.add("hide"), 380);
+        setTimeout(() => { try{ veil.remove(); }catch(e){} }, 1500);
+
+        setTimeout(() => {
+          bg.classList.add("show");
+          heroEl.classList.add("reveal");
+        }, 420);
+      }
+
+      // ✅ Slower than entry/level3 baseline (locked)
+      function startLineReveal(){
+        const n = revealLines.length;
+
+        // optional: stretch if voice is LONG, never speed up
+        const voiceDur = (isFinite(voice.duration) && voice.duration > 2) ? voice.duration : 0;
+
+        const MIN_TOTAL    = 60;  // overall minimum
+        const MIN_LINE_DUR = 4.5; // per line
+        const MIN_GAP      = 0.9; // between lines
+        const START_DELAY  = 1.2;
+
+        const total = Math.max(MIN_TOTAL, voiceDur ? (voiceDur * 1.05) : 0);
+
+        let gap = (total / n) * 0.22;
+        let lineDur = (total / n) * 1.05;
+
+        gap = Math.max(MIN_GAP, gap);
+        lineDur = Math.max(MIN_LINE_DUR, lineDur);
+
+        revealLines.forEach((line, i) => {
+          line.style.setProperty("--dur", `${lineDur.toFixed(2)}s`);
+          line.style.setProperty("--delay", `${(START_DELAY + i * gap).toFixed(2)}s`);
+          line.classList.add("run");
+        });
+      }
+
+      muteBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const newMuted = !voice.muted;
+        voice.muted = newMuted;
+        amb.muted = newMuted;
+
+        localStorage.setItem("ofs_mute", newMuted ? "1" : "0");
+        muteBtn.textContent = newMuted ? "🔇" : "🔊";
+
+        if (!newMuted) playBoth();
+        else stopBoth();
+      }, true);
+
+      window.addEventListener("pageshow", async () => {
+        revealVisuals();
+        if (!voice.muted) await playBoth();
+        startLineReveal();
+      });
+
+      window.addEventListener("pointerdown", () => {
+        if (!voice.muted && (voice.paused || amb.paused)) playBoth();
+      }, { once:true });
+
+    })();
   </script>
 </body>
 </html>
