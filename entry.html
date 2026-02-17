@@ -25,25 +25,12 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      background:#000;
-    }
 
-    /* ✅ Background layer (so we can fade it in) */
-    .bg{
-      position:absolute;
-      inset:0;
+      /* ✅ Your background image */
       background-image: url("entry.jpg");
       background-size: cover;
       background-position: center 30%;
       background-repeat: no-repeat;
-      opacity: 0;
-      transform: scale(1.02);
-      transition: opacity 2200ms ease, transform 3000ms ease;
-      z-index: 0;
-    }
-    .bg.show{
-      opacity: 1;
-      transform: scale(1);
     }
 
     /* Dark overlay */
@@ -56,10 +43,7 @@
         linear-gradient(to bottom, rgba(0,0,0,0.25), rgba(0,0,0,0.55));
       z-index: 1;
       pointer-events:none;
-      opacity: 0;
-      transition: opacity 2200ms ease;
     }
-    .hero.reveal::before{ opacity: 1; }
 
     /* Subtle grain */
     .hero::after{
@@ -68,12 +52,10 @@
       inset:0;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.20'/%3E%3C/svg%3E");
       mix-blend-mode: overlay;
-      opacity: 0;
+      opacity: .14;
       pointer-events:none;
       z-index: 1;
-      transition: opacity 2200ms ease;
     }
-    .hero.reveal::after{ opacity: .14; }
 
     /* Floating letters layer */
     #specters{
@@ -147,14 +129,13 @@
 
     .story{
       font-family: "Cormorant Garamond", serif;
-      font-size: clamp(20px, 2.1vw, 24px);
-      line-height: 1.75;
-      letter-spacing: 0.04em;
+      font-size: 17px;
+      line-height: 1.65;
+      letter-spacing: 0.03em;
       color: rgba(255,255,255,0.75);
       margin: 0 auto 22px;
       max-width: 56ch;
       animation: candleFlicker 5s infinite ease-in-out;
-      min-height: 12.5em; /* stops layout jump while typing */
     }
 
     .story em{
@@ -241,17 +222,17 @@
     .fadeOut{ animation: fade 700ms ease forwards; }
     @keyframes fade{ to{ opacity:0; transform: translateY(6px); } }
 
-    /* ✅ Single global audio button (required standard) */
+    /* Ensure the mute button is always clickable above everything */
     #muteBtn{
       position: fixed;
       top: 18px;
       right: 18px;
-      z-index: 2147483647;
+      z-index: 999999;
       pointer-events: auto;
       cursor: pointer;
-      background: rgba(0,0,0,.45);
-      border: 1px solid rgba(255,255,255,.28);
-      color: rgba(255,255,255,.95);
+      background: rgba(0,0,0,.35);
+      border: 1px solid rgba(255,255,255,.25);
+      color: rgba(255,255,255,.85);
       padding: 10px 12px;
       border-radius: 999px;
       font-family: 'Cormorant Garamond', serif;
@@ -259,37 +240,19 @@
       -webkit-tap-highlight-color: transparent;
       user-select:none;
     }
-
-    /* 🎬 Veil (brief darkness) */
-    #veil{
-      position: fixed;
-      inset: 0;
-      background: #000;
-      opacity: 1;
-      z-index: 2147483646;
-      pointer-events:none;
-      transition: opacity 900ms ease;
-    }
-    #veil.hide{ opacity: 0; }
-
-    /* Prevent selection while typing (keeps it “cinematic”) */
-    .typing .story{ user-select:none; }
   </style>
 </head>
 
-<body class="typing">
-  <!-- 🎬 Darkness veil -->
-  <div id="veil" aria-hidden="true"></div>
+<body>
 
-  <main class="hero" id="hero">
-    <div class="bg" id="bg" aria-hidden="true"></div>
+  <main class="hero">
     <div id="specters" aria-hidden="true"></div>
 
     <section class="wrap" id="wrap">
       <div class="kicker">Level 1</div>
       <h1>The Castle Remembers</h1>
 
-      <p class="story" id="story">
+      <p class="story">
         The door shuts without a sound—yet the air grows heavier, as if the stone itself
         has been holding its breath for centuries.
         <br><br>
@@ -338,14 +301,23 @@
       el.className = "glyph" + (isFlash ? " flash" : "");
       el.textContent = ch;
 
+      // Peripheral positioning (edges)
       const pickEdgeBand = () => {
         const r = Math.random();
+
+        // Left or right edge
         if (r < 0.50) {
-          const x = (r < 0.25) ? (4 + Math.random() * 14) : (82 + Math.random() * 14);
+          const x = (r < 0.25)
+            ? (4 + Math.random() * 14)    // left 4–18%
+            : (82 + Math.random() * 14);  // right 82–96%
           const y = 10 + Math.random() * 80;
           return { x, y };
         }
-        const y = (r < 0.75) ? (5 + Math.random() * 14) : (81 + Math.random() * 14);
+
+        // Top or bottom edge
+        const y = (r < 0.75)
+          ? (5 + Math.random() * 14)      // top 5–19%
+          : (81 + Math.random() * 14);    // bottom 81–95%
         const x = 12 + Math.random() * 76;
         return { x, y };
       };
@@ -372,11 +344,12 @@
       return a;
     }
 
+    // ✅ UPDATED: slower + longer for ALL letters
     async function flashLetterNTimes(letter, n){
       for (let i = 0; i < n; i++){
         spawnGlyph(letter, true);
-        await wait(420);
-        await wait(260);
+        await wait(720);  // longer ON
+        await wait(420);  // longer OFF
       }
     }
 
@@ -391,13 +364,16 @@
 
     async function runSequenceForever(){
       startAmbientDecoys();
+
       while(true){
         const randomized = shuffle(sequence);
+
         for (const item of randomized){
           await flashLetterNTimes(item.ch, item.flashes);
-          await wait(1400);
+          await wait(2000); // ✅ slower between groups
         }
-        await wait(2200);
+
+        await wait(3200); // ✅ slower between cycles
       }
     }
     runSequenceForever();
@@ -432,232 +408,79 @@
     });
   </script>
 
-  <!-- 🩸 Single audio button (controls BOTH voice + ambience) -->
+  <!-- Audio + Mute button placed at end so everything exists -->
   <button id="muteBtn" aria-label="Toggle audio">🔊</button>
 
-  <!-- Mordain Voice -->
-  <audio id="mordainVoice" preload="auto" playsinline>
+  <audio id="mordainVoice" autoplay preload="auto" playsinline>
     <source id="mordainSrc" src="audio/mordain-whisper.mp3" type="audio/mpeg">
-  </audio>
-
-  <!-- Entry Ambience -->
-  <audio id="entryAmbience" loop preload="auto" playsinline>
-    <source id="entryAmbienceSrc" src="audio/entry-ambience.mp3" type="audio/mpeg">
   </audio>
 
   <script>
   (() => {
-    const hero = document.getElementById("hero");
-    const bg = document.getElementById("bg");
-    const veil = document.getElementById("veil");
-
-    const storyEl = document.getElementById("story");
-    const originalHTML = storyEl.innerHTML; // keep your formatting
-    storyEl.innerHTML = ""; // start blank for typewriter
-
+    // Grab existing elements (works even if you pasted other scripts)
+    const audio = document.getElementById("mordainVoice");
     const btn = document.getElementById("muteBtn");
-    const voice = document.getElementById("mordainVoice");
-    const amb = document.getElementById("entryAmbience");
+    const srcEl = document.getElementById("mordainSrc");
+    const baseSrc = "audio/mordain-whisper.mp3";
 
-    if (!btn || !voice || !amb || !hero || !bg || !veil || !storyEl) return;
+    if (!audio || !btn) return;
 
-    // --- audio settings ---
-    const VOICE_TARGET = 0.74;  // intimate but clear
-    const AMB_TARGET   = 0.30;  // background only (doesn't fight voice)
-
-    // saved mute
+    // Restore mute state
     const savedMuted = localStorage.getItem("ofs_mute") === "1";
-    voice.muted = savedMuted;
-    amb.muted = savedMuted;
-    btn.textContent = savedMuted ? "🔇" : "🔊";
+    audio.muted = savedMuted;
+    btn.textContent = audio.muted ? "🔇" : "🔊";
 
-    // start with 0 volume, then fade in (refined entrance)
-    voice.volume = 0;
-    amb.volume = 0;
+    // Keep it intimate
+    const TARGET = 0.85;
+    audio.volume = 0;
 
-    function fadeTo(audio, target, step=0.02, interval=120){
-      try{
-        let v = audio.volume || 0;
-        const id = setInterval(() => {
-          v = Math.min(target, v + step);
-          audio.volume = v;
-          if (v >= target) clearInterval(id);
-        }, interval);
-      } catch(e){}
+    function fadeIn(){
+      let v = 0;
+      audio.volume = 0;
+      const id = setInterval(() => {
+        v = Math.min(TARGET, v + 0.02);
+        audio.volume = v;
+        if (v >= TARGET) clearInterval(id);
+      }, 120);
     }
 
-    async function playBoth(){
+    function restart({ bustCache } = { bustCache: false }){
       try{
-        voice.currentTime = 0;
-        amb.currentTime = 0;
+        audio.pause();
+        audio.currentTime = 0;
 
-        const p1 = voice.play();
-        const p2 = amb.play();
-        if (p1 && p1.catch) p1.catch(()=>{});
-        if (p2 && p2.catch) p2.catch(()=>{});
-
-        if (!voice.muted) {
-          voice.volume = 0;
-          amb.volume = 0;
-          fadeTo(voice, VOICE_TARGET, 0.02, 120);
-          fadeTo(amb,   AMB_TARGET,   0.012, 140);
+        // optional cache bust (dev-friendly)
+        if (bustCache && srcEl) {
+          srcEl.src = baseSrc + "?v=" + Date.now();
+          audio.load();
         }
-      } catch(e){}
+
+        const p = audio.play();
+        if (p && p.catch) p.catch(()=>{});
+        if (!audio.muted) fadeIn();
+      }catch(e){}
     }
 
-    function stopBoth(){
-      try{ voice.pause(); }catch(e){}
-      try{ amb.pause(); }catch(e){}
-    }
-
-    // --- cinematic reveal ---
-    function revealVisuals(){
-      // keep darkness briefly, then fade away
-      setTimeout(() => veil.classList.add("hide"), 350);
-      setTimeout(() => veil.remove(), 1400);
-
-      // image + overlays fade
-      setTimeout(() => {
-        bg.classList.add("show");
-        hero.classList.add("reveal");
-      }, 450);
-    }
-
-    // --- typewriter that preserves tags like <br> and <em> ---
-    function typeHTML(el, html, cps){
-      return new Promise((resolve) => {
-        const tokens = html.match(/<\/?[^>]+>|[^<]+/g) || [];
-        let i = 0;
-        let charIndex = 0;
-        let currentText = "";
-        let currentTagBuffer = "";
-
-        // Pre-calc total visible chars
-        const totalChars = tokens
-          .filter(t => t[0] !== "<")
-          .join("")
-          .replace(/\s+/g, " ").length;
-
-        const interval = Math.max(12, Math.floor(1000 / Math.max(10, cps)));
-
-        const timer = setInterval(() => {
-          if (i >= tokens.length){
-            clearInterval(timer);
-            el.innerHTML = currentText + currentTagBuffer;
-            document.body.classList.remove("typing");
-            resolve();
-            return;
-          }
-
-          const tok = tokens[i];
-
-          // Tag: append instantly
-          if (tok[0] === "<"){
-            currentTagBuffer += tok;
-            i++;
-            el.innerHTML = currentText + currentTagBuffer;
-            return;
-          }
-
-          // Text: type char-by-char
-          const chunk = tok;
-          const nextChar = chunk[charIndex];
-          if (nextChar == null){
-            i++;
-            charIndex = 0;
-            return;
-          }
-
-          currentText += nextChar;
-          charIndex++;
-          el.innerHTML = currentText + currentTagBuffer;
-
-        }, interval);
-
-        // click story to instantly reveal (quality of life)
-        el.addEventListener("click", () => {
-          clearInterval(timer);
-          el.innerHTML = html;
-          document.body.classList.remove("typing");
-          resolve();
-        }, { once:true });
-      });
-    }
-
-    function computeCPS(){
-      // Aim: finish around near the voice ending (but not depend on autoplay)
-      // Use voice duration if available; else a safe fallback.
-      const duration = (isFinite(voice.duration) && voice.duration > 1) ? voice.duration : 22;
-      // Let typing end ~90% of duration
-      const targetTime = Math.max(14, duration * 0.9);
-
-      // Estimate total visible characters
-      const plain = originalHTML
-        .replace(/<[^>]+>/g, "")
-        .replace(/\s+/g, " ")
-        .trim();
-      const total = plain.length || 380;
-
-      // cps = chars per second
-      let cps = total / targetTime;
-
-      // clamp so it stays cinematic, not frantic / not asleep
-      cps = Math.max(14, Math.min(28, cps));
-      return cps;
-    }
-
-    async function startTypewriter(){
-      // slight delay so visuals begin first
-      await wait(700);
-
-      const cps = computeCPS();
-      await typeHTML(storyEl, originalHTML, cps);
-    }
-
-    function wait(ms){ return new Promise(r => setTimeout(r, ms)); }
-
-    // --- Button ---
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
 
-      const newMuted = !(voice.muted);
-      voice.muted = newMuted;
-      amb.muted = newMuted;
-      localStorage.setItem("ofs_mute", newMuted ? "1" : "0");
-      btn.textContent = newMuted ? "🔇" : "🔊";
+      audio.muted = !audio.muted;
+      localStorage.setItem("ofs_mute", audio.muted ? "1" : "0");
+      btn.textContent = audio.muted ? "🔇" : "🔊";
 
-      if (!newMuted){
-        playBoth();
-      } else {
-        stopBoth();
-      }
+      if (!audio.muted) restart({ bustCache:false });
+      else audio.pause();
     }, true);
 
-    // --- Page show / unlock ---
-    window.addEventListener("pageshow", async () => {
-      revealVisuals();
-
-      // Try to start audio on show (may be blocked until first tap)
-      if (!voice.muted){
-        await playBoth();
-      }
-
-      // Start typing regardless (it’s the visual hook)
-      startTypewriter();
+    window.addEventListener("pageshow", () => {
+      if (!audio.muted) restart({ bustCache:true });
     });
 
-    // Autoplay unlock: first tap anywhere starts audio if blocked
+    // autoplay unlock on first tap
     window.addEventListener("pointerdown", () => {
-      if (!voice.muted && (voice.paused || amb.paused)){
-        playBoth();
-      }
+      if (!audio.muted && audio.paused) restart({ bustCache:false });
     }, { once:true });
-
-    // Also: if metadata arrives later, we can optionally re-tune typing speed (we keep it simple)
-    voice.addEventListener("loadedmetadata", () => {
-      // no-op by design (we already started typing)
-    });
 
   })();
   </script>
