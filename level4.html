@@ -148,7 +148,7 @@
       mask-position: 100% 0;
     }
     .fogLine.run{
-      animation: fogLineReveal var(--dur, 4.8s) ease forwards;
+      animation: fogLineReveal var(--dur, 5.4s) ease forwards;
       animation-delay: var(--delay, 0s);
     }
     @keyframes fogLineReveal{
@@ -200,23 +200,19 @@
     }
 
     /* =========================
-       🗝 PASSWORD BOX (ONLY CHANGE)
-       - ritual slot
-       - no white “bank input”
-       - subtle rune underline + glow
+       🗝 PASSWORD BOX (UPGRADED)
+       - “carved altar + aged parchment slot”
+       - kills the white “bank” vibe
     ========================== */
     .gateWrap{
       width: min(560px, 92vw);
       margin: 16px auto 0;
       padding: 18px 16px 18px;
       border-radius: 22px;
-
-      /* “carved stone + smoke” */
       background:
         radial-gradient(circle at 18% 18%, rgba(255,255,255,0.06), transparent 55%),
         radial-gradient(circle at 82% 38%, rgba(160,60,40,0.10), transparent 62%),
-        linear-gradient(to bottom, rgba(0,0,0,0.26), rgba(0,0,0,0.10));
-
+        linear-gradient(to bottom, rgba(0,0,0,0.28), rgba(0,0,0,0.10));
       border: 1px solid rgba(255,255,255,0.12);
       backdrop-filter: blur(7px);
       box-shadow:
@@ -226,7 +222,6 @@
       overflow:hidden;
     }
 
-    /* faint “rune ring” line */
     .gateWrap::after{
       content:"";
       position:absolute;
@@ -256,7 +251,6 @@
       align-items:center;
       justify-content:center;
       gap: 10px;
-      position: relative;
       text-shadow: 0 0 18px rgba(0,0,0,0.55);
     }
 
@@ -275,18 +269,20 @@
       position: relative;
     }
 
+    /* ✅ The input now feels like aged parchment INSET into stone */
     input[type="password"]{
       width: min(340px, 86vw);
       padding: 13px 16px;
       border-radius: 16px;
 
-      /* kill the white look */
+      /* parchment + soot + vignette */
       background:
-        radial-gradient(circle at 25% 20%, rgba(255,255,255,0.06), transparent 58%),
-        rgba(0,0,0,0.42);
+        radial-gradient(circle at 30% 28%, rgba(240,225,190,0.10), transparent 55%),
+        radial-gradient(circle at 70% 70%, rgba(140,60,40,0.08), transparent 60%),
+        linear-gradient(to bottom, rgba(18,14,12,0.68), rgba(8,7,7,0.78));
 
       border: 1px solid rgba(255,255,255,0.16);
-      color: rgba(255,255,255,0.92);
+      color: rgba(245,236,216,0.92); /* warmer, not stark white */
       outline: none;
 
       letter-spacing: 0.16em;
@@ -294,15 +290,14 @@
       font-family: "Cormorant Garamond", serif;
 
       box-shadow:
-        inset 0 0 0 1px rgba(0,0,0,0.45),
-        inset 0 0 22px rgba(0,0,0,0.35);
-
+        inset 0 0 0 1px rgba(0,0,0,0.55),
+        inset 0 0 26px rgba(0,0,0,0.45);
       transition: border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
       -webkit-text-security: disc;
     }
 
     input[type="password"]::placeholder{
-      color: rgba(255,255,255,0.30);
+      color: rgba(232,210,170,0.35);
       letter-spacing: 0.10em;
     }
 
@@ -310,9 +305,9 @@
       border-color: rgba(232, 210, 170, 0.30);
       box-shadow:
         0 0 0 3px rgba(232, 210, 170, 0.06),
-        0 0 26px rgba(160,60,40,0.12),
-        inset 0 0 0 1px rgba(0,0,0,0.45),
-        inset 0 0 24px rgba(0,0,0,0.38);
+        0 0 28px rgba(160,60,40,0.12),
+        inset 0 0 0 1px rgba(0,0,0,0.55),
+        inset 0 0 28px rgba(0,0,0,0.50);
       transform: translateY(-1px);
     }
 
@@ -321,21 +316,16 @@
       border-radius: 16px;
       border: 1px solid rgba(255,255,255,0.16);
       cursor:pointer;
-
-      /* “wax seal / ember” vibe */
       background:
         radial-gradient(circle at 30% 30%, rgba(255,255,255,0.10), transparent 55%),
         linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(0,0,0,0.18));
-
-      color: rgba(255,255,255,0.92);
+      color: rgba(245,236,216,0.92);
       letter-spacing: 0.16em;
       text-transform: uppercase;
       font-family: "Cormorant Garamond", serif;
-
       box-shadow:
         0 14px 26px rgba(0,0,0,0.35),
         inset 0 1px 0 rgba(255,255,255,0.08);
-
       transition: transform 180ms ease, border-color 220ms ease, box-shadow 220ms ease, filter 220ms ease;
       position: relative;
       overflow:hidden;
@@ -543,12 +533,11 @@
       <div class="riddleTitle">Riddle</div>
       <div class="riddleText">WHAT IS TAKEN FROM YOU THE MOMENT YOU TRY TO HOLD IT?</div>
 
-      <!-- ✅ Ritual Gate -->
       <div class="gateWrap">
         <div class="gateLabel"><span class="mark">⟡</span> Offer your answer <span class="mark">⟡</span></div>
         <div class="gate">
           <input id="pw" type="password" placeholder="whisper it…" autocomplete="off" />
-          <button id="btn">ENTER</button>
+          <button id="btn">UNSEAL</button>
         </div>
       </div>
 
@@ -735,12 +724,13 @@
         const n = revealLines.length;
         const voiceDur = (isFinite(voice.duration) && voice.duration > 2) ? voice.duration : 0;
 
-        const MIN_TOTAL    = 68;
-        const MIN_LINE_DUR = 5.0;
-        const MIN_GAP      = 1.05;
-        const START_DELAY  = 1.25;
+        // ✅ slightly slower than before (but not too much)
+        const MIN_TOTAL    = 74;   // was 68
+        const MIN_LINE_DUR = 5.8;  // was 5.4
+        const MIN_GAP      = 1.15; // was 1.05
+        const START_DELAY  = 1.35; // was 1.25
 
-        const total = Math.max(MIN_TOTAL, voiceDur ? (voiceDur * 1.07) : 0);
+        const total = Math.max(MIN_TOTAL, voiceDur ? (voiceDur * 1.10) : 0);
 
         let gap = (total / n) * 0.22;
         let lineDur = (total / n) * 1.05;
