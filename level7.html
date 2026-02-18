@@ -1,0 +1,895 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ONLYFORSAKEN — Level 7</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --text: rgba(255,255,255,0.90);
+      --muted: rgba(255,255,255,0.55);
+      --shadow: rgba(0,0,0,0.70);
+
+      /* cinematic background control (non-stretched, mobile-consistent framing) */
+      --bg-img: url("image.jpg");
+      --bg-zoom-desktop: 1.02;
+      --bg-zoom-mobile: 1.08;
+
+      /* locked preference */
+      --bg-pos-desktop: 50% 50%;
+      --bg-pos-mobile: 50% 50%;
+
+      --wrap-max: 900px;
+
+      --fog-min: 18px;
+      --fog-max: 24px;
+
+      --seal-border: rgba(255,255,255,0.18);
+      --seal-fill: rgba(0,0,0,0.40);
+
+      --accent: rgba(120,255,190,0.95);
+      --sigilTint: rgba(120,255,190,0.22); /* VERY subtle hint */
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; margin:0; background:#000; color:var(--text); }
+    body{
+      font-family: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+      overflow-x:hidden;
+    }
+
+    /* fixed cinematic background */
+    .bg{
+      position:fixed; inset:0;
+      background-image: var(--bg-img);
+      background-size: cover;
+      background-repeat:no-repeat;
+      transform: scale(var(--bg-zoom-desktop));
+      transform-origin: center;
+      background-position: var(--bg-pos-desktop);
+      filter: saturate(1.05) contrast(1.05);
+      opacity:0;
+      transition: opacity 1200ms ease;
+      will-change: transform, opacity;
+    }
+
+    /* soft veil fade */
+    .veil{
+      position:fixed; inset:0;
+      background: #000;
+      opacity:1;
+      pointer-events:none;
+      transition: opacity 900ms ease;
+    }
+
+    /* grain */
+    .grain{
+      position:fixed; inset:-20%;
+      pointer-events:none;
+      opacity:0.12;
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+      animation: grainMove 8s steps(2) infinite;
+    }
+    @keyframes grainMove{
+      0%{ transform: translate3d(-2%, -2%, 0); }
+      50%{ transform: translate3d(2%, 1%, 0); }
+      100%{ transform: translate3d(-1%, 2%, 0); }
+    }
+
+    /* page layout */
+    .wrap{
+      position:relative;
+      width:min(var(--wrap-max), calc(100% - 28px));
+      margin: 0 auto;
+      padding: 26px 0 80px;
+      min-height:100vh;
+    }
+
+    .topRow{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding-top: 10px;
+    }
+
+    .brand{
+      font-family:"Cinzel Decorative", serif;
+      font-weight:700;
+      letter-spacing:0.08em;
+      font-size: 14px;
+      color: rgba(255,255,255,0.78);
+      text-transform:uppercase;
+    }
+
+    /* audio button (single control) */
+    .audioBtn{
+      appearance:none;
+      border:1px solid rgba(255,255,255,0.18);
+      background: rgba(0,0,0,0.35);
+      color: rgba(255,255,255,0.85);
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-family: "Cinzel Decorative", serif;
+      font-size: 12px;
+      letter-spacing:0.08em;
+      cursor:pointer;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      user-select:none;
+    }
+    .audioBtn:active{ transform: translateY(1px); }
+
+    /* inventory (3 slots) */
+    .inv{
+      margin-top: 14px;
+      display:flex;
+      justify-content:center;
+    }
+    .invBar{
+      width:min(520px, 100%);
+      border:1px solid rgba(255,255,255,0.16);
+      background: rgba(0,0,0,0.35);
+      border-radius: 18px;
+      padding: 10px 12px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 16px 60px rgba(0,0,0,0.45);
+    }
+    .invTitle{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom:8px;
+      color: rgba(255,255,255,0.72);
+      font-family:"Cinzel Decorative", serif;
+      letter-spacing:0.08em;
+      font-size:12px;
+      text-transform:uppercase;
+    }
+    .slots{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:10px;
+    }
+    .slot{
+      border:1px solid rgba(255,255,255,0.18);
+      background: rgba(0,0,0,0.25);
+      border-radius: 16px;
+      height:58px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      overflow:hidden;
+    }
+    .slot::after{
+      content:"";
+      position:absolute; inset:0;
+      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.08), transparent 55%);
+      opacity:0.6;
+      pointer-events:none;
+    }
+    .slotIcon{
+      font-size:22px;
+      line-height:1;
+      filter: drop-shadow(0 6px 18px rgba(0,0,0,0.65));
+    }
+    .slotName{
+      position:absolute;
+      bottom:6px;
+      left:8px;
+      right:8px;
+      font-size:12px;
+      color: rgba(255,255,255,0.70);
+      text-align:center;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      letter-spacing:0.02em;
+    }
+    .empty{
+      color: rgba(255,255,255,0.28);
+      font-size:12px;
+      letter-spacing:0.08em;
+      font-family:"Cinzel Decorative", serif;
+      text-transform:uppercase;
+    }
+
+    /* main panel */
+    .panel{
+      margin-top: 18px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.42);
+      border-radius: 26px;
+      padding: 22px 18px 18px;
+      box-shadow: 0 22px 90px rgba(0,0,0,0.55);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      overflow:hidden;
+      position:relative;
+    }
+    .panel::before{
+      content:"";
+      position:absolute; inset:0;
+      background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.06), transparent 55%),
+                  radial-gradient(circle at 20% 90%, rgba(120,255,190,0.06), transparent 45%);
+      pointer-events:none;
+    }
+
+    h1{
+      margin: 0 0 8px;
+      text-align:center;
+      font-family:"Cinzel Decorative", serif;
+      font-weight:700;
+      letter-spacing:0.06em;
+      color: rgba(255,255,255,0.92);
+      font-size: clamp(26px, 4.2vw, 40px);
+      text-transform:uppercase;
+    }
+
+    .sub{
+      margin: 0 0 16px;
+      text-align:center;
+      color: rgba(255,255,255,0.70);
+      letter-spacing:0.10em;
+      text-transform:uppercase;
+      font-family:"Cinzel Decorative", serif;
+      font-size: 12px;
+    }
+
+    /* story text */
+    .story{
+      margin: 0 auto;
+      max-width: 64ch;
+      font-size: clamp(20px, 2.2vw, 24px);
+      line-height: 1.75;
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.88);
+      text-shadow: 0 10px 40px rgba(0,0,0,0.60);
+    }
+    .story .muted{
+      color: var(--muted);
+    }
+
+    /* fog reveal lines */
+    .fogLine{
+      position:relative;
+      display:block;
+      margin: 0 0 14px;
+      filter: blur(7px);
+      opacity: 0.15;
+      transform: translateY(6px);
+      clip-path: inset(0 100% 0 0);
+      will-change: clip-path, filter, opacity, transform;
+    }
+    .fogLine.reveal{
+      animation: fogReveal var(--dur, 1400ms) ease forwards;
+    }
+    @keyframes fogReveal{
+      0%{
+        clip-path: inset(0 100% 0 0);
+        filter: blur(9px);
+        opacity:0.10;
+        transform: translateY(7px);
+      }
+      70%{
+        opacity:0.90;
+      }
+      100%{
+        clip-path: inset(0 0 0 0);
+        filter: blur(0px);
+        opacity:1;
+        transform: translateY(0);
+      }
+    }
+
+    .sigil{
+      color: rgba(255,255,255,0.92);
+      text-shadow: 0 0 18px rgba(120,255,190,0.22);
+      background: linear-gradient(transparent, transparent);
+      border-bottom: 1px solid rgba(120,255,190,0.18);
+      box-shadow: inset 0 -14px 0 var(--sigilTint);
+      padding: 0 2px;
+      border-radius: 6px;
+    }
+
+    /* antique seal gate (isolated classes) */
+    .seal{
+      margin: 18px auto 0;
+      max-width: 560px;
+      border: 1px solid var(--seal-border);
+      background: var(--seal-fill);
+      border-radius: 22px;
+      padding: 14px 14px 16px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 18px 70px rgba(0,0,0,0.55);
+      position:relative;
+      overflow:hidden;
+    }
+    .seal::before{
+      content:"";
+      position:absolute; inset:-1px;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(255,255,255,0.06), transparent 55%),
+        radial-gradient(circle at 70% 90%, rgba(120,255,190,0.07), transparent 48%);
+      pointer-events:none;
+    }
+    .sealLabel{
+      text-align:center;
+      font-family:"Cinzel Decorative", serif;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      font-size: 12px;
+      color: rgba(255,255,255,0.78);
+      margin-bottom:10px;
+      position:relative;
+      z-index:1;
+    }
+    .sealRow{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      position:relative;
+      z-index:1;
+    }
+    .sealInput{
+      flex:1;
+      border: 1px solid rgba(255,255,255,0.20);
+      background: rgba(0,0,0,0.35);
+      border-radius: 18px;
+      padding: 12px 14px;
+      color: rgba(255,255,255,0.92);
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing:0.14em;
+      text-transform:uppercase;
+      font-size: 13px;
+      outline:none;
+    }
+    .sealInput::placeholder{
+      color: rgba(255,255,255,0.35);
+      letter-spacing:0.10em;
+    }
+    .sealBtn{
+      border: 1px solid rgba(255,255,255,0.22);
+      background: rgba(0,0,0,0.35);
+      color: rgba(255,255,255,0.90);
+      padding: 12px 14px;
+      border-radius: 18px;
+      font-family:"Cinzel Decorative", serif;
+      letter-spacing:0.10em;
+      font-size: 12px;
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .sealBtn:active{ transform: translateY(1px); }
+
+    .sealMsg{
+      margin-top:10px;
+      text-align:center;
+      font-size: 16px;
+      color: rgba(255,255,255,0.72);
+      letter-spacing:0.02em;
+      min-height: 22px;
+      position:relative;
+      z-index:1;
+    }
+
+    /* rune section (unlocked) */
+    .runeZone{
+      margin: 16px auto 0;
+      max-width: 560px;
+      border: 1px solid rgba(120,255,190,0.22);
+      background: rgba(0,0,0,0.32);
+      border-radius: 22px;
+      padding: 16px 14px;
+      display:none;
+      position:relative;
+      overflow:hidden;
+    }
+    .runeZone::before{
+      content:"";
+      position:absolute; inset:-1px;
+      background: radial-gradient(circle at 50% 20%, rgba(120,255,190,0.10), transparent 58%);
+      pointer-events:none;
+    }
+    .runeTitle{
+      text-align:center;
+      font-family:"Cinzel Decorative", serif;
+      letter-spacing:0.10em;
+      text-transform:uppercase;
+      font-size: 12px;
+      color: rgba(255,255,255,0.80);
+      margin-bottom:10px;
+      position:relative;
+      z-index:1;
+    }
+    .runeCard{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      position:relative;
+      z-index:1;
+    }
+    .runeGem{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .gemIcon{
+      width:46px; height:46px;
+      border-radius: 16px;
+      border:1px solid rgba(120,255,190,0.25);
+      background: radial-gradient(circle at 30% 30%, rgba(120,255,190,0.35), rgba(0,0,0,0.15) 60%),
+                  rgba(0,0,0,0.25);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow: 0 18px 60px rgba(0,0,0,0.55);
+      font-size: 20px;
+    }
+    .gemText{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .gemName{
+      font-size: 18px;
+      letter-spacing:0.04em;
+      color: rgba(255,255,255,0.90);
+    }
+    .gemDesc{
+      font-size: 14px;
+      color: rgba(255,255,255,0.62);
+      letter-spacing:0.02em;
+    }
+    .claimBtn{
+      border:1px solid rgba(120,255,190,0.30);
+      background: rgba(0,0,0,0.35);
+      color: rgba(255,255,255,0.92);
+      padding: 12px 14px;
+      border-radius: 18px;
+      font-family:"Cinzel Decorative", serif;
+      letter-spacing:0.10em;
+      font-size:12px;
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .claimBtn[disabled]{
+      opacity:0.55;
+      cursor:not-allowed;
+    }
+
+    .nextRow{
+      margin-top: 14px;
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      display:none;
+    }
+    .nextBtn{
+      border:1px solid rgba(255,255,255,0.22);
+      background: rgba(0,0,0,0.34);
+      color: rgba(255,255,255,0.90);
+      padding: 12px 16px;
+      border-radius: 18px;
+      font-family:"Cinzel Decorative", serif;
+      letter-spacing:0.10em;
+      font-size:12px;
+      cursor:pointer;
+      user-select:none;
+      text-transform:uppercase;
+    }
+
+    /* fade-out transition */
+    .fadeOut{
+      animation: fadeOut 650ms ease forwards;
+    }
+    @keyframes fadeOut{
+      to{ opacity:0; transform: translateY(4px); }
+    }
+
+    /* mobile framing tweaks */
+    @media (max-width: 720px){
+      .bg{
+        transform: scale(var(--bg-zoom-mobile));
+        background-position: var(--bg-pos-mobile);
+      }
+      .panel{ padding: 20px 14px 16px; border-radius: 24px; }
+      .sealRow{ flex-direction:column; }
+      .sealBtn, .sealInput{ width:100%; }
+      .runeCard{ flex-direction:column; align-items:stretch; }
+      .claimBtn{ width:100%; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg" id="bg"></div>
+  <div class="grain"></div>
+  <div class="veil" id="veil"></div>
+
+  <main class="wrap" id="page">
+    <div class="topRow">
+      <div class="brand">ONLYFORSAKEN</div>
+      <button class="audioBtn" id="audioBtn" type="button">MUTE</button>
+    </div>
+
+    <!-- Inventory UI (persistent, 3 slots) -->
+    <div class="inv">
+      <div class="invBar">
+        <div class="invTitle">
+          <span>Inventory</span>
+          <span id="invHint" style="color:rgba(255,255,255,0.45); font-size:11px; letter-spacing:0.10em;">3 SLOTS</span>
+        </div>
+        <div class="slots" id="slots"></div>
+      </div>
+    </div>
+
+    <section class="panel">
+      <h1>Level 7 — The Emerald Rune</h1>
+      <p class="sub">DISCOVER • UNSEAL • CLAIM</p>
+
+      <div class="story" id="story">
+        <span class="fogLine">The corridor breaks into a chamber that smells of wet stone and old incense—like a cathedral that forgot its god.</span>
+        <span class="fogLine">At its center stands a low pedestal. No dust dares settle on it. The air above it trembles, tinted faintly green.</span>
+        <span class="fogLine">You hear <span class="muted">Mordain</span> before you see anything else—his voice not in the room, but behind your eyes: <span class="muted">“Do not stare too long. Green is the color of permission.”</span></span>
+        <span class="fogLine">A gem rests where an offering should be—cut like a sealed tear. Inside it, a rune curls like a living thought.</span>
+        <span class="fogLine">Carvings ring the pedestal in a language that remembers you. The words are broken… yet the meaning is intact.</span>
+
+        <span class="fogLine"><span class="muted">Riddle:</span> I am the hunger that grows in gardens. I am the shade beneath the serpent’s skin. Speak my name to wake what waits.</span>
+
+        <span class="fogLine">The ring of carvings repeats the answer as if it’s ashamed to be obvious, hiding it in plain sight:</span>
+        <span class="fogLine">
+          <span class="sigil">V</span>ines choke the altar’s edge, <span class="sigil">E</span>ach root drinking secrets,
+          <span class="sigil">R</span>eturning them as breath. <span class="sigil">D</span>eep in the stone,
+          <span class="sigil">A</span> pulse answers you. <span class="sigil">N</span>o prayer is needed—
+          only the word that means <span class="sigil">T</span>hriving.
+        </span>
+
+        <span class="fogLine">Mordain whispers, softer: <span class="muted">“Take it. You will need it when the heart begins to bargain.”</span></span>
+      </div>
+
+      <!-- Password gate -->
+      <div class="seal" id="seal">
+        <div class="sealLabel">Enter the word</div>
+        <div class="sealRow">
+          <input class="sealInput" id="sealInput" autocomplete="off" spellcheck="false" placeholder="TYPE HERE" />
+          <button class="sealBtn" id="sealBtn" type="button">UNSEAL</button>
+        </div>
+        <div class="sealMsg" id="sealMsg"></div>
+      </div>
+
+      <!-- Rune claim zone -->
+      <div class="runeZone" id="runeZone">
+        <div class="runeTitle">Pedestal Unsealed</div>
+        <div class="runeCard">
+          <div class="runeGem">
+            <div class="gemIcon" aria-hidden="true">🟩</div>
+            <div class="gemText">
+              <div class="gemName">Emerald Rune</div>
+              <div class="gemDesc">A green gem etched with a living rune.</div>
+            </div>
+          </div>
+          <button class="claimBtn" id="claimBtn" type="button">CLAIM RUNE</button>
+        </div>
+        <div class="sealMsg" id="claimMsg" style="margin-top:10px;"></div>
+        <div class="nextRow" id="nextRow">
+          <button class="nextBtn" id="nextBtn" type="button">Proceed</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!--
+    AUDIO FILES (place these next to this HTML)
+    - voice:  level7-voice.mp3
+    - ambience: level7-ambience.mp3
+    If you don’t have them yet, leave the files missing; the page still works.
+  -->
+  <audio id="voice" preload="auto" src="level7-voice.mp3"></audio>
+  <audio id="amb" preload="auto" loop src="level7-ambience.mp3"></audio>
+
+  <script>
+    /* ---------------------------
+       Locked persistence keys
+    --------------------------- */
+    const KEY_MUTE = "ofs_mute";
+    const KEY_INV  = "ofs_inventory";
+
+    /* ---------------------------
+       Password (chosen for this level)
+    --------------------------- */
+    const PASSWORD = "VERDANT";
+
+    /* ---------------------------
+       Rune item definition
+    --------------------------- */
+    const RUNE_ITEM = {
+      id: "rune_emerald",
+      name: "Emerald Rune",
+      icon: "🟩"
+    };
+
+    /* ---------------------------
+       Elements
+    --------------------------- */
+    const bg = document.getElementById("bg");
+    const veil = document.getElementById("veil");
+    const page = document.getElementById("page");
+
+    const audioBtn = document.getElementById("audioBtn");
+    const voice = document.getElementById("voice");
+    const amb = document.getElementById("amb");
+
+    const slotsEl = document.getElementById("slots");
+
+    const sealInput = document.getElementById("sealInput");
+    const sealBtn = document.getElementById("sealBtn");
+    const sealMsg = document.getElementById("sealMsg");
+
+    const runeZone = document.getElementById("runeZone");
+    const claimBtn = document.getElementById("claimBtn");
+    const claimMsg = document.getElementById("claimMsg");
+    const nextRow = document.getElementById("nextRow");
+    const nextBtn = document.getElementById("nextBtn");
+
+    const fogLines = Array.from(document.querySelectorAll(".fogLine"));
+
+    /* ---------------------------
+       Inventory helpers
+    --------------------------- */
+    function loadInventory(){
+      try{
+        const raw = localStorage.getItem(KEY_INV);
+        const inv = raw ? JSON.parse(raw) : null;
+        if(Array.isArray(inv) && inv.length === 3) return inv;
+      }catch(e){}
+      return [null, null, null];
+    }
+
+    function saveInventory(inv){
+      localStorage.setItem(KEY_INV, JSON.stringify(inv));
+    }
+
+    function renderInventory(){
+      const inv = loadInventory();
+      slotsEl.innerHTML = "";
+      inv.forEach((it, idx) => {
+        const slot = document.createElement("div");
+        slot.className = "slot";
+        slot.setAttribute("data-slot", String(idx));
+
+        if(!it){
+          const empty = document.createElement("div");
+          empty.className = "empty";
+          empty.textContent = "EMPTY";
+          slot.appendChild(empty);
+        }else{
+          const icon = document.createElement("div");
+          icon.className = "slotIcon";
+          icon.textContent = it.icon || "◆";
+
+          const name = document.createElement("div");
+          name.className = "slotName";
+          name.textContent = it.name || it.id;
+
+          slot.appendChild(icon);
+          slot.appendChild(name);
+        }
+
+        slotsEl.appendChild(slot);
+      });
+    }
+
+    function hasItem(id){
+      const inv = loadInventory();
+      return inv.some(it => it && it.id === id);
+    }
+
+    function addToInventory(item){
+      const inv = loadInventory();
+      if(inv.some(it => it && it.id === item.id)) return { ok:false, reason:"already" };
+
+      const emptyIndex = inv.findIndex(it => !it);
+      if(emptyIndex === -1) return { ok:false, reason:"full" };
+
+      inv[emptyIndex] = item;
+      saveInventory(inv);
+      renderInventory();
+      return { ok:true, slot: emptyIndex };
+    }
+
+    /* ---------------------------
+       Audio system (single mute/unmute)
+       - persistent mute via localStorage
+       - unlock autoplay on first pointerdown
+       - pageshow restart
+       - baseline mix: voice 0.74, ambience 0.30
+    --------------------------- */
+    let audioUnlocked = false;
+
+    function getMuted(){
+      return localStorage.getItem(KEY_MUTE) === "1";
+    }
+    function setMuted(m){
+      localStorage.setItem(KEY_MUTE, m ? "1" : "0");
+      updateAudioState();
+    }
+
+    function updateAudioState(){
+      const muted = getMuted();
+      audioBtn.textContent = muted ? "UNMUTE" : "MUTE";
+
+      voice.volume = 0.74;
+      amb.volume = 0.30;
+
+      voice.muted = muted;
+      amb.muted = muted;
+
+      if(audioUnlocked){
+        if(!muted){
+          // try play; ignore failures (no files yet / browser policy)
+          amb.play().catch(()=>{});
+          voice.play().catch(()=>{});
+        }else{
+          amb.pause();
+          voice.pause();
+        }
+      }
+    }
+
+    function unlockAudio(){
+      if(audioUnlocked) return;
+      audioUnlocked = true;
+      updateAudioState();
+    }
+
+    audioBtn.addEventListener("click", () => {
+      setMuted(!getMuted());
+    });
+
+    window.addEventListener("pointerdown", unlockAudio, { once:true });
+
+    window.addEventListener("pageshow", () => {
+      // Restart each time page is shown from bfcache
+      audioUnlocked = false;
+      voice.currentTime = 0;
+      amb.currentTime = 0;
+      // try unlock immediately (user gesture may not exist, so we keep pointerdown too)
+      updateAudioState();
+    });
+
+    /* ---------------------------
+       Fog reveal pacing (tied to voice duration)
+       - slightly longer than voice
+    --------------------------- */
+    function startFogReveal(){
+      const fallbackVoice = 52; // seconds, cinematic default
+      const voiceDur = (isFinite(voice.duration) && voice.duration > 0) ? voice.duration : fallbackVoice;
+      const total = voiceDur * 1.08; // slightly longer than voice
+
+      const per = Math.max(0.9, total / Math.max(1, fogLines.length)); // seconds
+      fogLines.forEach((line, i) => {
+        const delay = i * per;
+        const dur = Math.max(1.2, per * 0.95);
+        line.style.setProperty("--dur", (dur * 1000).toFixed(0) + "ms");
+        line.style.animationDelay = delay.toFixed(2) + "s";
+        line.classList.add("reveal");
+      });
+    }
+
+    /* ---------------------------
+       Gate + Unseal
+    --------------------------- */
+    function normalize(v){
+      return (v || "").toString().trim().toUpperCase();
+    }
+
+    function unlockPedestal(){
+      sealMsg.textContent = "The seal exhales. The pedestal recognizes you.";
+      runeZone.style.display = "block";
+      // subtle scroll into view
+      setTimeout(() => runeZone.scrollIntoView({ behavior:"smooth", block:"center" }), 150);
+    }
+
+    function failSeal(){
+      sealMsg.textContent = "Nothing moves. The stone waits for the true word.";
+      sealMsg.style.color = "rgba(255,255,255,0.72)";
+      // tiny shake (inline)
+      const seal = document.getElementById("seal");
+      seal.animate(
+        [{ transform:"translateX(0)" }, { transform:"translateX(-6px)" }, { transform:"translateX(6px)" }, { transform:"translateX(0)" }],
+        { duration: 260, easing:"ease-out" }
+      );
+    }
+
+    function tryUnseal(){
+      const v = normalize(sealInput.value);
+      if(v === PASSWORD){
+        unlockPedestal();
+      }else{
+        failSeal();
+      }
+    }
+
+    sealBtn.addEventListener("click", tryUnseal);
+    sealInput.addEventListener("keydown", (e) => {
+      if(e.key === "Enter") tryUnseal();
+    });
+
+    /* ---------------------------
+       Claim rune -> store in inventory
+    --------------------------- */
+    function onClaim(){
+      // must be unsealed first
+      if(runeZone.style.display !== "block") return;
+
+      const res = addToInventory(RUNE_ITEM);
+      if(res.ok){
+        claimMsg.textContent = "You lift the gem. The rune crawls into your palm… then into your inventory.";
+        claimMsg.style.color = "rgba(120,255,190,0.92)";
+        claimBtn.disabled = true;
+        nextRow.style.display = "flex";
+      }else if(res.reason === "already"){
+        claimMsg.textContent = "You already carry this rune. The pedestal is empty now.";
+        claimMsg.style.color = "rgba(255,255,255,0.72)";
+        claimBtn.disabled = true;
+        nextRow.style.display = "flex";
+      }else{
+        claimMsg.textContent = "Your inventory is full. Make space before you can take the rune.";
+        claimMsg.style.color = "rgba(255,170,170,0.92)";
+      }
+    }
+
+    claimBtn.addEventListener("click", onClaim);
+
+    /* ---------------------------
+       Proceed (with fadeOut transition)
+    --------------------------- */
+    nextBtn.addEventListener("click", () => {
+      // set your next page here
+      const next = "level8.html";
+      page.classList.add("fadeOut");
+      setTimeout(() => { window.location.href = next; }, 520);
+    });
+
+    /* ---------------------------
+       Init
+    --------------------------- */
+    (function init(){
+      // background & veil sequence
+      requestAnimationFrame(() => {
+        bg.style.opacity = "1";
+        veil.style.opacity = "0";
+      });
+
+      renderInventory();
+
+      // If already has rune, reflect it
+      if(hasItem(RUNE_ITEM.id)){
+        // allow the flow, but don’t auto-unseal; keep mystery
+        claimBtn.disabled = true;
+      }
+
+      // start fog reveal after metadata is available (or quickly fallback)
+      const start = () => startFogReveal();
+      if(voice.readyState >= 1) start();
+      else voice.addEventListener("loadedmetadata", start, { once:true });
+
+      // initial audio state (muted/unmuted)
+      updateAudioState();
+    })();
+  </script>
+</body>
+</html>
