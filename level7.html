@@ -5,890 +5,906 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ONLYFORSAKEN — Level 7</title>
 
+  <!-- ✅ Fonts (LOCKED) -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --text: rgba(255,255,255,0.90);
-      --muted: rgba(255,255,255,0.55);
-      --shadow: rgba(0,0,0,0.70);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.78);
+      --hint: rgba(255,255,255,0.42);
+      --shadow: rgba(0,0,0,0.72);
 
-      /* cinematic background control (non-stretched, mobile-consistent framing) */
-      --bg-img: url("image.jpg");
-      --bg-zoom-desktop: 1.02;
-      --bg-zoom-mobile: 1.08;
-
-      /* locked preference */
-      --bg-pos-desktop: 50% 50%;
-      --bg-pos-mobile: 50% 50%;
-
-      --wrap-max: 900px;
-
-      --fog-min: 18px;
-      --fog-max: 24px;
-
-      --seal-border: rgba(255,255,255,0.18);
-      --seal-fill: rgba(0,0,0,0.40);
-
-      --accent: rgba(120,255,190,0.95);
-      --sigilTint: rgba(120,255,190,0.22); /* VERY subtle hint */
+      /* ✅ Desktop/mobile framing (crop more on PC) */
+      --bg-pos-desktop: center 50%;
+      --bg-pos-mobile:  center 52%;
     }
 
     *{ box-sizing:border-box; }
-    html,body{ height:100%; margin:0; background:#000; color:var(--text); }
-    body{
-      font-family: "Cormorant Garamond", Georgia, "Times New Roman", serif;
-      overflow-x:hidden;
+    html,body{ height:100%; margin:0; background:#000; font-family: Georgia, "Times New Roman", serif; }
+
+    /* =========================
+       🎬 HERO / BACKGROUND (LOCKED)
+    ========================== */
+    .hero{
+      min-height:100vh;
+      min-height:100svh;
+      position:relative;
+      overflow:hidden;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      background:#000;
     }
 
-    /* fixed cinematic background */
     .bg{
-      position:fixed; inset:0;
-      background-image: var(--bg-img);
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+
+      background-image: url("level7.jpg");
       background-size: cover;
-      background-repeat:no-repeat;
-      transform: scale(var(--bg-zoom-desktop));
-      transform-origin: center;
+      background-repeat: no-repeat;
       background-position: var(--bg-pos-desktop);
-      filter: saturate(1.05) contrast(1.05);
-      opacity:0;
-      transition: opacity 1200ms ease;
-      will-change: transform, opacity;
+
+      filter: brightness(1.14) contrast(1.12) saturate(1.04);
+      transform: scale(1.01);
+      opacity: 0;
+      transition: opacity 2200ms ease, transform 2800ms ease;
+      will-change: opacity, transform;
+    }
+    .bg.show{ opacity: 1; transform: scale(1); }
+
+    @media (max-width: 700px){
+      .bg{ background-position: var(--bg-pos-mobile); }
     }
 
-    /* soft veil fade */
-    .veil{
-      position:fixed; inset:0;
+    .hero::before{
+      content:"";
+      position: fixed;
+      inset:0;
+      background:
+        radial-gradient(circle at 50% 40%, rgba(0,0,0,0.08), rgba(0,0,0,0.56)),
+        linear-gradient(to bottom, rgba(0,0,0,0.18), rgba(0,0,0,0.66));
+      z-index:1;
+      pointer-events:none;
+      opacity: 0;
+      transition: opacity 2200ms ease;
+    }
+    .hero.reveal::before{ opacity: 1; }
+
+    .hero::after{
+      content:"";
+      position: fixed;
+      inset:0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+      opacity: 0;
+      pointer-events:none;
+      z-index:1;
+      transition: opacity 2200ms ease;
+    }
+    .hero.reveal::after{ opacity: .10; }
+
+    /* 🎬 Veil */
+    #veil{
+      position: fixed;
+      inset: 0;
       background: #000;
-      opacity:1;
+      opacity: 1;
+      z-index: 2147483646;
       pointer-events:none;
       transition: opacity 900ms ease;
     }
+    #veil.hide{ opacity: 0; }
 
-    /* grain */
-    .grain{
-      position:fixed; inset:-20%;
-      pointer-events:none;
-      opacity:0.12;
-      background-image:
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
-      mix-blend-mode: overlay;
-      animation: grainMove 8s steps(2) infinite;
-    }
-    @keyframes grainMove{
-      0%{ transform: translate3d(-2%, -2%, 0); }
-      50%{ transform: translate3d(2%, 1%, 0); }
-      100%{ transform: translate3d(-1%, 2%, 0); }
-    }
-
-    /* page layout */
+    /* =========================
+       🕯 UI (LOCKED)
+    ========================== */
     .wrap{
-      position:relative;
-      width:min(var(--wrap-max), calc(100% - 28px));
-      margin: 0 auto;
-      padding: 26px 0 80px;
-      min-height:100vh;
+      position: relative;
+      z-index: 3;
+      width: min(820px, 92vw);
+      padding: 42px 22px 112px;
+      text-align: center;
+      filter: drop-shadow(0 16px 22px var(--shadow));
+      pointer-events:auto;
     }
 
-    .topRow{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      padding-top: 10px;
-    }
-
-    .brand{
-      font-family:"Cinzel Decorative", serif;
-      font-weight:700;
-      letter-spacing:0.08em;
-      font-size: 14px;
-      color: rgba(255,255,255,0.78);
-      text-transform:uppercase;
-    }
-
-    /* audio button (single control) */
-    .audioBtn{
-      appearance:none;
-      border:1px solid rgba(255,255,255,0.18);
-      background: rgba(0,0,0,0.35);
-      color: rgba(255,255,255,0.85);
-      padding: 10px 12px;
-      border-radius: 14px;
-      font-family: "Cinzel Decorative", serif;
+    .kicker{
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
       font-size: 12px;
-      letter-spacing:0.08em;
-      cursor:pointer;
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      color: rgba(255,255,255,0.46);
+      margin: 0 0 10px;
       user-select:none;
     }
-    .audioBtn:active{ transform: translateY(1px); }
 
-    /* inventory (3 slots) */
-    .inv{
-      margin-top: 14px;
-      display:flex;
-      justify-content:center;
-    }
-    .invBar{
-      width:min(520px, 100%);
-      border:1px solid rgba(255,255,255,0.16);
-      background: rgba(0,0,0,0.35);
-      border-radius: 18px;
-      padding: 10px 12px;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      box-shadow: 0 16px 60px rgba(0,0,0,0.45);
-    }
-    .invTitle{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      margin-bottom:8px;
-      color: rgba(255,255,255,0.72);
-      font-family:"Cinzel Decorative", serif;
-      letter-spacing:0.08em;
-      font-size:12px;
-      text-transform:uppercase;
-    }
-    .slots{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:10px;
-    }
-    .slot{
-      border:1px solid rgba(255,255,255,0.18);
-      background: rgba(0,0,0,0.25);
-      border-radius: 16px;
-      height:58px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      position:relative;
-      overflow:hidden;
-    }
-    .slot::after{
-      content:"";
-      position:absolute; inset:0;
-      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.08), transparent 55%);
-      opacity:0.6;
-      pointer-events:none;
-    }
-    .slotIcon{
-      font-size:22px;
-      line-height:1;
-      filter: drop-shadow(0 6px 18px rgba(0,0,0,0.65));
-    }
-    .slotName{
-      position:absolute;
-      bottom:6px;
-      left:8px;
-      right:8px;
-      font-size:12px;
-      color: rgba(255,255,255,0.70);
-      text-align:center;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      letter-spacing:0.02em;
-    }
-    .empty{
-      color: rgba(255,255,255,0.28);
-      font-size:12px;
-      letter-spacing:0.08em;
-      font-family:"Cinzel Decorative", serif;
-      text-transform:uppercase;
-    }
-
-    /* main panel */
-    .panel{
-      margin-top: 18px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(0,0,0,0.42);
-      border-radius: 26px;
-      padding: 22px 18px 18px;
-      box-shadow: 0 22px 90px rgba(0,0,0,0.55);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      overflow:hidden;
-      position:relative;
-    }
-    .panel::before{
-      content:"";
-      position:absolute; inset:0;
-      background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.06), transparent 55%),
-                  radial-gradient(circle at 20% 90%, rgba(120,255,190,0.06), transparent 45%);
-      pointer-events:none;
+    @keyframes candleFlicker {
+      0%   { opacity: 0.92; text-shadow: 0 0 6px rgba(255,255,255,0.10), 0 0 18px rgba(120,0,0,0.18); }
+      25%  { opacity: 1;    text-shadow: 0 0 10px rgba(255,255,255,0.18), 0 0 28px rgba(120,0,0,0.28); }
+      50%  { opacity: 0.96; text-shadow: 0 0 7px rgba(255,255,255,0.12), 0 0 20px rgba(120,0,0,0.22); }
+      75%  { opacity: 1;    text-shadow: 0 0 12px rgba(255,255,255,0.20), 0 0 34px rgba(120,0,0,0.32); }
+      100% { opacity: 0.94; text-shadow: 0 0 6px rgba(255,255,255,0.10), 0 0 18px rgba(120,0,0,0.18); }
     }
 
     h1{
-      margin: 0 0 8px;
-      text-align:center;
-      font-family:"Cinzel Decorative", serif;
-      font-weight:700;
-      letter-spacing:0.06em;
-      color: rgba(255,255,255,0.92);
-      font-size: clamp(26px, 4.2vw, 40px);
-      text-transform:uppercase;
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: clamp(24px, 3.6vw, 40px);
+      color: #e8e2d6;
+      margin: 0 0 14px;
+      animation: candleFlicker 3.5s infinite ease-in-out;
+      user-select:none;
     }
 
-    .sub{
-      margin: 0 0 16px;
-      text-align:center;
-      color: rgba(255,255,255,0.70);
-      letter-spacing:0.10em;
-      text-transform:uppercase;
-      font-family:"Cinzel Decorative", serif;
-      font-size: 12px;
-    }
-
-    /* story text */
+    /* =========================
+       🌫 FOG REVEAL (LOCKED)
+       left → right, line-by-line
+    ========================== */
     .story{
-      margin: 0 auto;
-      max-width: 64ch;
-      font-size: clamp(20px, 2.2vw, 24px);
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(20px, 2.1vw, 24px);
       line-height: 1.75;
       letter-spacing: 0.04em;
-      color: rgba(255,255,255,0.88);
-      text-shadow: 0 10px 40px rgba(0,0,0,0.60);
-    }
-    .story .muted{
-      color: var(--muted);
-    }
-
-    /* fog reveal lines */
-    .fogLine{
-      position:relative;
-      display:block;
-      margin: 0 0 14px;
-      filter: blur(7px);
-      opacity: 0.15;
-      transform: translateY(6px);
-      clip-path: inset(0 100% 0 0);
-      will-change: clip-path, filter, opacity, transform;
-    }
-    .fogLine.reveal{
-      animation: fogReveal var(--dur, 1400ms) ease forwards;
-    }
-    @keyframes fogReveal{
-      0%{
-        clip-path: inset(0 100% 0 0);
-        filter: blur(9px);
-        opacity:0.10;
-        transform: translateY(7px);
-      }
-      70%{
-        opacity:0.90;
-      }
-      100%{
-        clip-path: inset(0 0 0 0);
-        filter: blur(0px);
-        opacity:1;
-        transform: translateY(0);
-      }
-    }
-
-    .sigil{
-      color: rgba(255,255,255,0.92);
-      text-shadow: 0 0 18px rgba(120,255,190,0.22);
-      background: linear-gradient(transparent, transparent);
-      border-bottom: 1px solid rgba(120,255,190,0.18);
-      box-shadow: inset 0 -14px 0 var(--sigilTint);
-      padding: 0 2px;
-      border-radius: 6px;
-    }
-
-    /* antique seal gate (isolated classes) */
-    .seal{
-      margin: 18px auto 0;
-      max-width: 560px;
-      border: 1px solid var(--seal-border);
-      background: var(--seal-fill);
-      border-radius: 22px;
-      padding: 14px 14px 16px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 18px 70px rgba(0,0,0,0.55);
-      position:relative;
-      overflow:hidden;
-    }
-    .seal::before{
-      content:"";
-      position:absolute; inset:-1px;
-      background:
-        radial-gradient(circle at 30% 20%, rgba(255,255,255,0.06), transparent 55%),
-        radial-gradient(circle at 70% 90%, rgba(120,255,190,0.07), transparent 48%);
-      pointer-events:none;
-    }
-    .sealLabel{
-      text-align:center;
-      font-family:"Cinzel Decorative", serif;
-      letter-spacing:0.12em;
-      text-transform:uppercase;
-      font-size: 12px;
       color: rgba(255,255,255,0.78);
-      margin-bottom:10px;
-      position:relative;
-      z-index:1;
+      margin: 0 auto 18px;
+      max-width: 62ch;
+      animation: candleFlicker 5s infinite ease-in-out;
+      text-align: left;
     }
-    .sealRow{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      position:relative;
-      z-index:1;
+    .story em{
+      font-style: normal;
+      color: #d2c7b3;
+      text-shadow: 0 0 10px rgba(120,0,0,0.35);
     }
-    .sealInput{
-      flex:1;
-      border: 1px solid rgba(255,255,255,0.20);
-      background: rgba(0,0,0,0.35);
-      border-radius: 18px;
-      padding: 12px 14px;
-      color: rgba(255,255,255,0.92);
-      font-family: "Cinzel Decorative", serif;
-      letter-spacing:0.14em;
-      text-transform:uppercase;
-      font-size: 13px;
-      outline:none;
+
+    .fogLine{
+      display:block;
+      margin: 0 0 0.55em 0;
+      opacity: 0.85;
+      filter: blur(2.1px);
+
+      -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 60%);
+      -webkit-mask-size: 240% 100%;
+      -webkit-mask-position: 100% 0;
+
+      mask-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 60%);
+      mask-size: 240% 100%;
+      mask-position: 100% 0;
     }
-    .sealInput::placeholder{
-      color: rgba(255,255,255,0.35);
-      letter-spacing:0.10em;
+    .fogLine.run{
+      animation: fogLineReveal var(--dur, 5.8s) ease forwards;
+      animation-delay: var(--delay, 0s);
     }
-    .sealBtn{
-      border: 1px solid rgba(255,255,255,0.22);
-      background: rgba(0,0,0,0.35);
-      color: rgba(255,255,255,0.90);
-      padding: 12px 14px;
-      border-radius: 18px;
-      font-family:"Cinzel Decorative", serif;
-      letter-spacing:0.10em;
+    @keyframes fogLineReveal{
+      0%{ -webkit-mask-position: 100% 0; mask-position: 100% 0; filter: blur(2.1px); opacity: 0.80; }
+      100%{ -webkit-mask-position: 0% 0; mask-position: 0% 0; filter: blur(0px); opacity: 1; }
+    }
+
+    .hint{
+      margin: 14px auto 18px;
+      max-width: 64ch;
+      color: var(--hint);
       font-size: 12px;
-      cursor:pointer;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
       user-select:none;
-      white-space:nowrap;
-    }
-    .sealBtn:active{ transform: translateY(1px); }
-
-    .sealMsg{
-      margin-top:10px;
       text-align:center;
-      font-size: 16px;
-      color: rgba(255,255,255,0.72);
-      letter-spacing:0.02em;
-      min-height: 22px;
-      position:relative;
-      z-index:1;
     }
 
-    /* rune section (unlocked) */
-    .runeZone{
+    .sep{
+      height:1px;
+      width:min(560px, 92vw);
+      margin: 18px auto 14px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent);
+      opacity: .85;
+    }
+
+    .riddleTitle{
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: 11px;
+      color: rgba(255,255,255,0.34);
+      margin: 0 0 8px;
+      user-select:none;
+    }
+
+    .riddleText{
+      font-family: "Cormorant Garamond", serif;
+      font-size: 16px;
+      line-height: 1.35;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      text-align:center;
+      color: rgba(255,255,255,0.58);
+      text-shadow:
+      0 0 14px rgba(255,255,255,0.10),
+      0 0 28px rgba(160,60,40,0.12);
+      max-width: 62ch;
+      margin: 0 auto;
+      user-select:none;
+    }
+
+    /* =========================
+       🗝 PASSWORD BOX (LOCKED — SAME AS LEVEL 4/5)
+    ========================== */
+    .gateWrap{
+      width: min(560px, 92vw);
       margin: 16px auto 0;
-      max-width: 560px;
-      border: 1px solid rgba(120,255,190,0.22);
-      background: rgba(0,0,0,0.32);
+      padding: 18px 16px 18px;
       border-radius: 22px;
-      padding: 16px 14px;
-      display:none;
-      position:relative;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(255,255,255,0.06), transparent 55%),
+        radial-gradient(circle at 82% 38%, rgba(160,60,40,0.10), transparent 62%),
+        linear-gradient(to bottom, rgba(0,0,0,0.28), rgba(0,0,0,0.10));
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(7px);
+      box-shadow:
+        0 22px 44px rgba(0,0,0,0.46),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      position: relative;
       overflow:hidden;
     }
-    .runeZone::before{
+
+    .gateWrap::after{
       content:"";
-      position:absolute; inset:-1px;
-      background: radial-gradient(circle at 50% 20%, rgba(120,255,190,0.10), transparent 58%);
+      position:absolute;
+      left: 18px; right: 18px;
+      top: 46px;
+      height: 1px;
+      background: linear-gradient(90deg,
+        transparent,
+        rgba(232,210,170,0.14),
+        rgba(255,255,255,0.06),
+        rgba(232,210,170,0.12),
+        transparent
+      );
+      opacity: 0.85;
       pointer-events:none;
     }
-    .runeTitle{
-      text-align:center;
-      font-family:"Cinzel Decorative", serif;
-      letter-spacing:0.10em;
-      text-transform:uppercase;
+
+    .gateLabel{
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      font-size: 10px;
+      color: rgba(255,255,255,0.42);
+      margin: 0 0 14px;
+      user-select:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      text-shadow: 0 0 18px rgba(0,0,0,0.55);
+    }
+
+    .gateLabel .mark{
+      color: rgba(232, 210, 170, 0.52);
+      text-shadow: 0 0 16px rgba(160,60,40,0.20);
       font-size: 12px;
-      color: rgba(255,255,255,0.80);
-      margin-bottom:10px;
-      position:relative;
-      z-index:1;
     }
-    .runeCard{
+
+    .gate{
       display:flex;
-      gap:12px;
+      gap: 12px;
+      justify-content:center;
       align-items:center;
-      justify-content:space-between;
-      position:relative;
-      z-index:1;
+      flex-wrap:wrap;
+      position: relative;
     }
-    .runeGem{
-      display:flex;
-      gap:12px;
-      align-items:center;
-    }
-    .gemIcon{
-      width:46px; height:46px;
+
+    input[type="password"]{
+      width: min(340px, 86vw);
+      padding: 13px 16px;
       border-radius: 16px;
-      border:1px solid rgba(120,255,190,0.25);
-      background: radial-gradient(circle at 30% 30%, rgba(120,255,190,0.35), rgba(0,0,0,0.15) 60%),
-                  rgba(0,0,0,0.25);
+      background:
+        radial-gradient(circle at 30% 28%, rgba(240,225,190,0.10), transparent 55%),
+        radial-gradient(circle at 70% 70%, rgba(140,60,40,0.08), transparent 60%),
+        linear-gradient(to bottom, rgba(18,14,12,0.68), rgba(8,7,7,0.78));
+      border: 1px solid rgba(255,255,255,0.16);
+      color: rgba(245,236,216,0.92);
+      outline: none;
+      letter-spacing: 0.16em;
+      font-size: 14px;
+      font-family: "Cormorant Garamond", serif;
+      box-shadow:
+        inset 0 0 0 1px rgba(0,0,0,0.55),
+        inset 0 0 26px rgba(0,0,0,0.45);
+      transition: border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
+      -webkit-text-security: disc;
+    }
+
+    input[type="password"]::placeholder{
+      color: rgba(232,210,170,0.35);
+      letter-spacing: 0.10em;
+    }
+
+    input[type="password"]:focus{
+      border-color: rgba(232, 210, 170, 0.30);
+      box-shadow:
+        0 0 0 3px rgba(232, 210, 170, 0.06),
+        0 0 28px rgba(160,60,40,0.12),
+        inset 0 0 0 1px rgba(0,0,0,0.55),
+        inset 0 0 28px rgba(0,0,0,0.50);
+      transform: translateY(-1px);
+    }
+
+    button{
+      padding: 13px 18px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.16);
+      cursor:pointer;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.10), transparent 55%),
+        linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(0,0,0,0.18));
+      color: rgba(245,236,216,0.92);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-family: "Cormorant Garamond", serif;
+      box-shadow:
+        0 14px 26px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      transition: transform 180ms ease, border-color 220ms ease, box-shadow 220ms ease, filter 220ms ease;
+      position: relative;
+      overflow:hidden;
+    }
+
+    button::after{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(circle at 50% 20%, rgba(232,210,170,0.14), transparent 55%);
+      opacity: 0;
+      transition: opacity 220ms ease;
+      pointer-events:none;
+    }
+
+    button:hover{
+      border-color: rgba(232, 210, 170, 0.24);
+      box-shadow:
+        0 18px 34px rgba(0,0,0,0.42),
+        0 0 22px rgba(160,60,40,0.10),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+    }
+    button:hover::after{ opacity: 1; }
+    button:active{ transform: translateY(0px); }
+
+    .msg{
+      margin-top: 14px;
+      min-height: 18px;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.08em;
+      font-size: 12px;
+      user-select:none;
+    }
+
+    .wrong{ animation: shake 340ms ease; }
+    @keyframes shake{
+      0%{ transform: translateX(0); }
+      20%{ transform: translateX(-6px); }
+      40%{ transform: translateX(6px); }
+      60%{ transform: translateX(-4px); }
+      80%{ transform: translateX(4px); }
+      100%{ transform: translateX(0); }
+    }
+
+    .fadeOut{ animation: fade 700ms ease forwards; }
+    @keyframes fade{ to{ opacity:0; transform: translateY(6px); } }
+
+    /* ✅ Audio button (LOCKED STANDARD) */
+    #muteBtn{
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 2147483647;
+      pointer-events:auto;
+      cursor:pointer;
+      background: rgba(0,0,0,.45);
+      border: 1px solid rgba(255,255,255,.28);
+      color: rgba(255,255,255,.95);
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-family:'Cormorant Garamond',serif;
+      backdrop-filter: blur(6px);
+      -webkit-tap-highlight-color: transparent;
+      user-select:none;
+    }
+
+    /* ✅ Inventory (LOCKED STANDARD) */
+    #inventory{
+      position: fixed;
+      left: 50%;
+      bottom: 14px;
+      transform: translateX(-50%);
+      z-index: 2147483645;
+      display:flex;
+      flex-direction: column;
+      align-items:center;
+      gap: 8px;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    #invLabel{
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-size: 10px;
+      color: rgba(255,255,255,0.40);
+      text-shadow: 0 0 18px rgba(0,0,0,0.65);
+      opacity: 0.95;
+    }
+
+    #invSlots{
+      display:flex;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.28);
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 18px 34px rgba(0,0,0,0.40);
+    }
+
+    .slot{
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255,255,255,0.10), rgba(0,0,0,0.12) 60%),
+        rgba(0,0,0,0.18);
       display:flex;
       align-items:center;
       justify-content:center;
-      box-shadow: 0 18px 60px rgba(0,0,0,0.55);
-      font-size: 20px;
+      color: rgba(255,255,255,0.58);
+      font-family: "Cormorant Garamond", serif;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 16px rgba(0,0,0,0.75);
     }
-    .gemText{
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-    }
-    .gemName{
-      font-size: 18px;
-      letter-spacing:0.04em;
+
+    .slot.filled{
       color: rgba(255,255,255,0.90);
+      border-color: rgba(255,255,255,0.22);
+      text-shadow: 0 0 14px rgba(120,0,0,0.28);
     }
-    .gemDesc{
-      font-size: 14px;
-      color: rgba(255,255,255,0.62);
-      letter-spacing:0.02em;
+
+    @media (max-width: 520px){
+      #invSlots{ gap: 8px; padding: 9px 10px; }
+      .slot{ width: 48px; height: 48px; border-radius: 13px; }
     }
-    .claimBtn{
-      border:1px solid rgba(120,255,190,0.30);
-      background: rgba(0,0,0,0.35);
-      color: rgba(255,255,255,0.92);
-      padding: 12px 14px;
-      border-radius: 18px;
-      font-family:"Cinzel Decorative", serif;
-      letter-spacing:0.10em;
-      font-size:12px;
-      cursor:pointer;
+
+    /* =========================
+       🟢 Rune pickup (minimal, uses existing gateWrap styles)
+    ========================== */
+    #runeBlock{ display:none; }
+    #runeNote{
+      margin: 10px auto 0;
+      max-width: 64ch;
+      color: rgba(255,255,255,0.60);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
       user-select:none;
-      white-space:nowrap;
     }
-    .claimBtn[disabled]{
-      opacity:0.55;
-      cursor:not-allowed;
-    }
-
-    .nextRow{
-      margin-top: 14px;
-      display:flex;
-      justify-content:center;
-      gap:10px;
-      display:none;
-    }
-    .nextBtn{
-      border:1px solid rgba(255,255,255,0.22);
-      background: rgba(0,0,0,0.34);
-      color: rgba(255,255,255,0.90);
-      padding: 12px 16px;
-      border-radius: 18px;
-      font-family:"Cinzel Decorative", serif;
-      letter-spacing:0.10em;
-      font-size:12px;
-      cursor:pointer;
-      user-select:none;
-      text-transform:uppercase;
-    }
-
-    /* fade-out transition */
-    .fadeOut{
-      animation: fadeOut 650ms ease forwards;
-    }
-    @keyframes fadeOut{
-      to{ opacity:0; transform: translateY(4px); }
-    }
-
-    /* mobile framing tweaks */
-    @media (max-width: 720px){
-      .bg{
-        transform: scale(var(--bg-zoom-mobile));
-        background-position: var(--bg-pos-mobile);
-      }
-      .panel{ padding: 20px 14px 16px; border-radius: 24px; }
-      .sealRow{ flex-direction:column; }
-      .sealBtn, .sealInput{ width:100%; }
-      .runeCard{ flex-direction:column; align-items:stretch; }
-      .claimBtn{ width:100%; }
+    #takeBtn[disabled]{
+      opacity: 0.60;
+      cursor: not-allowed;
+      filter: saturate(0.9);
     }
   </style>
 </head>
 
 <body>
-  <div class="bg" id="bg"></div>
-  <div class="grain"></div>
-  <div class="veil" id="veil"></div>
+  <div id="veil" aria-hidden="true"></div>
 
-  <main class="wrap" id="page">
-    <div class="topRow">
-      <div class="brand">ONLYFORSAKEN</div>
-      <button class="audioBtn" id="audioBtn" type="button">MUTE</button>
-    </div>
+  <main class="hero" id="hero">
+    <div class="bg" id="bg" aria-hidden="true"></div>
 
-    <!-- Inventory UI (persistent, 3 slots) -->
-    <div class="inv">
-      <div class="invBar">
-        <div class="invTitle">
-          <span>Inventory</span>
-          <span id="invHint" style="color:rgba(255,255,255,0.45); font-size:11px; letter-spacing:0.10em;">3 SLOTS</span>
-        </div>
-        <div class="slots" id="slots"></div>
-      </div>
-    </div>
-
-    <section class="panel">
-      <h1>Level 7 — The Emerald Rune</h1>
-      <p class="sub">DISCOVER • UNSEAL • CLAIM</p>
+    <section class="wrap" id="wrap">
+      <div class="kicker">Level 7</div>
+      <h1>The Emerald Rune</h1>
 
       <div class="story" id="story">
-        <span class="fogLine">The corridor breaks into a chamber that smells of wet stone and old incense—like a cathedral that forgot its god.</span>
-        <span class="fogLine">At its center stands a low pedestal. No dust dares settle on it. The air above it trembles, tinted faintly green.</span>
-        <span class="fogLine">You hear <span class="muted">Mordain</span> before you see anything else—his voice not in the room, but behind your eyes: <span class="muted">“Do not stare too long. Green is the color of permission.”</span></span>
-        <span class="fogLine">A gem rests where an offering should be—cut like a sealed tear. Inside it, a rune curls like a living thought.</span>
-        <span class="fogLine">Carvings ring the pedestal in a language that remembers you. The words are broken… yet the meaning is intact.</span>
+        <span class="fogLine">The corridor finally releases you into a chamber that smells of wet stone and old incense—like a chapel that forgot its god.</span>
 
-        <span class="fogLine"><span class="muted">Riddle:</span> I am the hunger that grows in gardens. I am the shade beneath the serpent’s skin. Speak my name to wake what waits.</span>
+        <span class="fogLine">Your footsteps do not echo. They are <em>accepted</em>. The room takes them, counts them, and decides you may keep walking.</span>
 
-        <span class="fogLine">The ring of carvings repeats the answer as if it’s ashamed to be obvious, hiding it in plain sight:</span>
-        <span class="fogLine">
-          <span class="sigil">V</span>ines choke the altar’s edge, <span class="sigil">E</span>ach root drinking secrets,
-          <span class="sigil">R</span>eturning them as breath. <span class="sigil">D</span>eep in the stone,
-          <span class="sigil">A</span> pulse answers you. <span class="sigil">N</span>o prayer is needed—
-          only the word that means <span class="sigil">T</span>hriving.
-        </span>
+        <span class="fogLine">At the center stands a pedestal carved with a spiral rune. Its surface is clean—no dust, no grit, no age—like the castle has been waiting here <em>recently</em>.</span>
 
-        <span class="fogLine">Mordain whispers, softer: <span class="muted">“Take it. You will need it when the heart begins to bargain.”</span></span>
+        <span class="fogLine">Above it floats a green gem, cut like a sealed tear. It pulses slowly, and the air around it shivers as if the light has weight.</span>
+
+        <span class="fogLine">Mordain’s voice brushes the back of your skull: <em>“Do not stare too long. Green is the color of permission.”</em></span>
+
+        <span class="fogLine">A ring of carvings circles the pedestal. Broken words. Sharp intent. A warning dressed as a ceremony.</span>
+
+        <span class="fogLine">When you breathe in, the gem brightens. When you breathe out, it dims—like it’s learning the rhythm of something that still thinks it’s alone.</span>
+
+        <span class="fogLine">And for the first time, you understand: this isn’t a treasure. It’s a <em>piece</em>. A component. A promise that will be collected, slot by slot, until the castle has enough of you to finish what it began.</span>
       </div>
 
-      <!-- Password gate -->
-      <div class="seal" id="seal">
-        <div class="sealLabel">Enter the word</div>
-        <div class="sealRow">
-          <input class="sealInput" id="sealInput" autocomplete="off" spellcheck="false" placeholder="TYPE HERE" />
-          <button class="sealBtn" id="sealBtn" type="button">UNSEAL</button>
+      <div class="hint">Don’t touch what you haven’t named.</div>
+
+      <div class="sep"></div>
+
+      <div class="riddleTitle">Riddle</div>
+      <div class="riddleText">
+        I AM THE COLOR OF LIVING STONE.<br>
+        I AM GROWTH THAT DOES NOT ASK PERMISSION.<br>
+        SPEAK ME, AND THE PEDESTAL OPENS.
+      </div>
+
+      <div class="gateWrap" id="gateWrap">
+        <div class="gateLabel"><span class="mark">⟡</span> Offer your answer <span class="mark">⟡</span></div>
+        <div class="gate">
+          <input id="pw" type="password" placeholder="whisper it…" autocomplete="off" />
+          <button id="btn">UNSEAL</button>
         </div>
-        <div class="sealMsg" id="sealMsg"></div>
       </div>
 
-      <!-- Rune claim zone -->
-      <div class="runeZone" id="runeZone">
-        <div class="runeTitle">Pedestal Unsealed</div>
-        <div class="runeCard">
-          <div class="runeGem">
-            <div class="gemIcon" aria-hidden="true">🟩</div>
-            <div class="gemText">
-              <div class="gemName">Emerald Rune</div>
-              <div class="gemDesc">A green gem etched with a living rune.</div>
-            </div>
+      <div class="msg" id="msg"></div>
+
+      <!-- ✅ Rune interaction (appears ONLY after correct password) -->
+      <div id="runeBlock">
+        <div class="sep"></div>
+        <div class="riddleTitle">The Pedestal Yields</div>
+        <div class="riddleText">
+          THE GEM WAITS ABOVE YOUR PALM.<br>
+          TAKE IT—AND LET IT REMEMBER YOU.
+        </div>
+
+        <div class="gateWrap">
+          <div class="gateLabel"><span class="mark">⟡</span> Claim the rune <span class="mark">⟡</span></div>
+          <div class="gate">
+            <button id="takeBtn">TAKE RUNE</button>
+            <button id="nextBtn" style="display:none;">PROCEED</button>
           </div>
-          <button class="claimBtn" id="claimBtn" type="button">CLAIM RUNE</button>
-        </div>
-        <div class="sealMsg" id="claimMsg" style="margin-top:10px;"></div>
-        <div class="nextRow" id="nextRow">
-          <button class="nextBtn" id="nextBtn" type="button">Proceed</button>
+          <div id="runeNote">It will occupy one inventory slot.</div>
         </div>
       </div>
     </section>
   </main>
 
-  <!--
-    AUDIO FILES (place these next to this HTML)
-    - voice:  level7-voice.mp3
-    - ambience: level7-ambience.mp3
-    If you don’t have them yet, leave the files missing; the page still works.
-  -->
-  <audio id="voice" preload="auto" src="level7-voice.mp3"></audio>
-  <audio id="amb" preload="auto" loop src="level7-ambience.mp3"></audio>
+  <div id="inventory" aria-hidden="true">
+    <div id="invLabel">Inventory</div>
+    <div id="invSlots">
+      <div class="slot" id="slot0">—</div>
+      <div class="slot" id="slot1">—</div>
+      <div class="slot" id="slot2">—</div>
+    </div>
+  </div>
+
+  <button id="muteBtn" aria-label="Toggle audio">🔊</button>
+
+  <!-- 🩸 Mordain Voice (you provide the file) -->
+  <audio id="mordainVoice" preload="auto" playsinline>
+    <source src="audio/mordain-level7.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- 🌫 Level 7 Ambience (you provide the file) -->
+  <audio id="level7Ambience" loop preload="auto" playsinline>
+    <source src="audio/level7-ambience.mp3" type="audio/mpeg">
+  </audio>
 
   <script>
-    /* ---------------------------
-       Locked persistence keys
-    --------------------------- */
-    const KEY_MUTE = "ofs_mute";
-    const KEY_INV  = "ofs_inventory";
-
-    /* ---------------------------
-       Password (chosen for this level)
-    --------------------------- */
+    /* =========================
+       🚪 Gate (Level 7)
+    ========================== */
     const PASSWORD = "VERDANT";
+    const NEXT_PAGE = "level8.html";
 
-    /* ---------------------------
-       Rune item definition
-    --------------------------- */
-    const RUNE_ITEM = {
-      id: "rune_emerald",
-      name: "Emerald Rune",
-      icon: "🟩"
-    };
+    const wrap = document.getElementById("wrap");
+    const pw = document.getElementById("pw");
+    const btn = document.getElementById("btn");
+    const msg = document.getElementById("msg");
 
-    /* ---------------------------
-       Elements
-    --------------------------- */
-    const bg = document.getElementById("bg");
-    const veil = document.getElementById("veil");
-    const page = document.getElementById("page");
-
-    const audioBtn = document.getElementById("audioBtn");
-    const voice = document.getElementById("voice");
-    const amb = document.getElementById("amb");
-
-    const slotsEl = document.getElementById("slots");
-
-    const sealInput = document.getElementById("sealInput");
-    const sealBtn = document.getElementById("sealBtn");
-    const sealMsg = document.getElementById("sealMsg");
-
-    const runeZone = document.getElementById("runeZone");
-    const claimBtn = document.getElementById("claimBtn");
-    const claimMsg = document.getElementById("claimMsg");
-    const nextRow = document.getElementById("nextRow");
+    const runeBlock = document.getElementById("runeBlock");
+    const takeBtn = document.getElementById("takeBtn");
     const nextBtn = document.getElementById("nextBtn");
 
-    const fogLines = Array.from(document.querySelectorAll(".fogLine"));
+    const TAKEN_KEY = "ofs_level7_rune_taken";
+    const RUNE_LABEL = "EMERALD RUNE";
 
-    /* ---------------------------
-       Inventory helpers
-    --------------------------- */
-    function loadInventory(){
+    function normalize(v){
+      return (v || "").trim().toUpperCase();
+    }
+
+    function invHas(label){
+      const inv = window.ofsInv && window.ofsInv.get ? window.ofsInv.get() : [];
+      const up = normalize(label);
+      return inv.some(x => normalize(x) === up);
+    }
+
+    function revealRune(){
+      runeBlock.style.display = "block";
+      msg.textContent = "The seal yields. The pedestal recognizes your word.";
+      // lock gate inputs so people don’t spam it
+      try{ pw.disabled = true; }catch(e){}
+      try{ btn.disabled = true; }catch(e){}
+      // if already taken, reflect it
+      if (localStorage.getItem(TAKEN_KEY) === "1" || invHas(RUNE_LABEL)){
+        if (takeBtn){
+          takeBtn.textContent = "RUNE CLAIMED";
+          takeBtn.disabled = true;
+        }
+        if (nextBtn) nextBtn.style.display = "inline-block";
+      }
+    }
+
+    function check(){
+      const val = normalize(pw.value);
+      if (!val) return;
+
+      if (val === PASSWORD){
+        msg.textContent = "…";
+        setTimeout(revealRune, 520);
+      } else {
+        msg.textContent = "Not yet.";
+        wrap.classList.remove("wrong");
+        void wrap.offsetWidth;
+        wrap.classList.add("wrong");
+        pw.select();
+      }
+    }
+
+    btn.addEventListener("click", check);
+    pw.addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
+
+    /* =========================
+       🎒 Inventory (LOCKED) — unchanged
+    ========================== */
+    const INV_KEY = "ofs_inventory";
+
+    function loadInv(){
       try{
-        const raw = localStorage.getItem(KEY_INV);
-        const inv = raw ? JSON.parse(raw) : null;
-        if(Array.isArray(inv) && inv.length === 3) return inv;
+        const raw = localStorage.getItem(INV_KEY);
+        const parsed = raw ? JSON.parse(raw) : null;
+        if (Array.isArray(parsed) && parsed.length === 3) return parsed;
       }catch(e){}
       return [null, null, null];
     }
 
-    function saveInventory(inv){
-      localStorage.setItem(KEY_INV, JSON.stringify(inv));
+    function saveInv(inv){
+      try{ localStorage.setItem(INV_KEY, JSON.stringify(inv)); }catch(e){}
     }
 
-    function renderInventory(){
-      const inv = loadInventory();
-      slotsEl.innerHTML = "";
-      inv.forEach((it, idx) => {
-        const slot = document.createElement("div");
-        slot.className = "slot";
-        slot.setAttribute("data-slot", String(idx));
+    function renderInv(inv){
+      for (let i = 0; i < 3; i++){
+        const el = document.getElementById("slot" + i);
+        const item = inv[i];
+        if (!el) continue;
 
-        if(!it){
-          const empty = document.createElement("div");
-          empty.className = "empty";
-          empty.textContent = "EMPTY";
-          slot.appendChild(empty);
-        }else{
-          const icon = document.createElement("div");
-          icon.className = "slotIcon";
-          icon.textContent = it.icon || "◆";
-
-          const name = document.createElement("div");
-          name.className = "slotName";
-          name.textContent = it.name || it.id;
-
-          slot.appendChild(icon);
-          slot.appendChild(name);
-        }
-
-        slotsEl.appendChild(slot);
-      });
-    }
-
-    function hasItem(id){
-      const inv = loadInventory();
-      return inv.some(it => it && it.id === id);
-    }
-
-    function addToInventory(item){
-      const inv = loadInventory();
-      if(inv.some(it => it && it.id === item.id)) return { ok:false, reason:"already" };
-
-      const emptyIndex = inv.findIndex(it => !it);
-      if(emptyIndex === -1) return { ok:false, reason:"full" };
-
-      inv[emptyIndex] = item;
-      saveInventory(inv);
-      renderInventory();
-      return { ok:true, slot: emptyIndex };
-    }
-
-    /* ---------------------------
-       Audio system (single mute/unmute)
-       - persistent mute via localStorage
-       - unlock autoplay on first pointerdown
-       - pageshow restart
-       - baseline mix: voice 0.74, ambience 0.30
-    --------------------------- */
-    let audioUnlocked = false;
-
-    function getMuted(){
-      return localStorage.getItem(KEY_MUTE) === "1";
-    }
-    function setMuted(m){
-      localStorage.setItem(KEY_MUTE, m ? "1" : "0");
-      updateAudioState();
-    }
-
-    function updateAudioState(){
-      const muted = getMuted();
-      audioBtn.textContent = muted ? "UNMUTE" : "MUTE";
-
-      voice.volume = 0.74;
-      amb.volume = 0.30;
-
-      voice.muted = muted;
-      amb.muted = muted;
-
-      if(audioUnlocked){
-        if(!muted){
-          // try play; ignore failures (no files yet / browser policy)
-          amb.play().catch(()=>{});
-          voice.play().catch(()=>{});
-        }else{
-          amb.pause();
-          voice.pause();
+        if (item && String(item).trim()){
+          el.textContent = String(item).slice(0, 10);
+          el.classList.add("filled");
+        } else {
+          el.textContent = "—";
+          el.classList.remove("filled");
         }
       }
     }
 
-    function unlockAudio(){
-      if(audioUnlocked) return;
-      audioUnlocked = true;
-      updateAudioState();
+    window.ofsInv = {
+      get(){ return loadInv().slice(); },
+      set(slotIndex, label){
+        const inv = loadInv();
+        if (slotIndex < 0 || slotIndex > 2) return inv;
+        inv[slotIndex] = label ? String(label) : null;
+        saveInv(inv);
+        renderInv(inv);
+        return inv;
+      },
+      add(label){
+        const inv = loadInv();
+
+        // prevent duplicates
+        const up = normalize(label);
+        if (inv.some(x => normalize(x) === up)) return inv;
+
+        const idx = inv.findIndex(x => !x);
+        if (idx === -1) return inv;
+
+        inv[idx] = label ? String(label) : "Item";
+        saveInv(inv);
+        renderInv(inv);
+        return inv;
+      },
+      clear(){
+        const inv = [null,null,null];
+        saveInv(inv);
+        renderInv(inv);
+        return inv;
+      }
+    };
+
+    renderInv(loadInv());
+
+    /* =========================
+       🟢 Rune pickup (NEW, minimal)
+    ========================== */
+    function takeRune(){
+      if (!window.ofsInv) return;
+
+      if (invHas(RUNE_LABEL)){
+        msg.textContent = "The pedestal is empty now.";
+        if (takeBtn){
+          takeBtn.textContent = "RUNE CLAIMED";
+          takeBtn.disabled = true;
+        }
+        if (nextBtn) nextBtn.style.display = "inline-block";
+        localStorage.setItem(TAKEN_KEY, "1");
+        return;
+      }
+
+      const before = window.ofsInv.get();
+      const beforeEmpty = before.findIndex(x => !x);
+
+      if (beforeEmpty === -1){
+        msg.textContent = "Your inventory is full.";
+        wrap.classList.remove("wrong");
+        void wrap.offsetWidth;
+        wrap.classList.add("wrong");
+        return;
+      }
+
+      window.ofsInv.add(RUNE_LABEL);
+      localStorage.setItem(TAKEN_KEY, "1");
+
+      msg.textContent = "You lift the gem. The rune crawls into your palm… then into your inventory.";
+      if (takeBtn){
+        takeBtn.textContent = "RUNE CLAIMED";
+        takeBtn.disabled = true;
+      }
+      if (nextBtn) nextBtn.style.display = "inline-block";
     }
 
-    audioBtn.addEventListener("click", () => {
-      setMuted(!getMuted());
+    if (takeBtn) takeBtn.addEventListener("click", takeRune);
+
+    if (nextBtn) nextBtn.addEventListener("click", () => {
+      msg.textContent = "…";
+      setTimeout(() => wrap.classList.add("fadeOut"), 650);
+      setTimeout(() => window.location.href = NEXT_PAGE, 1350);
     });
 
-    window.addEventListener("pointerdown", unlockAudio, { once:true });
+    /* =========================
+       🎬 Visuals + 🔊 Audio + 🌫 Line Reveal (LOCKED)
+       (copied exactly from your Level 6 with only ambience id updated)
+    ========================== */
+    (() => {
+      const heroEl = document.getElementById("hero");
+      const bg = document.getElementById("bg");
+      const veil = document.getElementById("veil");
+      const revealLines = Array.from(document.querySelectorAll(".fogLine"));
 
-    window.addEventListener("pageshow", () => {
-      // Restart each time page is shown from bfcache
-      audioUnlocked = false;
-      voice.currentTime = 0;
-      amb.currentTime = 0;
-      // try unlock immediately (user gesture may not exist, so we keep pointerdown too)
-      updateAudioState();
-    });
+      const muteBtn = document.getElementById("muteBtn");
+      const voice = document.getElementById("mordainVoice");
+      const amb = document.getElementById("level7Ambience");
 
-    /* ---------------------------
-       Fog reveal pacing (tied to voice duration)
-       - slightly longer than voice
-    --------------------------- */
-    function startFogReveal(){
-      const fallbackVoice = 52; // seconds, cinematic default
-      const voiceDur = (isFinite(voice.duration) && voice.duration > 0) ? voice.duration : fallbackVoice;
-      const total = voiceDur * 1.08; // slightly longer than voice
+      if (!muteBtn || !voice || !amb || !heroEl || !bg || !veil || !revealLines.length) return;
 
-      const per = Math.max(0.9, total / Math.max(1, fogLines.length)); // seconds
-      fogLines.forEach((line, i) => {
-        const delay = i * per;
-        const dur = Math.max(1.2, per * 0.95);
-        line.style.setProperty("--dur", (dur * 1000).toFixed(0) + "ms");
-        line.style.animationDelay = delay.toFixed(2) + "s";
-        line.classList.add("reveal");
+      // ✅ MIX (locked baseline)
+      const VOICE_TARGET = 0.74;
+      const AMB_TARGET   = 0.30;
+
+      const savedMuted = localStorage.getItem("ofs_mute") === "1";
+      voice.muted = savedMuted;
+      amb.muted = savedMuted;
+      muteBtn.textContent = savedMuted ? "🔇" : "🔊";
+
+      // ✅ Faster voice fade-in (so you hear the first word)
+      voice.volume = 0;
+      amb.volume = 0;
+
+      function fadeTo(audio, target, step=0.06, interval=80){
+        try{
+          let v = audio.volume || 0;
+          const id = setInterval(() => {
+            v = Math.min(target, v + step);
+            audio.volume = v;
+            if (v >= target) clearInterval(id);
+          }, interval);
+        }catch(e){}
+      }
+
+      async function playBoth(){
+        try{
+          voice.currentTime = 0;
+          amb.currentTime = 0;
+
+          const p1 = voice.play();
+          const p2 = amb.play();
+          if (p1 && p1.catch) p1.catch(()=>{});
+          if (p2 && p2.catch) p2.catch(()=>{});
+
+          if (!voice.muted){
+            voice.volume = 0;
+            amb.volume = 0;
+
+            // voice ramps in quick
+            fadeTo(voice, VOICE_TARGET, 0.09, 70);
+
+            // ambience ramps in slower
+            fadeTo(amb, AMB_TARGET, 0.02, 140);
+          }
+        }catch(e){}
+      }
+
+      function stopBoth(){
+        try{ voice.pause(); }catch(e){}
+        try{ amb.pause(); }catch(e){}
+      }
+
+      function revealVisuals(){
+        setTimeout(() => veil.classList.add("hide"), 380);
+        setTimeout(() => { try{ veil.remove(); }catch(e){} }, 1500);
+
+        setTimeout(() => {
+          bg.classList.add("show");
+          heroEl.classList.add("reveal");
+        }, 420);
+      }
+
+      function startLineReveal(){
+        const n = revealLines.length;
+        const voiceDur = (isFinite(voice.duration) && voice.duration > 2) ? voice.duration : 0;
+
+        // ✅ locked slow cinematic pace
+        const MIN_TOTAL    = 74;
+        const MIN_LINE_DUR = 5.8;
+        const MIN_GAP      = 1.15;
+        const START_DELAY  = 1.35;
+
+        const total = Math.max(MIN_TOTAL, voiceDur ? (voiceDur * 1.10) : 0);
+
+        let gap = (total / n) * 0.22;
+        let lineDur = (total / n) * 1.05;
+
+        gap = Math.max(MIN_GAP, gap);
+        lineDur = Math.max(MIN_LINE_DUR, lineDur);
+
+        revealLines.forEach((line, i) => {
+          line.style.setProperty("--dur", `${lineDur.toFixed(2)}s`);
+          line.style.setProperty("--delay", `${(START_DELAY + i * gap).toFixed(2)}s`);
+          line.classList.add("run");
+        });
+      }
+
+      muteBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const newMuted = !voice.muted;
+        voice.muted = newMuted;
+        amb.muted = newMuted;
+
+        localStorage.setItem("ofs_mute", newMuted ? "1" : "0");
+        muteBtn.textContent = newMuted ? "🔇" : "🔊";
+
+        if (!newMuted) playBoth();
+        else stopBoth();
+      }, true);
+
+      window.addEventListener("pageshow", async () => {
+        revealVisuals();
+        if (!voice.muted) await playBoth();
+        startLineReveal();
+
+        // if player refreshes after already unsealing (keeps it sane)
+        if (localStorage.getItem(TAKEN_KEY) === "1" || invHas(RUNE_LABEL)){
+          // show rune block if already taken (optional convenience)
+          // we do NOT auto-solve the password; we only reflect taken state once revealed
+        }
       });
-    }
 
-    /* ---------------------------
-       Gate + Unseal
-    --------------------------- */
-    function normalize(v){
-      return (v || "").toString().trim().toUpperCase();
-    }
+      window.addEventListener("pointerdown", () => {
+        if (!voice.muted && (voice.paused || amb.paused)) playBoth();
+      }, { once:true });
 
-    function unlockPedestal(){
-      sealMsg.textContent = "The seal exhales. The pedestal recognizes you.";
-      runeZone.style.display = "block";
-      // subtle scroll into view
-      setTimeout(() => runeZone.scrollIntoView({ behavior:"smooth", block:"center" }), 150);
-    }
-
-    function failSeal(){
-      sealMsg.textContent = "Nothing moves. The stone waits for the true word.";
-      sealMsg.style.color = "rgba(255,255,255,0.72)";
-      // tiny shake (inline)
-      const seal = document.getElementById("seal");
-      seal.animate(
-        [{ transform:"translateX(0)" }, { transform:"translateX(-6px)" }, { transform:"translateX(6px)" }, { transform:"translateX(0)" }],
-        { duration: 260, easing:"ease-out" }
-      );
-    }
-
-    function tryUnseal(){
-      const v = normalize(sealInput.value);
-      if(v === PASSWORD){
-        unlockPedestal();
-      }else{
-        failSeal();
-      }
-    }
-
-    sealBtn.addEventListener("click", tryUnseal);
-    sealInput.addEventListener("keydown", (e) => {
-      if(e.key === "Enter") tryUnseal();
-    });
-
-    /* ---------------------------
-       Claim rune -> store in inventory
-    --------------------------- */
-    function onClaim(){
-      // must be unsealed first
-      if(runeZone.style.display !== "block") return;
-
-      const res = addToInventory(RUNE_ITEM);
-      if(res.ok){
-        claimMsg.textContent = "You lift the gem. The rune crawls into your palm… then into your inventory.";
-        claimMsg.style.color = "rgba(120,255,190,0.92)";
-        claimBtn.disabled = true;
-        nextRow.style.display = "flex";
-      }else if(res.reason === "already"){
-        claimMsg.textContent = "You already carry this rune. The pedestal is empty now.";
-        claimMsg.style.color = "rgba(255,255,255,0.72)";
-        claimBtn.disabled = true;
-        nextRow.style.display = "flex";
-      }else{
-        claimMsg.textContent = "Your inventory is full. Make space before you can take the rune.";
-        claimMsg.style.color = "rgba(255,170,170,0.92)";
-      }
-    }
-
-    claimBtn.addEventListener("click", onClaim);
-
-    /* ---------------------------
-       Proceed (with fadeOut transition)
-    --------------------------- */
-    nextBtn.addEventListener("click", () => {
-      // set your next page here
-      const next = "level8.html";
-      page.classList.add("fadeOut");
-      setTimeout(() => { window.location.href = next; }, 520);
-    });
-
-    /* ---------------------------
-       Init
-    --------------------------- */
-    (function init(){
-      // background & veil sequence
-      requestAnimationFrame(() => {
-        bg.style.opacity = "1";
-        veil.style.opacity = "0";
-      });
-
-      renderInventory();
-
-      // If already has rune, reflect it
-      if(hasItem(RUNE_ITEM.id)){
-        // allow the flow, but don’t auto-unseal; keep mystery
-        claimBtn.disabled = true;
-      }
-
-      // start fog reveal after metadata is available (or quickly fallback)
-      const start = () => startFogReveal();
-      if(voice.readyState >= 1) start();
-      else voice.addEventListener("loadedmetadata", start, { once:true });
-
-      // initial audio state (muted/unmuted)
-      updateAudioState();
     })();
   </script>
 </body>
