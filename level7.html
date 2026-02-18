@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ONLYFORSAKEN — Level 7</title>
 
-  <!-- ✅ Fonts (LOCKED) -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
@@ -15,7 +14,6 @@
       --hint: rgba(255,255,255,0.42);
       --shadow: rgba(0,0,0,0.72);
 
-      /* ✅ Desktop/mobile framing (crop more on PC) */
       --bg-pos-desktop: center 50%;
       --bg-pos-mobile:  center 52%;
     }
@@ -23,9 +21,6 @@
     *{ box-sizing:border-box; }
     html,body{ height:100%; margin:0; background:#000; font-family: Georgia, "Times New Roman", serif; }
 
-    /* =========================
-       🎬 HERO / BACKGROUND (LOCKED)
-    ========================== */
     .hero{
       min-height:100vh;
       min-height:100svh;
@@ -86,7 +81,6 @@
     }
     .hero.reveal::after{ opacity: .10; }
 
-    /* 🎬 Veil */
     #veil{
       position: fixed;
       inset: 0;
@@ -98,9 +92,6 @@
     }
     #veil.hide{ opacity: 0; }
 
-    /* =========================
-       🕯 UI (LOCKED)
-    ========================== */
     .wrap{
       position: relative;
       z-index: 3;
@@ -139,10 +130,6 @@
       user-select:none;
     }
 
-    /* =========================
-       🌫 FOG REVEAL (LOCKED)
-       left → right, line-by-line
-    ========================== */
     .story{
       font-family: "Cormorant Garamond", serif;
       font-size: clamp(20px, 2.1vw, 24px);
@@ -228,9 +215,6 @@
       user-select:none;
     }
 
-    /* =========================
-       🗝 PASSWORD BOX (LOCKED — SAME AS LEVEL 4/5)
-    ========================== */
     .gateWrap{
       width: min(560px, 92vw);
       margin: 16px auto 0;
@@ -373,15 +357,6 @@
     button:hover::after{ opacity: 1; }
     button:active{ transform: translateY(0px); }
 
-    .msg{
-      margin-top: 14px;
-      min-height: 18px;
-      color: rgba(255,255,255,0.55);
-      letter-spacing: 0.08em;
-      font-size: 12px;
-      user-select:none;
-    }
-
     .wrong{ animation: shake 340ms ease; }
     @keyframes shake{
       0%{ transform: translateX(0); }
@@ -395,7 +370,6 @@
     .fadeOut{ animation: fade 700ms ease forwards; }
     @keyframes fade{ to{ opacity:0; transform: translateY(6px); } }
 
-    /* ✅ Audio button (LOCKED STANDARD) */
     #muteBtn{
       position: fixed;
       top: 18px;
@@ -414,7 +388,6 @@
       user-select:none;
     }
 
-    /* ✅ Inventory (LOCKED STANDARD) */
     #inventory{
       position: fixed;
       left: 50%;
@@ -476,7 +449,6 @@
       text-shadow: 0 0 14px rgba(120,0,0,0.28);
     }
 
-    /* ✅ NEW: icon rendering inside slots (minimal, still same UI) */
     .slot img.invIcon{
       width: 34px;
       height: 34px;
@@ -493,9 +465,6 @@
       .slot img.invIcon{ width: 30px; height: 30px; }
     }
 
-    /* =========================
-       🟢 Rune pickup (minimal, uses existing gateWrap styles)
-    ========================== */
     #runeBlock{ display:none; }
     #runeNote{
       margin: 10px auto 0;
@@ -556,7 +525,6 @@
 
       <div class="msg" id="msg"></div>
 
-      <!-- ✅ Rune interaction -->
       <div id="runeBlock">
         <div class="sep"></div>
         <div class="riddleTitle">The Pedestal Yields</div>
@@ -588,20 +556,15 @@
 
   <button id="muteBtn" aria-label="Toggle audio">🔊</button>
 
-  <!-- 🩸 Mordain Voice -->
   <audio id="mordainVoice" preload="auto" playsinline>
     <source src="audio/mordain-level7.mp3" type="audio/mpeg">
   </audio>
 
-  <!-- 🌫 Level 7 Ambience -->
   <audio id="level7Ambience" loop preload="auto" playsinline>
     <source src="audio/level7-ambience.mp3" type="audio/mpeg">
   </audio>
 
   <script>
-    /* =========================
-       🚪 Gate (Level 7)
-    ========================== */
     const PASSWORD = "VERDANT";
     const NEXT_PAGE = "level8.html";
 
@@ -616,10 +579,8 @@
 
     const TAKEN_KEY = "ofs_level7_rune_taken";
 
-    // ✅ Item object that will be stored in ofs_inventory
-    // Put this file in: ui/rune-emerald.png
     const EMERALD_RUNE = {
-      id: "rune_emerald",
+      id: "RUNE_EMERALD",
       img: "ui/rune-emerald.png",
       alt: "Emerald Rune"
     };
@@ -647,7 +608,6 @@
       try{ pw.disabled = true; }catch(e){}
       try{ btn.disabled = true; }catch(e){}
 
-      // reflect taken state
       if (localStorage.getItem(TAKEN_KEY) === "1" || invHasId(EMERALD_RUNE.id)){
         if (takeBtn){
           takeBtn.textContent = "RUNE CLAIMED";
@@ -677,7 +637,7 @@
     pw.addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
 
     /* =========================
-       🎒 Inventory (LOCKED) + upgraded to support ICON ITEMS
+       🎒 Inventory (with migration)
     ========================== */
     const INV_KEY = "ofs_inventory";
 
@@ -694,6 +654,29 @@
       try{ localStorage.setItem(INV_KEY, JSON.stringify(inv)); }catch(e){}
     }
 
+    // ✅ migrate old strings -> objects (so older pages stop showing text)
+    function migrateInv(inv){
+      let changed = false;
+
+      const out = inv.map(it => {
+        if (!it) return it;
+
+        if (typeof it === "string"){
+          const s = normalize(it);
+
+          // old saved label variants
+          if (s === "EMERALD RUNE" || s === "RUNE_EMERALD" || s === "RUNE EMERALD"){
+            changed = true;
+            return EMERALD_RUNE;
+          }
+        }
+        return it;
+      });
+
+      if (changed) saveInv(out);
+      return out;
+    }
+
     function renderSlot(el, item){
       if (!el) return;
 
@@ -703,14 +686,12 @@
         return;
       }
 
-      // if item is object with img -> render icon
       if (typeof item === "object" && item.img){
         el.innerHTML = `<img class="invIcon" src="${item.img}" alt="${(item.alt||"Item").replace(/"/g,'&quot;')}" />`;
         el.classList.add("filled");
         return;
       }
 
-      // fallback to text
       el.textContent = String(item).slice(0, 10);
       el.classList.add("filled");
     }
@@ -725,7 +706,7 @@
     window.ofsInv = {
       get(){ return loadInv().slice(); },
       set(slotIndex, value){
-        const inv = loadInv();
+        const inv = migrateInv(loadInv());
         if (slotIndex < 0 || slotIndex > 2) return inv;
         inv[slotIndex] = value ? value : null;
         saveInv(inv);
@@ -733,9 +714,8 @@
         return inv;
       },
       add(value){
-        const inv = loadInv();
+        const inv = migrateInv(loadInv());
 
-        // prevent duplicates (works for strings or objects)
         const newId = getItemId(value);
         if (newId && inv.some(it => getItemId(it) === newId)) return inv;
 
@@ -755,11 +735,10 @@
       }
     };
 
-    renderInv(loadInv());
+    // ✅ Load + migrate once on page load
+    const initialInv = migrateInv(loadInv());
+    renderInv(initialInv);
 
-    /* =========================
-       🟢 Rune pickup -> adds ICON ITEM
-    ========================== */
     function takeRune(){
       if (!window.ofsInv) return;
 
@@ -819,7 +798,6 @@
 
       if (!muteBtn || !voice || !amb || !heroEl || !bg || !veil || !revealLines.length) return;
 
-      // ✅ MIX (locked baseline)
       const VOICE_TARGET = 0.74;
       const AMB_TARGET   = 0.30;
 
@@ -828,7 +806,6 @@
       amb.muted = savedMuted;
       muteBtn.textContent = savedMuted ? "🔇" : "🔊";
 
-      // ✅ Faster voice fade-in (so you hear the first word)
       voice.volume = 0;
       amb.volume = 0;
 
@@ -857,10 +834,7 @@
             voice.volume = 0;
             amb.volume = 0;
 
-            // voice ramps in quick
             fadeTo(voice, VOICE_TARGET, 0.09, 70);
-
-            // ambience ramps in slower
             fadeTo(amb, AMB_TARGET, 0.02, 140);
           }
         }catch(e){}
@@ -885,7 +859,6 @@
         const n = revealLines.length;
         const voiceDur = (isFinite(voice.duration) && voice.duration > 2) ? voice.duration : 0;
 
-        // ✅ locked slow cinematic pace
         const MIN_TOTAL    = 74;
         const MIN_LINE_DUR = 5.8;
         const MIN_GAP      = 1.15;
