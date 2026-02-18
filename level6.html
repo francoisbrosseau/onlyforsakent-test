@@ -5,301 +5,776 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ONLYFORSAKEN — Level 6</title>
 
-  <!-- Fonts -->
+  <!-- ✅ Fonts (LOCKED) -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --title-font:"Cinzel Decorative", serif;
-      --body-font:"Cormorant Garamond", serif;
-
       --text: rgba(255,255,255,0.92);
-      --muted: rgba(255,255,255,0.62);
-
+      --muted: rgba(255,255,255,0.78);
+      --hint: rgba(255,255,255,0.42);
       --shadow: rgba(0,0,0,0.72);
 
-      --maxw: 880px;
-
-      --ok: rgba(170,255,210,0.95);
-      --bad: rgba(255,140,140,0.95);
+      /* ✅ Desktop/mobile framing (crop more on PC) */
+      --bg-pos-desktop: center 62%;
+      --bg-pos-mobile:  center 52%;
     }
 
     *{ box-sizing:border-box; }
-    html,body{ height:100%; margin:0; }
-    body{
-      background:#000;
-      color:var(--text);
-      font-family:var(--body-font);
-      overflow-x:hidden;
-      text-align:center;
-      position:relative;
-    }
+    html,body{ height:100%; margin:0; background:#000; font-family: Georgia, "Times New Roman", serif; }
 
-    /* === ALWAYS-ON BACKGROUND (NO CUT TO BLACK) === */
-    body::before{
-      content:"";
-      position:fixed;
-      inset:0;
-      z-index:-10;
-
-      background:
-        linear-gradient(to bottom, rgba(0,0,0,0.08), rgba(0,0,0,0.38)),
-        url("level6.jpg");
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: 68% 62%;
-    }
-
-    /* soft vignette (light) */
-    body::after{
-      content:"";
-      position:fixed;
-      inset:-35%;
-      z-index:-9;
-      pointer-events:none;
-      background: radial-gradient(closest-side at 50% 35%,
-        rgba(0,0,0,0) 55%,
-        rgba(0,0,0,0.35) 90%
-      );
-    }
-
-    /* FULLSCREEN HERO (keeps everything centered) */
+    /* =========================
+       🎬 HERO / BACKGROUND (LOCKED)
+    ========================== */
     .hero{
       min-height:100vh;
       min-height:100svh;
-      display:grid;
-      place-items:center;
-      padding: clamp(18px, 4vw, 56px);
-      text-align:center;
+      position:relative;
+      overflow:hidden;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      background:#000;
     }
 
-    /* Grain overlay (very light; won’t blur the image) */
-    .grain{
-      position:fixed;
+    .bg{
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+
+      background-image: url("level6.jpg");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: var(--bg-pos-desktop);
+
+      filter: brightness(1.14) contrast(1.12) saturate(1.04);
+      transform: scale(1.01);
+      opacity: 0;
+      transition: opacity 2200ms ease, transform 2800ms ease;
+      will-change: opacity, transform;
+    }
+    .bg.show{ opacity: 1; transform: scale(1); }
+
+    @media (max-width: 700px){
+      .bg{ background-position: var(--bg-pos-mobile); }
+    }
+
+    .hero::before{
+      content:"";
+      position: fixed;
       inset:0;
+      background:
+        radial-gradient(circle at 50% 40%, rgba(0,0,0,0.08), rgba(0,0,0,0.56)),
+        linear-gradient(to bottom, rgba(0,0,0,0.18), rgba(0,0,0,0.66));
+      z-index:1;
       pointer-events:none;
-      opacity:0.07;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
-      mix-blend-mode:overlay;
-      z-index:-8;
+      opacity: 0;
+      transition: opacity 2200ms ease;
     }
+    .hero.reveal::before{ opacity: 1; }
 
-    @keyframes candleFlicker{
-      0%{ opacity:0.94; transform: translateY(0px); }
-      50%{ opacity:1; transform: translateY(-1px); }
-      100%{ opacity:0.96; transform: translateY(0px); }
+    .hero::after{
+      content:"";
+      position: fixed;
+      inset:0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+      opacity: 0;
+      pointer-events:none;
+      z-index:1;
+      transition: opacity 2200ms ease;
     }
-    .flicker{ animation:candleFlicker 5.2s ease-in-out infinite; }
+    .hero.reveal::after{ opacity: .10; }
 
-    /* NO BOX / NO PANEL — just centered content */
+    /* 🎬 Veil */
+    #veil{
+      position: fixed;
+      inset: 0;
+      background: #000;
+      opacity: 1;
+      z-index: 2147483646;
+      pointer-events:none;
+      transition: opacity 900ms ease;
+    }
+    #veil.hide{ opacity: 0; }
+
+    /* =========================
+       🕯 UI (LOCKED)
+    ========================== */
     .wrap{
-      width:min(var(--maxw), 100%);
-      margin: 0 auto;
-      padding: clamp(18px, 3.5vw, 46px);
-      background:none;
-      border:none;
-      box-shadow:none;
-      backdrop-filter:none;
-      -webkit-backdrop-filter:none;
-      text-align:center;
+      position: relative;
+      z-index: 3;
+      width: min(820px, 92vw);
+      padding: 42px 22px 112px;
+      text-align: center;
+      filter: drop-shadow(0 16px 22px var(--shadow));
+      pointer-events:auto;
+    }
+
+    .kicker{
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      font-size: 12px;
+      color: rgba(255,255,255,0.46);
+      margin: 0 0 10px;
+      user-select:none;
+    }
+
+    @keyframes candleFlicker {
+      0%   { opacity: 0.92; text-shadow: 0 0 6px rgba(255,255,255,0.10), 0 0 18px rgba(120,0,0,0.18); }
+      25%  { opacity: 1;    text-shadow: 0 0 10px rgba(255,255,255,0.18), 0 0 28px rgba(120,0,0,0.28); }
+      50%  { opacity: 0.96; text-shadow: 0 0 7px rgba(255,255,255,0.12), 0 0 20px rgba(120,0,0,0.22); }
+      75%  { opacity: 1;    text-shadow: 0 0 12px rgba(255,255,255,0.20), 0 0 34px rgba(120,0,0,0.32); }
+      100% { opacity: 0.94; text-shadow: 0 0 6px rgba(255,255,255,0.10), 0 0 18px rgba(120,0,0,0.18); }
     }
 
     h1{
-      margin:0;
-      font-family:var(--title-font);
-      letter-spacing:0.10em;
-      font-size: clamp(32px, 3.8vw, 52px);
-      text-shadow: 0 14px 44px rgba(0,0,0,0.70);
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: clamp(24px, 3.6vw, 40px);
+      color: #e8e2d6;
+      margin: 0 0 14px;
+      animation: candleFlicker 3.5s infinite ease-in-out;
+      user-select:none;
     }
 
-    .subtitle{
-      margin: 10px 0 0;
-      font-weight:600;
-      font-size: clamp(18px, 2.2vw, 24px);
-      color: rgba(255,255,255,0.80);
-    }
-
-    .divider{
-      height:1px;
-      background: linear-gradient(to right, transparent, rgba(255,255,255,0.22), transparent);
-      margin: 20px auto;
-      width: min(720px, 92vw);
-    }
-
-    /* STORY — NO BOX */
+    /* =========================
+       🌫 FOG REVEAL (LOCKED)
+       left → right, line-by-line
+    ========================== */
     .story{
-      margin: 0 auto;
-      max-width: 68ch;
-      font-size: clamp(18px, 2.05vw, 22px);
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(20px, 2.1vw, 24px);
       line-height: 1.75;
-      color: rgba(255,255,255,0.88);
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.78);
+      margin: 0 auto 18px;
+      max-width: 62ch;
+      animation: candleFlicker 5s infinite ease-in-out;
+      text-align: left;
     }
-    .story p{ margin: 12px 0; }
+    .story em{
+      font-style: normal;
+      color: #d2c7b3;
+      text-shadow: 0 0 10px rgba(120,0,0,0.35);
+    }
+
+    .fogLine{
+      display:block;
+      margin: 0 0 0.55em 0;
+      opacity: 0.85;
+      filter: blur(2.1px);
+
+      -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 60%);
+      -webkit-mask-size: 240% 100%;
+      -webkit-mask-position: 100% 0;
+
+      mask-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 60%);
+      mask-size: 240% 100%;
+      mask-position: 100% 0;
+    }
+    .fogLine.run{
+      animation: fogLineReveal var(--dur, 5.8s) ease forwards;
+      animation-delay: var(--delay, 0s);
+    }
+    @keyframes fogLineReveal{
+      0%{ -webkit-mask-position: 100% 0; mask-position: 100% 0; filter: blur(2.1px); opacity: 0.80; }
+      100%{ -webkit-mask-position: 0% 0; mask-position: 0% 0; filter: blur(0px); opacity: 1; }
+    }
+
+    .hint{
+      margin: 14px auto 18px;
+      max-width: 64ch;
+      color: var(--hint);
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      user-select:none;
+      text-align:center;
+    }
+
+    .sep{
+      height:1px;
+      width:min(560px, 92vw);
+      margin: 18px auto 14px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent);
+      opacity: .85;
+    }
 
     .riddleTitle{
-      font-family:var(--title-font);
-      letter-spacing:0.14em;
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
-      font-size: 12px;
-      color: rgba(255,255,255,0.72);
-      margin: 8px 0 10px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.34);
+      margin: 0 0 8px;
+      user-select:none;
     }
 
-    .riddle{
-      margin: 0 auto;
+    .riddleText{
+      font-family: "Cormorant Garamond", serif;
+      font-size: 16px;
+      line-height: 1.35;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      text-align:center;
+      color: rgba(255,255,255,0.22);
+      text-shadow: 0 1px 0 rgba(0,0,0,0.85), 0 -1px 0 rgba(255,255,255,0.06);
       max-width: 62ch;
-      padding: 14px 18px;
-      border-radius: 20px;
-      background: rgba(0,0,0,0.12); /* very light so it doesn’t look “boxed” */
-      border: 1px solid rgba(255,255,255,0.10);
-      line-height: 1.85;
-      font-size: clamp(18px, 2.05vw, 22px);
+      margin: 0 auto;
+      user-select:none;
     }
 
-    /* PASSWORD GATE — smaller */
-    .gate{
-      margin-top: 18px;
+    /* =========================
+       🗝 PASSWORD BOX (LOCKED — SAME AS LEVEL 4/5)
+    ========================== */
+    .gateWrap{
+      width: min(560px, 92vw);
+      margin: 16px auto 0;
+      padding: 18px 16px 18px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(255,255,255,0.06), transparent 55%),
+        radial-gradient(circle at 82% 38%, rgba(160,60,40,0.10), transparent 62%),
+        linear-gradient(to bottom, rgba(0,0,0,0.28), rgba(0,0,0,0.10));
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(7px);
+      box-shadow:
+        0 22px 44px rgba(0,0,0,0.46),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      position: relative;
+      overflow:hidden;
+    }
+
+    .gateWrap::after{
+      content:"";
+      position:absolute;
+      left: 18px; right: 18px;
+      top: 46px;
+      height: 1px;
+      background: linear-gradient(90deg,
+        transparent,
+        rgba(232,210,170,0.14),
+        rgba(255,255,255,0.06),
+        rgba(232,210,170,0.12),
+        transparent
+      );
+      opacity: 0.85;
+      pointer-events:none;
+    }
+
+    .gateLabel{
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      font-size: 10px;
+      color: rgba(255,255,255,0.42);
+      margin: 0 0 14px;
+      user-select:none;
       display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      text-shadow: 0 0 18px rgba(0,0,0,0.55);
+    }
+
+    .gateLabel .mark{
+      color: rgba(232, 210, 170, 0.52);
+      text-shadow: 0 0 16px rgba(160,60,40,0.20);
+      font-size: 12px;
+    }
+
+    .gate{
+      display:flex;
+      gap: 12px;
       justify-content:center;
       align-items:center;
-      gap: 10px;
-      flex-wrap: wrap;
+      flex-wrap:wrap;
+      position: relative;
     }
 
     input[type="password"]{
-      width: min(260px, 82vw);
-      padding: 9px 12px;
-      border-radius: 14px;
+      width: min(340px, 86vw);
+      padding: 13px 16px;
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at 30% 28%, rgba(240,225,190,0.10), transparent 55%),
+        radial-gradient(circle at 70% 70%, rgba(140,60,40,0.08), transparent 60%),
+        linear-gradient(to bottom, rgba(18,14,12,0.68), rgba(8,7,7,0.78));
       border: 1px solid rgba(255,255,255,0.16);
-      background: rgba(0,0,0,0.24);
-      color: var(--text);
-      font-family:var(--body-font);
-      font-size: 18px;
-      outline:none;
-      text-align:center;
-      transition: box-shadow .18s ease, border-color .18s ease;
+      color: rgba(245,236,216,0.92);
+      outline: none;
+      letter-spacing: 0.16em;
+      font-size: 14px;
+      font-family: "Cormorant Garamond", serif;
+      box-shadow:
+        inset 0 0 0 1px rgba(0,0,0,0.55),
+        inset 0 0 26px rgba(0,0,0,0.45);
+      transition: border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
+      -webkit-text-security: disc;
     }
+
+    input[type="password"]::placeholder{
+      color: rgba(232,210,170,0.35);
+      letter-spacing: 0.10em;
+    }
+
     input[type="password"]:focus{
-      border-color: rgba(255,255,255,0.30);
-      box-shadow: 0 0 0 4px rgba(255,255,255,0.08);
+      border-color: rgba(232, 210, 170, 0.30);
+      box-shadow:
+        0 0 0 3px rgba(232, 210, 170, 0.06),
+        0 0 28px rgba(160,60,40,0.12),
+        inset 0 0 0 1px rgba(0,0,0,0.55),
+        inset 0 0 28px rgba(0,0,0,0.50);
+      transform: translateY(-1px);
     }
 
     button{
-      padding: 10px 14px;
-      border-radius: 14px;
+      padding: 13px 18px;
+      border-radius: 16px;
       border: 1px solid rgba(255,255,255,0.16);
-      background: rgba(255,255,255,0.10);
-      color: rgba(255,255,255,0.92);
-      font-family: var(--title-font);
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      font-size: 11px;
       cursor:pointer;
-      transition: transform .08s ease, background .18s ease, border-color .18s ease;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.10), transparent 55%),
+        linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(0,0,0,0.18));
+      color: rgba(245,236,216,0.92);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-family: "Cormorant Garamond", serif;
+      box-shadow:
+        0 14px 26px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      transition: transform 180ms ease, border-color 220ms ease, box-shadow 220ms ease, filter 220ms ease;
+      position: relative;
+      overflow:hidden;
     }
-    button:hover{ background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.26); }
-    button:active{ transform: translateY(1px); }
 
-    .hint{
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 14px;
+    button::after{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(circle at 50% 20%, rgba(232,210,170,0.14), transparent 55%);
+      opacity: 0;
+      transition: opacity 220ms ease;
+      pointer-events:none;
     }
+
+    button:hover{
+      border-color: rgba(232, 210, 170, 0.24);
+      box-shadow:
+        0 18px 34px rgba(0,0,0,0.42),
+        0 0 22px rgba(160,60,40,0.10),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+    }
+    button:hover::after{ opacity: 1; }
+    button:active{ transform: translateY(0px); }
 
     .msg{
-      margin-top: 10px;
-      min-height: 22px;
-      font-size: 15px;
-      letter-spacing: 0.02em;
-    }
-    .msg.ok{ color: var(--ok); }
-    .msg.bad{ color: var(--bad); }
-
-    .foot{
-      margin-top: 16px;
-      color: rgba(255,255,255,0.40);
+      margin-top: 14px;
+      min-height: 18px;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.08em;
       font-size: 12px;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
+      user-select:none;
     }
 
-    /* If you ever see a leftover .bg element from older versions, kill it */
-    .bg, .vignette{ display:none !important; }
+    .wrong{ animation: shake 340ms ease; }
+    @keyframes shake{
+      0%{ transform: translateX(0); }
+      20%{ transform: translateX(-6px); }
+      40%{ transform: translateX(6px); }
+      60%{ transform: translateX(-4px); }
+      80%{ transform: translateX(4px); }
+      100%{ transform: translateX(0); }
+    }
+
+    .fadeOut{ animation: fade 700ms ease forwards; }
+    @keyframes fade{ to{ opacity:0; transform: translateY(6px); } }
+
+    /* ✅ Audio button (LOCKED STANDARD) */
+    #muteBtn{
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 2147483647;
+      pointer-events:auto;
+      cursor:pointer;
+      background: rgba(0,0,0,.45);
+      border: 1px solid rgba(255,255,255,.28);
+      color: rgba(255,255,255,.95);
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-family:'Cormorant Garamond',serif;
+      backdrop-filter: blur(6px);
+      -webkit-tap-highlight-color: transparent;
+      user-select:none;
+    }
+
+    /* ✅ Inventory (LOCKED STANDARD) */
+    #inventory{
+      position: fixed;
+      left: 50%;
+      bottom: 14px;
+      transform: translateX(-50%);
+      z-index: 2147483645;
+      display:flex;
+      flex-direction: column;
+      align-items:center;
+      gap: 8px;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    #invLabel{
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-size: 10px;
+      color: rgba(255,255,255,0.40);
+      text-shadow: 0 0 18px rgba(0,0,0,0.65);
+      opacity: 0.95;
+    }
+
+    #invSlots{
+      display:flex;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.28);
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 18px 34px rgba(0,0,0,0.40);
+    }
+
+    .slot{
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255,255,255,0.10), rgba(0,0,0,0.12) 60%),
+        rgba(0,0,0,0.18);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color: rgba(255,255,255,0.58);
+      font-family: "Cormorant Garamond", serif;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 16px rgba(0,0,0,0.75);
+    }
+
+    .slot.filled{
+      color: rgba(255,255,255,0.90);
+      border-color: rgba(255,255,255,0.22);
+      text-shadow: 0 0 14px rgba(120,0,0,0.28);
+    }
+
+    @media (max-width: 520px){
+      #invSlots{ gap: 8px; padding: 9px 10px; }
+      .slot{ width: 48px; height: 48px; border-radius: 13px; }
+    }
   </style>
 </head>
 
 <body>
-  <div class="grain" aria-hidden="true"></div>
+  <div id="veil" aria-hidden="true"></div>
 
-  <main class="hero">
-    <section class="wrap flicker" aria-label="Level 6">
-      <h1>ONLYFORSAKEN</h1>
-      <div class="subtitle">The castle begins to answer.</div>
+  <main class="hero" id="hero">
+    <div class="bg" id="bg" aria-hidden="true"></div>
 
-      <div class="divider"></div>
+    <section class="wrap" id="wrap">
+      <div class="kicker">Level 6</div>
+      <h1>The Corridor That Answers</h1>
 
-      <!-- STORY (unchanged) -->
-      <div class="story">
-        <p>You step forward and the corridor returns your step—late, softer, wrong.</p>
-        <p>The stones are not just holding the sound. They are <em>learning</em> it.</p>
-        <p>A doorway you passed before appears again with the same bent handle, the same stain that never dries, the same cold draft that smells like old iron. Distance stops meaning what it should. Corners lead back to memories you did not agree to revisit.</p>
-        <p>At the end, a slab of black stone waits with a shallow indentation—made for a single word. Not a key. Not a name. A word the castle can repeat until it becomes true.</p>
+      <div class="story" id="story">
+        <span class="fogLine">You take one step—and the castle takes it <em>after</em> you.</span>
+
+        <span class="fogLine">Not your foot. Your <em>weight</em>. Your hesitation. The little tremor you pretend you don’t feel.</span>
+
+        <span class="fogLine">The sound returns too late, like a thought forming behind your skull. It learns your rhythm, then corrects it—politer, softer, almost affectionate.</span>
+
+        <span class="fogLine">A door you swear you passed reappears with the same bent handle, the same stain that never dries. Corners fold into older corners. Distance becomes a lie told with perfect confidence.</span>
+
+        <span class="fogLine">Somewhere in the stone, something repeats your breath—then tries to hold it, as if it can keep you alive by imitation.</span>
+
+        <span class="fogLine">And then Mordain’s presence presses in—no longer beside you, but <em>inside</em> the space behind your eyes.</span>
+
+        <span class="fogLine">“Do you feel it?” the whisper says. “How easily you answer when you believe you’re alone.”</span>
+
+        <span class="fogLine">At the end of the passage, a slab of black stone waits with a shallow indentation—made for one word.</span>
+
+        <span class="fogLine">Not a key. Not a name. A word the castle can speak back until the corridor believes it belongs to you.</span>
       </div>
 
-      <div class="divider"></div>
+      <div class="hint">Don’t fight it. Listen to what follows.</div>
+
+      <div class="sep"></div>
 
       <div class="riddleTitle">Riddle</div>
-      <div class="riddle">
-        I speak without a mouth.<br>
-        I answer without a voice.<br>
-        I follow you longer than shadows.<br>
-        What am I?
+      <div class="riddleText">
+        I SPEAK WITHOUT A MOUTH. I ANSWER WITHOUT A VOICE.<br>
+        I FOLLOW YOU LONGER THAN SHADOWS. WHAT AM I?
       </div>
 
-      <div class="gate" role="group" aria-label="Password gate">
-        <input id="pw" type="password" inputmode="text" autocomplete="off" spellcheck="false"
-               placeholder="Enter the answer…" aria-label="Password" />
-        <button id="enterBtn" type="button">Enter</button>
+      <div class="gateWrap">
+        <div class="gateLabel"><span class="mark">⟡</span> Offer your answer <span class="mark">⟡</span></div>
+        <div class="gate">
+          <input id="pw" type="password" placeholder="whisper it…" autocomplete="off" />
+          <button id="btn">UNSEAL</button>
+        </div>
       </div>
 
-      <div class="hint">One word. No spaces.</div>
-      <div id="msg" class="msg" aria-live="polite"></div>
-
-      <div class="foot">Say it right — and the stone will say it back.</div>
+      <div class="msg" id="msg"></div>
     </section>
   </main>
 
+  <div id="inventory" aria-hidden="true">
+    <div id="invLabel">Inventory</div>
+    <div id="invSlots">
+      <div class="slot" id="slot0">—</div>
+      <div class="slot" id="slot1">—</div>
+      <div class="slot" id="slot2">—</div>
+    </div>
+  </div>
+
+  <button id="muteBtn" aria-label="Toggle audio">🔊</button>
+
+  <!-- 🩸 Mordain Voice (you provide the file) -->
+  <audio id="mordainVoice" preload="auto" playsinline>
+    <source src="audio/mordain-level6.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- 🌫 Level 6 Ambience (you provide the file) -->
+  <audio id="level6Ambience" loop preload="auto" playsinline>
+    <source src="audio/level6-ambience.mp3" type="audio/mpeg">
+  </audio>
+
   <script>
-    const PASSWORD = "echo";
+    /* =========================
+       🚪 Gate
+    ========================== */
+    const PASSWORD = "ECHO";
     const NEXT_PAGE = "level7.html";
 
+    const wrap = document.getElementById("wrap");
     const pw = document.getElementById("pw");
+    const btn = document.getElementById("btn");
     const msg = document.getElementById("msg");
-    const btn = document.getElementById("enterBtn");
-
-    function setMsg(text, ok=false){
-      msg.textContent = text;
-      msg.className = "msg " + (ok ? "ok" : "bad");
-    }
 
     function check(){
-      const v = (pw.value || "").trim().toLowerCase();
-      if(!v){
-        setMsg("The stone waits. Offer a word.");
-        return;
-      }
-      if(v === PASSWORD){
-        setMsg("Accepted.", true);
-        setTimeout(()=> { window.location.href = NEXT_PAGE; }, 450);
+      const val = (pw.value || "").trim().toUpperCase();
+      if (!val) return;
+
+      if (val === PASSWORD){
+        msg.textContent = "…";
+        setTimeout(() => wrap.classList.add("fadeOut"), 650);
+        setTimeout(() => window.location.href = NEXT_PAGE, 1350);
       } else {
-        setMsg("Wrong.", false);
+        msg.textContent = "Not yet.";
+        wrap.classList.remove("wrong");
+        void wrap.offsetWidth;
+        wrap.classList.add("wrong");
         pw.select();
       }
     }
 
     btn.addEventListener("click", check);
-    pw.addEventListener("keydown", (e)=>{ if(e.key === "Enter") check(); });
-    window.addEventListener("load", ()=> pw.focus());
+    pw.addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
+
+    /* =========================
+       🎒 Inventory (LOCKED)
+    ========================== */
+    const INV_KEY = "ofs_inventory";
+
+    function loadInv(){
+      try{
+        const raw = localStorage.getItem(INV_KEY);
+        const parsed = raw ? JSON.parse(raw) : null;
+        if (Array.isArray(parsed) && parsed.length === 3) return parsed;
+      }catch(e){}
+      return [null, null, null];
+    }
+
+    function saveInv(inv){
+      try{ localStorage.setItem(INV_KEY, JSON.stringify(inv)); }catch(e){}
+    }
+
+    function renderInv(inv){
+      for (let i = 0; i < 3; i++){
+        const el = document.getElementById("slot" + i);
+        const item = inv[i];
+        if (!el) continue;
+
+        if (item && String(item).trim()){
+          el.textContent = String(item).slice(0, 10);
+          el.classList.add("filled");
+        } else {
+          el.textContent = "—";
+          el.classList.remove("filled");
+        }
+      }
+    }
+
+    window.ofsInv = {
+      get(){ return loadInv().slice(); },
+      set(slotIndex, label){
+        const inv = loadInv();
+        if (slotIndex < 0 || slotIndex > 2) return inv;
+        inv[slotIndex] = label ? String(label) : null;
+        saveInv(inv);
+        renderInv(inv);
+        return inv;
+      },
+      add(label){
+        const inv = loadInv();
+        const idx = inv.findIndex(x => !x);
+        if (idx === -1) return inv;
+        inv[idx] = label ? String(label) : "Item";
+        saveInv(inv);
+        renderInv(inv);
+        return inv;
+      },
+      clear(){
+        const inv = [null,null,null];
+        saveInv(inv);
+        renderInv(inv);
+        return inv;
+      }
+    };
+
+    renderInv(loadInv());
+
+    /* =========================
+       🎬 Visuals + 🔊 Audio + 🌫 Line Reveal (LOCKED)
+    ========================== */
+    (() => {
+      const heroEl = document.getElementById("hero");
+      const bg = document.getElementById("bg");
+      const veil = document.getElementById("veil");
+      const revealLines = Array.from(document.querySelectorAll(".fogLine"));
+
+      const muteBtn = document.getElementById("muteBtn");
+      const voice = document.getElementById("mordainVoice");
+      const amb = document.getElementById("level6Ambience");
+
+      if (!muteBtn || !voice || !amb || !heroEl || !bg || !veil || !revealLines.length) return;
+
+      // ✅ MIX (locked baseline)
+      const VOICE_TARGET = 0.74;
+      const AMB_TARGET   = 0.30;
+
+      const savedMuted = localStorage.getItem("ofs_mute") === "1";
+      voice.muted = savedMuted;
+      amb.muted = savedMuted;
+      muteBtn.textContent = savedMuted ? "🔇" : "🔊";
+
+      // ✅ Faster voice fade-in (so you hear the first word)
+      voice.volume = 0;
+      amb.volume = 0;
+
+      function fadeTo(audio, target, step=0.06, interval=80){
+        try{
+          let v = audio.volume || 0;
+          const id = setInterval(() => {
+            v = Math.min(target, v + step);
+            audio.volume = v;
+            if (v >= target) clearInterval(id);
+          }, interval);
+        }catch(e){}
+      }
+
+      async function playBoth(){
+        try{
+          voice.currentTime = 0;
+          amb.currentTime = 0;
+
+          const p1 = voice.play();
+          const p2 = amb.play();
+          if (p1 && p1.catch) p1.catch(()=>{});
+          if (p2 && p2.catch) p2.catch(()=>{});
+
+          if (!voice.muted){
+            voice.volume = 0;
+            amb.volume = 0;
+
+            // voice ramps in quick
+            fadeTo(voice, VOICE_TARGET, 0.09, 70);
+
+            // ambience ramps in slower
+            fadeTo(amb, AMB_TARGET, 0.02, 140);
+          }
+        }catch(e){}
+      }
+
+      function stopBoth(){
+        try{ voice.pause(); }catch(e){}
+        try{ amb.pause(); }catch(e){}
+      }
+
+      function revealVisuals(){
+        setTimeout(() => veil.classList.add("hide"), 380);
+        setTimeout(() => { try{ veil.remove(); }catch(e){} }, 1500);
+
+        setTimeout(() => {
+          bg.classList.add("show");
+          heroEl.classList.add("reveal");
+        }, 420);
+      }
+
+      function startLineReveal(){
+        const n = revealLines.length;
+        const voiceDur = (isFinite(voice.duration) && voice.duration > 2) ? voice.duration : 0;
+
+        // ✅ locked slow cinematic pace
+        const MIN_TOTAL    = 74;
+        const MIN_LINE_DUR = 5.8;
+        const MIN_GAP      = 1.15;
+        const START_DELAY  = 1.35;
+
+        const total = Math.max(MIN_TOTAL, voiceDur ? (voiceDur * 1.10) : 0);
+
+        let gap = (total / n) * 0.22;
+        let lineDur = (total / n) * 1.05;
+
+        gap = Math.max(MIN_GAP, gap);
+        lineDur = Math.max(MIN_LINE_DUR, lineDur);
+
+        revealLines.forEach((line, i) => {
+          line.style.setProperty("--dur", `${lineDur.toFixed(2)}s`);
+          line.style.setProperty("--delay", `${(START_DELAY + i * gap).toFixed(2)}s`);
+          line.classList.add("run");
+        });
+      }
+
+      muteBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const newMuted = !voice.muted;
+        voice.muted = newMuted;
+        amb.muted = newMuted;
+
+        localStorage.setItem("ofs_mute", newMuted ? "1" : "0");
+        muteBtn.textContent = newMuted ? "🔇" : "🔊";
+
+        if (!newMuted) playBoth();
+        else stopBoth();
+      }, true);
+
+      window.addEventListener("pageshow", async () => {
+        revealVisuals();
+        if (!voice.muted) await playBoth();
+        startLineReveal();
+      });
+
+      window.addEventListener("pointerdown", () => {
+        if (!voice.muted && (voice.paused || amb.paused)) playBoth();
+      }, { once:true });
+
+    })();
   </script>
 </body>
 </html>
