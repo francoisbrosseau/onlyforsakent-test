@@ -466,6 +466,8 @@
       font-size: 12px;
       letter-spacing: 0.08em;
       text-shadow: 0 0 16px rgba(0,0,0,0.75);
+      position:relative;
+      overflow:hidden;
     }
 
     .slot.filled{
@@ -474,9 +476,21 @@
       text-shadow: 0 0 14px rgba(120,0,0,0.28);
     }
 
+    /* ✅ NEW: icon rendering inside slots (minimal, still same UI) */
+    .slot img.invIcon{
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(0,0,0,0.65));
+      opacity: 0.95;
+      pointer-events:none;
+      user-select:none;
+    }
+
     @media (max-width: 520px){
       #invSlots{ gap: 8px; padding: 9px 10px; }
       .slot{ width: 48px; height: 48px; border-radius: 13px; }
+      .slot img.invIcon{ width: 30px; height: 30px; }
     }
 
     /* =========================
@@ -512,19 +526,12 @@
 
       <div class="story" id="story">
         <span class="fogLine">The corridor finally releases you into a chamber that smells of wet stone and old incense—like a chapel that forgot its god.</span>
-
         <span class="fogLine">Your footsteps do not echo. They are <em>accepted</em>. The room takes them, counts them, and decides you may keep walking.</span>
-
         <span class="fogLine">At the center stands a pedestal carved with a spiral rune. Its surface is clean—no dust, no grit, no age—like the castle has been waiting here <em>recently</em>.</span>
-
         <span class="fogLine">Above it floats a green gem, cut like a sealed tear. It pulses slowly, and the air around it shivers as if the light has weight.</span>
-
         <span class="fogLine">Mordain’s voice brushes the back of your skull: <em>“Do not stare too long. Green is the color of permission.”</em></span>
-
         <span class="fogLine">A ring of carvings circles the pedestal. Broken words. Sharp intent. A warning dressed as a ceremony.</span>
-
         <span class="fogLine">When you breathe in, the gem brightens. When you breathe out, it dims—like it’s learning the rhythm of something that still thinks it’s alone.</span>
-
         <span class="fogLine">And for the first time, you understand: this isn’t a treasure. It’s a <em>piece</em>. A component. A promise that will be collected, slot by slot, until the castle has enough of you to finish what it began.</span>
       </div>
 
@@ -549,7 +556,7 @@
 
       <div class="msg" id="msg"></div>
 
-      <!-- ✅ Rune interaction (appears ONLY after correct password) -->
+      <!-- ✅ Rune interaction -->
       <div id="runeBlock">
         <div class="sep"></div>
         <div class="riddleTitle">The Pedestal Yields</div>
@@ -581,12 +588,12 @@
 
   <button id="muteBtn" aria-label="Toggle audio">🔊</button>
 
-  <!-- 🩸 Mordain Voice (you provide the file) -->
+  <!-- 🩸 Mordain Voice -->
   <audio id="mordainVoice" preload="auto" playsinline>
     <source src="audio/mordain-level7.mp3" type="audio/mpeg">
   </audio>
 
-  <!-- 🌫 Level 7 Ambience (you provide the file) -->
+  <!-- 🌫 Level 7 Ambience -->
   <audio id="level7Ambience" loop preload="auto" playsinline>
     <source src="audio/level7-ambience.mp3" type="audio/mpeg">
   </audio>
@@ -608,26 +615,40 @@
     const nextBtn = document.getElementById("nextBtn");
 
     const TAKEN_KEY = "ofs_level7_rune_taken";
-    const RUNE_LABEL = "EMERALD RUNE";
+
+    // ✅ Item object that will be stored in ofs_inventory
+    // Put this file in: ui/rune-emerald.png
+    const EMERALD_RUNE = {
+      id: "rune_emerald",
+      img: "ui/rune-emerald.png",
+      alt: "Emerald Rune"
+    };
 
     function normalize(v){
-      return (v || "").trim().toUpperCase();
+      return (v || "").toString().trim().toUpperCase();
     }
 
-    function invHas(label){
+    function getItemId(item){
+      if (!item) return "";
+      if (typeof item === "string") return normalize(item);
+      if (typeof item === "object") return normalize(item.id || item.alt || "");
+      return "";
+    }
+
+    function invHasId(id){
       const inv = window.ofsInv && window.ofsInv.get ? window.ofsInv.get() : [];
-      const up = normalize(label);
-      return inv.some(x => normalize(x) === up);
+      const target = normalize(id);
+      return inv.some(it => getItemId(it) === target);
     }
 
     function revealRune(){
       runeBlock.style.display = "block";
       msg.textContent = "The seal yields. The pedestal recognizes your word.";
-      // lock gate inputs so people don’t spam it
       try{ pw.disabled = true; }catch(e){}
       try{ btn.disabled = true; }catch(e){}
-      // if already taken, reflect it
-      if (localStorage.getItem(TAKEN_KEY) === "1" || invHas(RUNE_LABEL)){
+
+      // reflect taken state
+      if (localStorage.getItem(TAKEN_KEY) === "1" || invHasId(EMERALD_RUNE.id)){
         if (takeBtn){
           takeBtn.textContent = "RUNE CLAIMED";
           takeBtn.disabled = true;
@@ -656,7 +677,7 @@
     pw.addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
 
     /* =========================
-       🎒 Inventory (LOCKED) — unchanged
+       🎒 Inventory (LOCKED) + upgraded to support ICON ITEMS
     ========================== */
     const INV_KEY = "ofs_inventory";
 
@@ -673,43 +694,55 @@
       try{ localStorage.setItem(INV_KEY, JSON.stringify(inv)); }catch(e){}
     }
 
+    function renderSlot(el, item){
+      if (!el) return;
+
+      if (!item){
+        el.textContent = "—";
+        el.classList.remove("filled");
+        return;
+      }
+
+      // if item is object with img -> render icon
+      if (typeof item === "object" && item.img){
+        el.innerHTML = `<img class="invIcon" src="${item.img}" alt="${(item.alt||"Item").replace(/"/g,'&quot;')}" />`;
+        el.classList.add("filled");
+        return;
+      }
+
+      // fallback to text
+      el.textContent = String(item).slice(0, 10);
+      el.classList.add("filled");
+    }
+
     function renderInv(inv){
       for (let i = 0; i < 3; i++){
         const el = document.getElementById("slot" + i);
-        const item = inv[i];
-        if (!el) continue;
-
-        if (item && String(item).trim()){
-          el.textContent = String(item).slice(0, 10);
-          el.classList.add("filled");
-        } else {
-          el.textContent = "—";
-          el.classList.remove("filled");
-        }
+        renderSlot(el, inv[i]);
       }
     }
 
     window.ofsInv = {
       get(){ return loadInv().slice(); },
-      set(slotIndex, label){
+      set(slotIndex, value){
         const inv = loadInv();
         if (slotIndex < 0 || slotIndex > 2) return inv;
-        inv[slotIndex] = label ? String(label) : null;
+        inv[slotIndex] = value ? value : null;
         saveInv(inv);
         renderInv(inv);
         return inv;
       },
-      add(label){
+      add(value){
         const inv = loadInv();
 
-        // prevent duplicates
-        const up = normalize(label);
-        if (inv.some(x => normalize(x) === up)) return inv;
+        // prevent duplicates (works for strings or objects)
+        const newId = getItemId(value);
+        if (newId && inv.some(it => getItemId(it) === newId)) return inv;
 
         const idx = inv.findIndex(x => !x);
         if (idx === -1) return inv;
 
-        inv[idx] = label ? String(label) : "Item";
+        inv[idx] = value ? value : "Item";
         saveInv(inv);
         renderInv(inv);
         return inv;
@@ -725,12 +758,12 @@
     renderInv(loadInv());
 
     /* =========================
-       🟢 Rune pickup (NEW, minimal)
+       🟢 Rune pickup -> adds ICON ITEM
     ========================== */
     function takeRune(){
       if (!window.ofsInv) return;
 
-      if (invHas(RUNE_LABEL)){
+      if (invHasId(EMERALD_RUNE.id)){
         msg.textContent = "The pedestal is empty now.";
         if (takeBtn){
           takeBtn.textContent = "RUNE CLAIMED";
@@ -742,9 +775,9 @@
       }
 
       const before = window.ofsInv.get();
-      const beforeEmpty = before.findIndex(x => !x);
+      const emptyIndex = before.findIndex(x => !x);
 
-      if (beforeEmpty === -1){
+      if (emptyIndex === -1){
         msg.textContent = "Your inventory is full.";
         wrap.classList.remove("wrong");
         void wrap.offsetWidth;
@@ -752,7 +785,7 @@
         return;
       }
 
-      window.ofsInv.add(RUNE_LABEL);
+      window.ofsInv.add(EMERALD_RUNE);
       localStorage.setItem(TAKEN_KEY, "1");
 
       msg.textContent = "You lift the gem. The rune crawls into your palm… then into your inventory.";
@@ -773,7 +806,6 @@
 
     /* =========================
        🎬 Visuals + 🔊 Audio + 🌫 Line Reveal (LOCKED)
-       (copied exactly from your Level 6 with only ambience id updated)
     ========================== */
     (() => {
       const heroEl = document.getElementById("hero");
@@ -893,12 +925,6 @@
         revealVisuals();
         if (!voice.muted) await playBoth();
         startLineReveal();
-
-        // if player refreshes after already unsealing (keeps it sane)
-        if (localStorage.getItem(TAKEN_KEY) === "1" || invHas(RUNE_LABEL)){
-          // show rune block if already taken (optional convenience)
-          // we do NOT auto-solve the password; we only reflect taken state once revealed
-        }
       });
 
       window.addEventListener("pointerdown", () => {
