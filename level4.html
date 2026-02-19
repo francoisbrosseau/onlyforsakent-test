@@ -199,11 +199,6 @@
       user-select:none;
     }
 
-    /* =========================
-       🗝 PASSWORD BOX (UPGRADED)
-       - “carved altar + aged parchment slot”
-       - kills the white “bank” vibe
-    ========================== */
     .gateWrap{
       width: min(560px, 92vw);
       margin: 16px auto 0;
@@ -269,26 +264,20 @@
       position: relative;
     }
 
-    /* ✅ The input now feels like aged parchment INSET into stone */
     input[type="password"]{
       width: min(340px, 86vw);
       padding: 13px 16px;
       border-radius: 16px;
-
-      /* parchment + soot + vignette */
       background:
         radial-gradient(circle at 30% 28%, rgba(240,225,190,0.10), transparent 55%),
         radial-gradient(circle at 70% 70%, rgba(140,60,40,0.08), transparent 60%),
         linear-gradient(to bottom, rgba(18,14,12,0.68), rgba(8,7,7,0.78));
-
       border: 1px solid rgba(255,255,255,0.16);
-      color: rgba(245,236,216,0.92); /* warmer, not stark white */
+      color: rgba(245,236,216,0.92);
       outline: none;
-
       letter-spacing: 0.16em;
       font-size: 14px;
       font-family: "Cormorant Garamond", serif;
-
       box-shadow:
         inset 0 0 0 1px rgba(0,0,0,0.55),
         inset 0 0 26px rgba(0,0,0,0.45);
@@ -443,6 +432,8 @@
       font-size: 12px;
       letter-spacing: 0.08em;
       text-shadow: 0 0 16px rgba(0,0,0,0.75);
+      position: relative;
+      overflow: hidden;
     }
 
     .slot.filled{
@@ -451,9 +442,21 @@
       text-shadow: 0 0 14px rgba(120,0,0,0.28);
     }
 
+    /* ✅ icon support (doesn't change look unless used) */
+    .slot img.invIcon{
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(0,0,0,0.65));
+      opacity: 0.95;
+      pointer-events:none;
+      user-select:none;
+    }
+
     @media (max-width: 520px){
       #invSlots{ gap: 8px; padding: 9px 10px; }
       .slot{ width: 48px; height: 48px; border-radius: 13px; }
+      .slot img.invIcon{ width: 30px; height: 30px; }
     }
   </style>
 </head>
@@ -592,7 +595,20 @@
     btn.addEventListener("click", check);
     pw.addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
 
+    /* =========================
+       🎒 Inventory (LOCKED) + ✅ REVEAL GATE
+       - Hide all items until Level 7 "unlocks" inventory visibility
+    ========================== */
     const INV_KEY = "ofs_inventory";
+
+    // ✅ Gate key: Level 7 will set this to "7"
+    const INV_REVEAL_KEY = "ofs_inv_reveal_level";
+    const REQUIRED_REVEAL_LEVEL = 7;
+
+    function getRevealLevel(){
+      const n = parseInt(localStorage.getItem(INV_REVEAL_KEY) || "0", 10);
+      return Number.isFinite(n) ? n : 0;
+    }
 
     function loadInv(){
       try{
@@ -607,37 +623,81 @@
       try{ localStorage.setItem(INV_KEY, JSON.stringify(inv)); }catch(e){}
     }
 
+    function asId(v){
+      return (v || "").toString().trim().toUpperCase();
+    }
+
+    // ✅ If you used old text items before, keep compatibility
+    function migrateInv(inv){
+      let changed = false;
+      const out = inv.map(it => {
+        if (!it) return it;
+        if (typeof it === "string"){
+          const s = asId(it);
+          if (s === "EMERALD RUNE" || s === "RUNE EMERALD" || s === "RUNE_EMERALD"){
+            changed = true;
+            return { id:"RUNE_EMERALD", img:"ui/rune-emerald.png", alt:"Emerald Rune" };
+          }
+        }
+        return it;
+      });
+      if (changed) saveInv(out);
+      return out;
+    }
+
+    function renderSlot(el, item, allowItems){
+      if (!el) return;
+
+      if (!allowItems){
+        el.textContent = "—";
+        el.classList.remove("filled");
+        el.innerHTML = "—";
+        return;
+      }
+
+      if (!item){
+        el.textContent = "—";
+        el.classList.remove("filled");
+        el.innerHTML = "—";
+        return;
+      }
+
+      // ✅ Icon item support
+      if (typeof item === "object" && item.img){
+        el.innerHTML = `<img class="invIcon" src="${item.img}" alt="${String(item.alt || "Item").replace(/"/g,'&quot;')}" />`;
+        el.classList.add("filled");
+        return;
+      }
+
+      // ✅ fallback text
+      el.textContent = String(item).slice(0, 10);
+      el.classList.add("filled");
+    }
+
     function renderInv(inv){
+      const allowItems = getRevealLevel() >= REQUIRED_REVEAL_LEVEL;
+
       for (let i = 0; i < 3; i++){
         const el = document.getElementById("slot" + i);
-        const item = inv[i];
-        if (!el) continue;
-
-        if (item && String(item).trim()){
-          el.textContent = String(item).slice(0, 10);
-          el.classList.add("filled");
-        } else {
-          el.textContent = "—";
-          el.classList.remove("filled");
-        }
+        renderSlot(el, inv[i], allowItems);
       }
     }
 
     window.ofsInv = {
-      get(){ return loadInv().slice(); },
-      set(slotIndex, label){
-        const inv = loadInv();
+      get(){ return migrateInv(loadInv()).slice(); },
+      set(slotIndex, value){
+        const inv = migrateInv(loadInv());
         if (slotIndex < 0 || slotIndex > 2) return inv;
-        inv[slotIndex] = label ? String(label) : null;
+        inv[slotIndex] = value ? value : null;
         saveInv(inv);
         renderInv(inv);
         return inv;
       },
-      add(label){
-        const inv = loadInv();
+      add(value){
+        const inv = migrateInv(loadInv());
         const idx = inv.findIndex(x => !x);
         if (idx === -1) return inv;
-        inv[idx] = label ? String(label) : "Item";
+        inv[idx] = value ? value : "Item";
         saveInv(inv);
         renderInv(inv);
         return inv;
@@ -650,8 +710,11 @@
       }
     };
 
-    renderInv(loadInv());
+    renderInv(migrateInv(loadInv()));
 
+    /* =========================
+       🎬 Visuals + 🔊 Audio + 🌫 Line Reveal (LOCKED)
+    ========================== */
     (() => {
       const heroEl = document.getElementById("hero");
       const bg = document.getElementById("bg");
@@ -724,11 +787,10 @@
         const n = revealLines.length;
         const voiceDur = (isFinite(voice.duration) && voice.duration > 2) ? voice.duration : 0;
 
-        // ✅ slightly slower than before (but not too much)
-        const MIN_TOTAL    = 74;   // was 68
-        const MIN_LINE_DUR = 5.8;  // was 5.4
-        const MIN_GAP      = 1.15; // was 1.05
-        const START_DELAY  = 1.35; // was 1.25
+        const MIN_TOTAL    = 74;
+        const MIN_LINE_DUR = 5.8;
+        const MIN_GAP      = 1.15;
+        const START_DELAY  = 1.35;
 
         const total = Math.max(MIN_TOTAL, voiceDur ? (voiceDur * 1.10) : 0);
 
