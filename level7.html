@@ -16,8 +16,8 @@
       --shadow: rgba(0,0,0,0.72);
 
       /* ✅ Desktop/mobile framing (LOCKED) */
-      --bg-pos-desktop: center 50%;
-      --bg-pos-mobile:  center 52%;
+      --bg-pos-desktop: 50% 50%;
+      --bg-pos-mobile:  50% 52%;
     }
 
     *{ box-sizing:border-box; }
@@ -228,9 +228,10 @@
     }
 
     /* =========================
-       🗝 PASSWORD BOX (LOCKED)
+       🗝 ANTIQUE SEAL GATE (LOCKED)
+       - Isolated classes only (.seal / .sealInput / .sealBtn)
     ========================== */
-    .gateWrap{
+    .seal{
       width: min(560px, 92vw);
       margin: 16px auto 0;
       padding: 18px 16px 18px;
@@ -248,7 +249,7 @@
       overflow:hidden;
     }
 
-    .gateWrap::after{
+    .seal::after{
       content:"";
       position:absolute;
       left: 18px; right: 18px;
@@ -265,7 +266,7 @@
       pointer-events:none;
     }
 
-    .gateLabel{
+    .sealLabel{
       font-family: "Cinzel Decorative", serif;
       letter-spacing: 0.24em;
       text-transform: uppercase;
@@ -280,13 +281,13 @@
       text-shadow: 0 0 18px rgba(0,0,0,0.55);
     }
 
-    .gateLabel .mark{
+    .sealLabel .mark{
       color: rgba(232, 210, 170, 0.52);
       text-shadow: 0 0 16px rgba(160,60,40,0.20);
       font-size: 12px;
     }
 
-    .gate{
+    .sealRow{
       display:flex;
       gap: 12px;
       justify-content:center;
@@ -295,7 +296,7 @@
       position: relative;
     }
 
-    input[type="password"]{
+    .sealInput{
       width: min(340px, 86vw);
       padding: 13px 16px;
       border-radius: 16px;
@@ -316,12 +317,12 @@
       -webkit-text-security: disc;
     }
 
-    input[type="password"]::placeholder{
+    .sealInput::placeholder{
       color: rgba(232,210,170,0.35);
       letter-spacing: 0.10em;
     }
 
-    input[type="password"]:focus{
+    .sealInput:focus{
       border-color: rgba(232, 210, 170, 0.30);
       box-shadow:
         0 0 0 3px rgba(232, 210, 170, 0.06),
@@ -331,7 +332,7 @@
       transform: translateY(-1px);
     }
 
-    button{
+    .sealBtn{
       padding: 13px 18px;
       border-radius: 16px;
       border: 1px solid rgba(255,255,255,0.16);
@@ -351,7 +352,7 @@
       overflow:hidden;
     }
 
-    button::after{
+    .sealBtn::after{
       content:"";
       position:absolute; inset:-2px;
       background: radial-gradient(circle at 50% 20%, rgba(232,210,170,0.14), transparent 55%);
@@ -360,7 +361,7 @@
       pointer-events:none;
     }
 
-    button:hover{
+    .sealBtn:hover{
       border-color: rgba(232, 210, 170, 0.24);
       box-shadow:
         0 18px 34px rgba(0,0,0,0.42),
@@ -369,8 +370,8 @@
       transform: translateY(-1px);
       filter: brightness(1.04);
     }
-    button:hover::after{ opacity: 1; }
-    button:active{ transform: translateY(0px); }
+    .sealBtn:hover::after{ opacity: 1; }
+    .sealBtn:active{ transform: translateY(0px); }
 
     .msg{
       margin-top: 14px;
@@ -541,11 +542,12 @@
         SPEAK ME, AND THE PEDESTAL OPENS.
       </div>
 
-      <div class="gateWrap" id="gateWrap">
-        <div class="gateLabel"><span class="mark">⟡</span> Offer your answer <span class="mark">⟡</span></div>
-        <div class="gate">
-          <input id="pw" type="password" placeholder="whisper it…" autocomplete="off" />
-          <button id="btn">UNSEAL</button>
+      <!-- ✅ LOCKED Seal Gate -->
+      <div class="seal" id="seal">
+        <div class="sealLabel"><span class="mark">⟡</span> Offer your answer <span class="mark">⟡</span></div>
+        <div class="sealRow">
+          <input id="pw" class="sealInput" type="password" placeholder="whisper it…" autocomplete="off" />
+          <button id="btn" class="sealBtn">UNSEAL</button>
         </div>
       </div>
 
@@ -559,11 +561,11 @@
           TAKE IT—AND DON’T FLINCH.
         </div>
 
-        <div class="gateWrap">
-          <div class="gateLabel"><span class="mark">⟡</span> Claim the rune <span class="mark">⟡</span></div>
-          <div class="gate">
-            <button id="takeBtn">TAKE RUNE</button>
-            <button id="nextBtn" style="display:none;">PROCEED</button>
+        <div class="seal">
+          <div class="sealLabel"><span class="mark">⟡</span> Claim the rune <span class="mark">⟡</span></div>
+          <div class="sealRow">
+            <button id="takeBtn" class="sealBtn">TAKE RUNE</button>
+            <button id="nextBtn" class="sealBtn" style="display:none;">PROCEED</button>
           </div>
           <div id="runeNote">It will occupy one inventory slot.</div>
         </div>
@@ -593,7 +595,7 @@
   </audio>
 
   <script>
-
+    /* ✅ Level 7 reveals inventory contents from here onward */
     localStorage.setItem("ofs_inv_reveal_level", "7");
 
     /* =========================
@@ -602,16 +604,17 @@
     const CURRENT_LEVEL = 7;
 
     /* =========================
-       TEST MODE RESET (per your request)
-       - Reload Level 7 => puzzle resets
-       - Remove emerald rune from inventory so you can retest
+       TEST MODE RESET
+       ✅ Keep OFF for production.
+       If you want testing, flip to true locally.
     ========================== */
-    const TEST_RESET_ON_RELOAD = true;
+    const TEST_RESET_ON_RELOAD = false;
 
     /* =========================
        ITEMS + INVENTORY
     ========================== */
     const INV_KEY = "ofs_inventory";
+    const REVEAL_KEY = "ofs_inv_reveal_level";
 
     const EMERALD_RUNE = {
       id: "RUNE_EMERALD",
@@ -621,6 +624,11 @@
 
     function normalize(v){
       return (v || "").toString().trim().toUpperCase();
+    }
+
+    function canShowInventoryItems(){
+      const gate = parseInt(localStorage.getItem(REVEAL_KEY) || "0", 10);
+      return Number.isFinite(gate) && gate >= 7;
     }
 
     function loadInv(){
@@ -644,13 +652,12 @@
     }
 
     function migrateInv(inv){
-      // keep compatibility if old text existed
       let changed = false;
       const out = inv.map(it => {
         if (!it) return it;
         if (typeof it === "string"){
           const s = normalize(it);
-          if (s === "EMERALD RUNE" || s === "RUNE EMERALD" || s === "RUNE_EMERALD"){
+          if (s === "EMERALD RUNE" || s === "RUNE EMERALD" || s === "RUNE_EMERALD" || s === "RUNE_EMERALD".toUpperCase()){
             changed = true;
             return EMERALD_RUNE;
           }
@@ -664,24 +671,25 @@
     function removeItemById(inv, id){
       const target = normalize(id);
       const out = inv.map(it => (getItemId(it) === target ? null : it));
-      // compact left
       const compact = out.filter(Boolean);
       while (compact.length < 3) compact.push(null);
       return compact.slice(0,3);
     }
 
-    function renderSlot(el, item, allowItems=true){
+    function renderSlot(el, item, allowItems){
       if (!el) return;
 
       if (!allowItems){
         el.textContent = "—";
         el.classList.remove("filled");
+        el.innerHTML = "—";
         return;
       }
 
       if (!item){
         el.textContent = "—";
         el.classList.remove("filled");
+        el.innerHTML = "—";
         return;
       }
 
@@ -696,10 +704,10 @@
     }
 
     function renderInv(inv){
+      const allowItems = canShowInventoryItems();
       for (let i=0;i<3;i++){
         const el = document.getElementById("slot"+i);
-        // On Level 7, items are allowed to show
-        renderSlot(el, inv[i], true);
+        renderSlot(el, inv[i], allowItems);
       }
     }
 
@@ -743,15 +751,12 @@
     const TAKEN_KEY = "ofs_level7_rune_taken";
 
     function resetForTesting(){
-      // reset "claimed" state
       localStorage.removeItem(TAKEN_KEY);
 
-      // remove emerald rune from inventory (only this item)
       const inv = migrateInv(loadInv());
       const cleaned = removeItemById(inv, EMERALD_RUNE.id);
       saveInv(cleaned);
 
-      // reset UI state
       try{ pw.disabled = false; }catch(e){}
       try{ btn.disabled = false; }catch(e){}
       pw.value = "";
@@ -828,15 +833,12 @@
     const initial = migrateInv(loadInv());
     renderInv(initial);
 
-    /* ✅ Your request: reload Level 7 resets puzzle so you can test */
     if (TEST_RESET_ON_RELOAD){
-      // run after first paint
       setTimeout(resetForTesting, 0);
     }
 
     /* =========================
        🎬 Visuals + 🔊 Audio + 🌫 Line Reveal (LOCKED)
-       ✅ SPEED FIX: same rhythm as Level 6, slightly faster
     ========================== */
     (() => {
       const heroEl = document.getElementById("hero");
@@ -910,11 +912,13 @@
       function startLineReveal(){
         const n = revealLines.length;
 
-        // ✅ Fixed speed like Level 6, but a hair faster
-        const TOTAL        = 66;   // (Level 6 was ~74 minimum) — this is slightly faster
-        const MIN_LINE_DUR = 5.2;  // slightly faster than 5.8
-        const MIN_GAP      = 1.00; // slightly faster than 1.15
-        const START_DELAY  = 1.15; // slightly faster than 1.35
+        // ✅ LOCKED pacing floors
+        const MIN_TOTAL    = 74;
+        const MIN_LINE_DUR = 5.8;
+        const MIN_GAP      = 1.15;
+        const START_DELAY  = 1.35;
+
+        const TOTAL = Math.max(MIN_TOTAL, (voice && voice.duration && isFinite(voice.duration)) ? (voice.duration + 6) : MIN_TOTAL);
 
         let gap = (TOTAL / n) * 0.22;
         let lineDur = (TOTAL / n) * 1.05;
