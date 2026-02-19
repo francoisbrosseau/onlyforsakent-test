@@ -219,10 +219,10 @@
       letter-spacing: 0.10em;
       text-transform: uppercase;
       text-align:center;
-        color: rgba(255,255,255,0.58);
+      color: rgba(255,255,255,0.58);
       text-shadow:
-      0 0 14px rgba(255,255,255,0.10),
-      0 0 28px rgba(160,60,40,0.12);
+        0 0 14px rgba(255,255,255,0.10),
+        0 0 28px rgba(160,60,40,0.12);
       max-width: 62ch;
       margin: 0 auto;
       user-select:none;
@@ -466,6 +466,8 @@
       font-size: 12px;
       letter-spacing: 0.08em;
       text-shadow: 0 0 16px rgba(0,0,0,0.75);
+      position: relative;
+      overflow:hidden;
     }
 
     .slot.filled{
@@ -474,9 +476,21 @@
       text-shadow: 0 0 14px rgba(120,0,0,0.28);
     }
 
+    /* ✅ icon support (silent until used) */
+    .slot img.invIcon{
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(0,0,0,0.65));
+      opacity: 0.95;
+      pointer-events:none;
+      user-select:none;
+    }
+
     @media (max-width: 520px){
       #invSlots{ gap: 8px; padding: 9px 10px; }
       .slot{ width: 48px; height: 48px; border-radius: 13px; }
+      .slot img.invIcon{ width: 30px; height: 30px; }
     }
   </style>
 </head>
@@ -587,9 +601,18 @@
     pw.addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
 
     /* =========================
-       🎒 Inventory (LOCKED)
+       🎒 Inventory (LOCKED) + ✅ REVEAL GATE
+       - Items hidden until Level 7 "unlocks" visibility
     ========================== */
     const INV_KEY = "ofs_inventory";
+
+    const INV_REVEAL_KEY = "ofs_inv_reveal_level";
+    const REQUIRED_REVEAL_LEVEL = 7;
+
+    function getRevealLevel(){
+      const n = parseInt(localStorage.getItem(INV_REVEAL_KEY) || "0", 10);
+      return Number.isFinite(n) ? n : 0;
+    }
 
     function loadInv(){
       try{
@@ -604,37 +627,75 @@
       try{ localStorage.setItem(INV_KEY, JSON.stringify(inv)); }catch(e){}
     }
 
+    function asId(v){
+      return (v || "").toString().trim().toUpperCase();
+    }
+
+    function migrateInv(inv){
+      let changed = false;
+      const out = inv.map(it => {
+        if (!it) return it;
+        if (typeof it === "string"){
+          const s = asId(it);
+          if (s === "EMERALD RUNE" || s === "RUNE EMERALD" || s === "RUNE_EMERALD"){
+            changed = true;
+            return { id:"RUNE_EMERALD", img:"ui/rune-emerald.png", alt:"Emerald Rune" };
+          }
+        }
+        return it;
+      });
+      if (changed) saveInv(out);
+      return out;
+    }
+
+    function renderSlot(el, item, allowItems){
+      if (!el) return;
+
+      if (!allowItems){
+        el.classList.remove("filled");
+        el.innerHTML = "—";
+        return;
+      }
+
+      if (!item){
+        el.classList.remove("filled");
+        el.innerHTML = "—";
+        return;
+      }
+
+      if (typeof item === "object" && item.img){
+        el.innerHTML = `<img class="invIcon" src="${item.img}" alt="${String(item.alt || "Item").replace(/"/g,'&quot;')}" />`;
+        el.classList.add("filled");
+        return;
+      }
+
+      el.textContent = String(item).slice(0, 10);
+      el.classList.add("filled");
+    }
+
     function renderInv(inv){
+      const allowItems = getRevealLevel() >= REQUIRED_REVEAL_LEVEL;
       for (let i = 0; i < 3; i++){
         const el = document.getElementById("slot" + i);
-        const item = inv[i];
-        if (!el) continue;
-
-        if (item && String(item).trim()){
-          el.textContent = String(item).slice(0, 10);
-          el.classList.add("filled");
-        } else {
-          el.textContent = "—";
-          el.classList.remove("filled");
-        }
+        renderSlot(el, inv[i], allowItems);
       }
     }
 
     window.ofsInv = {
-      get(){ return loadInv().slice(); },
-      set(slotIndex, label){
-        const inv = loadInv();
+      get(){ return migrateInv(loadInv()).slice(); },
+      set(slotIndex, value){
+        const inv = migrateInv(loadInv());
         if (slotIndex < 0 || slotIndex > 2) return inv;
-        inv[slotIndex] = label ? String(label) : null;
+        inv[slotIndex] = value ? value : null;
         saveInv(inv);
         renderInv(inv);
         return inv;
       },
-      add(label){
-        const inv = loadInv();
+      add(value){
+        const inv = migrateInv(loadInv());
         const idx = inv.findIndex(x => !x);
         if (idx === -1) return inv;
-        inv[idx] = label ? String(label) : "Item";
+        inv[idx] = value ? value : "Item";
         saveInv(inv);
         renderInv(inv);
         return inv;
@@ -647,7 +708,7 @@
       }
     };
 
-    renderInv(loadInv());
+    renderInv(migrateInv(loadInv()));
 
     /* =========================
        🎬 Visuals + 🔊 Audio + 🌫 Line Reveal (LOCKED)
