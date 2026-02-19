@@ -481,6 +481,8 @@
       font-size: 12px;
       letter-spacing: 0.08em;
       text-shadow: 0 0 16px rgba(0,0,0,0.75);
+      position: relative;
+      overflow:hidden;
     }
 
     .slot.filled{
@@ -489,9 +491,21 @@
       text-shadow: 0 0 14px rgba(120,0,0,0.28);
     }
 
+    /* ✅ icon support (silent until used) */
+    .slot img.invIcon{
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(0,0,0,0.65));
+      opacity: 0.95;
+      pointer-events:none;
+      user-select:none;
+    }
+
     @media (max-width: 520px){
       #invSlots{ gap: 8px; padding: 9px 10px; }
       .slot{ width: 48px; height: 48px; border-radius: 13px; }
+      .slot img.invIcon{ width: 30px; height: 30px; }
 
       .slotBox, .tile{ width: 52px; height: 52px; border-radius: 15px; }
     }
@@ -652,7 +666,6 @@
       el.addEventListener("click", () => {
         if (el.classList.contains("used")) return;
 
-        // toggle selection
         document.querySelectorAll(".tile.selected").forEach(t => t.classList.remove("selected"));
         if (selectedTileId === id){
           selectedTileId = null;
@@ -678,11 +691,8 @@
     function placeTileIntoSlot(tileId, slotIndex){
       const tile = getTileById(tileId);
       if (!tile) return;
-
-      // already used? block
       if (tile.classList.contains("used")) return;
 
-      // if slot already has a tile, kick it back to pool
       const existing = slotState[slotIndex];
       if (existing){
         const oldTile = getTileById(existing);
@@ -692,7 +702,6 @@
         }
       }
 
-      // if this tile is already placed in another slot, remove from that slot
       const prevIndex = slotState.findIndex(x => x === tileId);
       if (prevIndex !== -1){
         slotState[prevIndex] = null;
@@ -700,12 +709,10 @@
         slotEls[prevIndex].classList.remove("filled");
       }
 
-      // place
       slotState[slotIndex] = tileId;
       slotEls[slotIndex].textContent = tile.dataset.letter;
       slotEls[slotIndex].classList.add("filled");
 
-      // mark tile used (keep it in pool but faded)
       tile.classList.add("used");
       tile.classList.remove("selected");
       tile.style.visibility = "visible";
@@ -745,7 +752,6 @@
       }
     }
 
-    // Slots accept drag/drop + tap-to-place
     slotEls.forEach((slotEl, idx) => {
       slotEl.addEventListener("dragover", (e) => {
         e.preventDefault();
@@ -762,18 +768,15 @@
         placeTileIntoSlot(tileId, idx);
       });
 
-      // Tap fallback
       slotEl.addEventListener("click", () => {
         if (!selectedTileId) return;
         placeTileIntoSlot(selectedTileId, idx);
       });
     });
 
-    // Build tiles (random order)
     const letters = shuffle(TARGET.split(""));
     letters.forEach((ch, i) => createTile(ch, i));
 
-    /* Optional: double-tap a filled slot to remove its letter */
     slotEls.forEach((slotEl, idx) => {
       slotEl.addEventListener("dblclick", () => {
         if (solved) return;
@@ -793,9 +796,17 @@
     });
 
     /* =========================
-       🎒 Inventory (LOCKED)
+       🎒 Inventory (LOCKED) + ✅ REVEAL GATE (same as Level 6)
+       - hides ALL items until Level 7 reveals inventory contents
     ========================== */
     const INV_KEY = "ofs_inventory";
+    const INV_REVEAL_KEY = "ofs_inv_reveal_level";
+    const REQUIRED_REVEAL_LEVEL = 7;
+
+    function getRevealLevel(){
+      const n = parseInt(localStorage.getItem(INV_REVEAL_KEY) || "0", 10);
+      return Number.isFinite(n) ? n : 0;
+    }
 
     function loadInv(){
       try{
@@ -810,37 +821,75 @@
       try{ localStorage.setItem(INV_KEY, JSON.stringify(inv)); }catch(e){}
     }
 
+    function asId(v){
+      return (v || "").toString().trim().toUpperCase();
+    }
+
+    function migrateInv(inv){
+      let changed = false;
+      const out = inv.map(it => {
+        if (!it) return it;
+        if (typeof it === "string"){
+          const s = asId(it);
+          if (s === "EMERALD RUNE" || s === "RUNE EMERALD" || s === "RUNE_EMERALD"){
+            changed = true;
+            return { id:"RUNE_EMERALD", img:"ui/rune-emerald.png", alt:"Emerald Rune" };
+          }
+        }
+        return it;
+      });
+      if (changed) saveInv(out);
+      return out;
+    }
+
+    function renderSlot(el, item, allowItems){
+      if (!el) return;
+
+      if (!allowItems){
+        el.classList.remove("filled");
+        el.innerHTML = "—";
+        return;
+      }
+
+      if (!item){
+        el.classList.remove("filled");
+        el.innerHTML = "—";
+        return;
+      }
+
+      if (typeof item === "object" && item.img){
+        el.innerHTML = `<img class="invIcon" src="${item.img}" alt="${String(item.alt || "Item").replace(/"/g,'&quot;')}" />`;
+        el.classList.add("filled");
+        return;
+      }
+
+      el.textContent = String(item).slice(0, 10);
+      el.classList.add("filled");
+    }
+
     function renderInv(inv){
+      const allowItems = getRevealLevel() >= REQUIRED_REVEAL_LEVEL;
       for (let i = 0; i < 3; i++){
         const el = document.getElementById("slot" + i);
-        const item = inv[i];
-        if (!el) continue;
-
-        if (item && String(item).trim()){
-          el.textContent = String(item).slice(0, 10);
-          el.classList.add("filled");
-        } else {
-          el.textContent = "—";
-          el.classList.remove("filled");
-        }
+        renderSlot(el, inv[i], allowItems);
       }
     }
 
     window.ofsInv = {
-      get(){ return loadInv().slice(); },
-      set(slotIndex, label){
-        const inv = loadInv();
+      get(){ return migrateInv(loadInv()).slice(); },
+      set(slotIndex, value){
+        const inv = migrateInv(loadInv());
         if (slotIndex < 0 || slotIndex > 2) return inv;
-        inv[slotIndex] = label ? String(label) : null;
+        inv[slotIndex] = value ? value : null;
         saveInv(inv);
         renderInv(inv);
         return inv;
       },
-      add(label){
-        const inv = loadInv();
+      add(value){
+        const inv = migrateInv(loadInv());
         const idx = inv.findIndex(x => !x);
         if (idx === -1) return inv;
-        inv[idx] = label ? String(label) : "Item";
+        inv[idx] = value ? value : "Item";
         saveInv(inv);
         renderInv(inv);
         return inv;
@@ -853,13 +902,10 @@
       }
     };
 
-    renderInv(loadInv());
+    renderInv(migrateInv(loadInv()));
 
     /* =========================
        🎬 Visuals + 🔊 Audio + 🌫 Fog Reveal (LOCKED)
-       - voice fade hits fast (so first word is audible)
-       - ambience gentle
-       - same pacing floor as Level 4
     ========================== */
     (() => {
       const heroEl = document.getElementById("hero");
