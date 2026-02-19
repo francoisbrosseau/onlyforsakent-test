@@ -229,7 +229,7 @@
 
     /* =========================
        🗝 ANTIQUE SEAL GATE (LOCKED)
-       - Isolated classes only (.seal / .sealInput / .sealBtn)
+       - Isolated classes only
     ========================== */
     .seal{
       width: min(560px, 92vw);
@@ -542,7 +542,6 @@
         SPEAK ME, AND THE PEDESTAL OPENS.
       </div>
 
-      <!-- ✅ LOCKED Seal Gate -->
       <div class="seal" id="seal">
         <div class="sealLabel"><span class="mark">⟡</span> Offer your answer <span class="mark">⟡</span></div>
         <div class="sealRow">
@@ -584,12 +583,10 @@
 
   <button id="muteBtn" aria-label="Toggle audio">🔊</button>
 
-  <!-- 🩸 Mordain Voice -->
   <audio id="mordainVoice" preload="auto" playsinline>
     <source src="audio/mordain-level7.mp3" type="audio/mpeg">
   </audio>
 
-  <!-- 🌫 Level 7 Ambience -->
   <audio id="level7Ambience" loop preload="auto" playsinline>
     <source src="audio/level7-ambience.mp3" type="audio/mpeg">
   </audio>
@@ -598,21 +595,11 @@
     /* ✅ Level 7 reveals inventory contents from here onward */
     localStorage.setItem("ofs_inv_reveal_level", "7");
 
-    /* =========================
-       LEVEL SETTINGS
-    ========================== */
     const CURRENT_LEVEL = 7;
 
-    /* =========================
-       TEST MODE RESET
-       ✅ Keep OFF for production.
-       If you want testing, flip to true locally.
-    ========================== */
-    const TEST_RESET_ON_RELOAD = false;
+    /* ✅ DEV MODE (your request): reload resets Level 7 */
+    const TEST_RESET_ON_RELOAD = true;
 
-    /* =========================
-       ITEMS + INVENTORY
-    ========================== */
     const INV_KEY = "ofs_inventory";
     const REVEAL_KEY = "ofs_inv_reveal_level";
 
@@ -657,7 +644,7 @@
         if (!it) return it;
         if (typeof it === "string"){
           const s = normalize(it);
-          if (s === "EMERALD RUNE" || s === "RUNE EMERALD" || s === "RUNE_EMERALD" || s === "RUNE_EMERALD".toUpperCase()){
+          if (s === "EMERALD RUNE" || s === "RUNE EMERALD" || s === "RUNE_EMERALD"){
             changed = true;
             return EMERALD_RUNE;
           }
@@ -680,16 +667,14 @@
       if (!el) return;
 
       if (!allowItems){
-        el.textContent = "—";
-        el.classList.remove("filled");
         el.innerHTML = "—";
+        el.classList.remove("filled");
         return;
       }
 
       if (!item){
-        el.textContent = "—";
-        el.classList.remove("filled");
         el.innerHTML = "—";
+        el.classList.remove("filled");
         return;
       }
 
@@ -704,7 +689,7 @@
     }
 
     function renderInv(inv){
-      const allowItems = canShowInventoryItems();
+      const allowItems = canShowInventoryItems(); // ✅ respects reveal gate
       for (let i=0;i<3;i++){
         const el = document.getElementById("slot"+i);
         renderSlot(el, inv[i], allowItems);
@@ -733,9 +718,6 @@
       }
     };
 
-    /* =========================
-       PUZZLE (Level 7)
-    ========================== */
     const PASSWORD = "VERDANT";
     const NEXT_PAGE = "level8.html";
 
@@ -828,12 +810,13 @@
     });
 
     /* =========================
-       INIT INVENTORY + TEST RESET
+       INIT INVENTORY + DEV RESET
     ========================== */
     const initial = migrateInv(loadInv());
     renderInv(initial);
 
     if (TEST_RESET_ON_RELOAD){
+      // run after first paint
       setTimeout(resetForTesting, 0);
     }
 
@@ -852,7 +835,6 @@
 
       if (!muteBtn || !voice || !amb || !heroEl || !bg || !veil || !revealLines.length) return;
 
-      // ✅ MIX (locked baseline)
       const VOICE_TARGET = 0.74;
       const AMB_TARGET   = 0.30;
 
@@ -912,7 +894,7 @@
       function startLineReveal(){
         const n = revealLines.length;
 
-        // ✅ LOCKED pacing floors
+        /* ✅ LOCKED pacing floors */
         const MIN_TOTAL    = 74;
         const MIN_LINE_DUR = 5.8;
         const MIN_GAP      = 1.15;
