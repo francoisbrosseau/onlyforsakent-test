@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ONLYFORSAKEN — Level 7</title>
 
+  <!-- ✅ Fonts (LOCKED) -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
@@ -14,6 +15,7 @@
       --hint: rgba(255,255,255,0.42);
       --shadow: rgba(0,0,0,0.72);
 
+      /* ✅ Desktop/mobile framing (LOCKED) */
       --bg-pos-desktop: center 50%;
       --bg-pos-mobile:  center 52%;
     }
@@ -21,6 +23,9 @@
     *{ box-sizing:border-box; }
     html,body{ height:100%; margin:0; background:#000; font-family: Georgia, "Times New Roman", serif; }
 
+    /* =========================
+       🎬 HERO / BACKGROUND (LOCKED)
+    ========================== */
     .hero{
       min-height:100vh;
       min-height:100svh;
@@ -81,6 +86,7 @@
     }
     .hero.reveal::after{ opacity: .10; }
 
+    /* 🎬 Veil */
     #veil{
       position: fixed;
       inset: 0;
@@ -92,6 +98,9 @@
     }
     #veil.hide{ opacity: 0; }
 
+    /* =========================
+       🕯 UI (LOCKED)
+    ========================== */
     .wrap{
       position: relative;
       z-index: 3;
@@ -130,6 +139,9 @@
       user-select:none;
     }
 
+    /* =========================
+       🌫 FOG REVEAL (LOCKED)
+    ========================== */
     .story{
       font-family: "Cormorant Garamond", serif;
       font-size: clamp(20px, 2.1vw, 24px);
@@ -215,6 +227,9 @@
       user-select:none;
     }
 
+    /* =========================
+       🗝 PASSWORD BOX (LOCKED)
+    ========================== */
     .gateWrap{
       width: min(560px, 92vw);
       margin: 16px auto 0;
@@ -357,6 +372,15 @@
     button:hover::after{ opacity: 1; }
     button:active{ transform: translateY(0px); }
 
+    .msg{
+      margin-top: 14px;
+      min-height: 18px;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.08em;
+      font-size: 12px;
+      user-select:none;
+    }
+
     .wrong{ animation: shake 340ms ease; }
     @keyframes shake{
       0%{ transform: translateX(0); }
@@ -370,6 +394,7 @@
     .fadeOut{ animation: fade 700ms ease forwards; }
     @keyframes fade{ to{ opacity:0; transform: translateY(6px); } }
 
+    /* ✅ Audio button (LOCKED) */
     #muteBtn{
       position: fixed;
       top: 18px;
@@ -388,6 +413,7 @@
       user-select:none;
     }
 
+    /* ✅ Inventory (LOCKED) */
     #inventory{
       position: fixed;
       left: 50%;
@@ -465,6 +491,7 @@
       .slot img.invIcon{ width: 30px; height: 30px; }
     }
 
+    /* ✅ Rune block */
     #runeBlock{ display:none; }
     #runeNote{
       margin: 10px auto 0;
@@ -494,14 +521,13 @@
       <h1>The Emerald Rune</h1>
 
       <div class="story" id="story">
-        <span class="fogLine">The corridor finally releases you into a chamber that smells of wet stone and old incense—like a chapel that forgot its god.</span>
-        <span class="fogLine">Your footsteps do not echo. They are <em>accepted</em>. The room takes them, counts them, and decides you may keep walking.</span>
-        <span class="fogLine">At the center stands a pedestal carved with a spiral rune. Its surface is clean—no dust, no grit, no age—like the castle has been waiting here <em>recently</em>.</span>
-        <span class="fogLine">Above it floats a green gem, cut like a sealed tear. It pulses slowly, and the air around it shivers as if the light has weight.</span>
-        <span class="fogLine">Mordain’s voice brushes the back of your skull: <em>“Do not stare too long. Green is the color of permission.”</em></span>
-        <span class="fogLine">A ring of carvings circles the pedestal. Broken words. Sharp intent. A warning dressed as a ceremony.</span>
-        <span class="fogLine">When you breathe in, the gem brightens. When you breathe out, it dims—like it’s learning the rhythm of something that still thinks it’s alone.</span>
-        <span class="fogLine">And for the first time, you understand: this isn’t a treasure. It’s a <em>piece</em>. A component. A promise that will be collected, slot by slot, until the castle has enough of you to finish what it began.</span>
+        <span class="fogLine">The corridor releases you into a chamber that smells of wet stone and old incense—like a chapel that forgot its god.</span>
+        <span class="fogLine">Candles cling to the walls in uneven circles. Their flames bend inward, as if the room is breathing through them.</span>
+        <span class="fogLine">At the center stands a pedestal carved with a spiral rune. Its surface is clean—no dust, no grit—like it has been waiting <em>recently</em>.</span>
+        <span class="fogLine">Above it floats a raw emerald. Not cut. Not perfected. A living fracture in the dark—glowing green with something that feels almost… attentive.</span>
+        <span class="fogLine">The rune inside the stone shifts when you blink. It doesn’t move like ink. It moves like a <em>thought</em>.</span>
+        <span class="fogLine">Skulls sit half-buried along the edges of the chamber, varnished with old blood. Whatever was “offered” here did not walk out whole.</span>
+        <span class="fogLine">A shallow indentation waits beneath the pedestal’s sigil—made for one word, one consent, one quiet mistake.</span>
       </div>
 
       <div class="hint">Don’t touch what you haven’t named.</div>
@@ -529,8 +555,8 @@
         <div class="sep"></div>
         <div class="riddleTitle">The Pedestal Yields</div>
         <div class="riddleText">
-          THE GEM WAITS ABOVE YOUR PALM.<br>
-          TAKE IT—AND LET IT REMEMBER YOU.
+          THE EMERALD HOVERS ABOVE YOUR PALM.<br>
+          TAKE IT—AND DON’T FLINCH.
         </div>
 
         <div class="gateWrap">
@@ -556,15 +582,149 @@
 
   <button id="muteBtn" aria-label="Toggle audio">🔊</button>
 
+  <!-- 🩸 Mordain Voice -->
   <audio id="mordainVoice" preload="auto" playsinline>
     <source src="audio/mordain-level7.mp3" type="audio/mpeg">
   </audio>
 
+  <!-- 🌫 Level 7 Ambience -->
   <audio id="level7Ambience" loop preload="auto" playsinline>
     <source src="audio/level7-ambience.mp3" type="audio/mpeg">
   </audio>
 
   <script>
+    /* =========================
+       LEVEL SETTINGS
+    ========================== */
+    const CURRENT_LEVEL = 7;
+
+    /* =========================
+       TEST MODE RESET (per your request)
+       - Reload Level 7 => puzzle resets
+       - Remove emerald rune from inventory so you can retest
+    ========================== */
+    const TEST_RESET_ON_RELOAD = true;
+
+    /* =========================
+       ITEMS + INVENTORY
+    ========================== */
+    const INV_KEY = "ofs_inventory";
+
+    const EMERALD_RUNE = {
+      id: "RUNE_EMERALD",
+      img: "ui/rune-emerald.png",
+      alt: "Emerald Rune"
+    };
+
+    function normalize(v){
+      return (v || "").toString().trim().toUpperCase();
+    }
+
+    function loadInv(){
+      try{
+        const raw = localStorage.getItem(INV_KEY);
+        const parsed = raw ? JSON.parse(raw) : null;
+        if (Array.isArray(parsed) && parsed.length === 3) return parsed;
+      }catch(e){}
+      return [null, null, null];
+    }
+
+    function saveInv(inv){
+      try{ localStorage.setItem(INV_KEY, JSON.stringify(inv)); }catch(e){}
+    }
+
+    function getItemId(item){
+      if (!item) return "";
+      if (typeof item === "string") return normalize(item);
+      if (typeof item === "object") return normalize(item.id || item.alt || "");
+      return "";
+    }
+
+    function migrateInv(inv){
+      // keep compatibility if old text existed
+      let changed = false;
+      const out = inv.map(it => {
+        if (!it) return it;
+        if (typeof it === "string"){
+          const s = normalize(it);
+          if (s === "EMERALD RUNE" || s === "RUNE EMERALD" || s === "RUNE_EMERALD"){
+            changed = true;
+            return EMERALD_RUNE;
+          }
+        }
+        return it;
+      });
+      if (changed) saveInv(out);
+      return out;
+    }
+
+    function removeItemById(inv, id){
+      const target = normalize(id);
+      const out = inv.map(it => (getItemId(it) === target ? null : it));
+      // compact left
+      const compact = out.filter(Boolean);
+      while (compact.length < 3) compact.push(null);
+      return compact.slice(0,3);
+    }
+
+    function renderSlot(el, item, allowItems=true){
+      if (!el) return;
+
+      if (!allowItems){
+        el.textContent = "—";
+        el.classList.remove("filled");
+        return;
+      }
+
+      if (!item){
+        el.textContent = "—";
+        el.classList.remove("filled");
+        return;
+      }
+
+      if (typeof item === "object" && item.img){
+        el.innerHTML = `<img class="invIcon" src="${item.img}" alt="${(item.alt||"Item").replace(/"/g,'&quot;')}" />`;
+        el.classList.add("filled");
+        return;
+      }
+
+      el.textContent = String(item).slice(0, 10);
+      el.classList.add("filled");
+    }
+
+    function renderInv(inv){
+      for (let i=0;i<3;i++){
+        const el = document.getElementById("slot"+i);
+        // On Level 7, items are allowed to show
+        renderSlot(el, inv[i], true);
+      }
+    }
+
+    window.ofsInv = {
+      get(){ return loadInv().slice(); },
+      setAll(inv){
+        saveInv(inv);
+        renderInv(inv);
+      },
+      add(value){
+        const inv = migrateInv(loadInv());
+
+        const newId = getItemId(value);
+        if (newId && inv.some(it => getItemId(it) === newId)) return inv;
+
+        const idx = inv.findIndex(x => !x);
+        if (idx === -1) return inv;
+
+        inv[idx] = value ? value : "Item";
+        saveInv(inv);
+        renderInv(inv);
+        return inv;
+      }
+    };
+
+    /* =========================
+       PUZZLE (Level 7)
+    ========================== */
     const PASSWORD = "VERDANT";
     const NEXT_PAGE = "level8.html";
 
@@ -579,27 +739,28 @@
 
     const TAKEN_KEY = "ofs_level7_rune_taken";
 
-    const EMERALD_RUNE = {
-      id: "RUNE_EMERALD",
-      img: "ui/rune-emerald.png",
-      alt: "Emerald Rune"
-    };
+    function resetForTesting(){
+      // reset "claimed" state
+      localStorage.removeItem(TAKEN_KEY);
 
-    function normalize(v){
-      return (v || "").toString().trim().toUpperCase();
-    }
+      // remove emerald rune from inventory (only this item)
+      const inv = migrateInv(loadInv());
+      const cleaned = removeItemById(inv, EMERALD_RUNE.id);
+      saveInv(cleaned);
 
-    function getItemId(item){
-      if (!item) return "";
-      if (typeof item === "string") return normalize(item);
-      if (typeof item === "object") return normalize(item.id || item.alt || "");
-      return "";
-    }
+      // reset UI state
+      try{ pw.disabled = false; }catch(e){}
+      try{ btn.disabled = false; }catch(e){}
+      pw.value = "";
+      msg.textContent = "";
+      if (runeBlock) runeBlock.style.display = "none";
+      if (takeBtn){
+        takeBtn.textContent = "TAKE RUNE";
+        takeBtn.disabled = false;
+      }
+      if (nextBtn) nextBtn.style.display = "none";
 
-    function invHasId(id){
-      const inv = window.ofsInv && window.ofsInv.get ? window.ofsInv.get() : [];
-      const target = normalize(id);
-      return inv.some(it => getItemId(it) === target);
+      renderInv(cleaned);
     }
 
     function revealRune(){
@@ -607,14 +768,6 @@
       msg.textContent = "The seal yields. The pedestal recognizes your word.";
       try{ pw.disabled = true; }catch(e){}
       try{ btn.disabled = true; }catch(e){}
-
-      if (localStorage.getItem(TAKEN_KEY) === "1" || invHasId(EMERALD_RUNE.id)){
-        if (takeBtn){
-          takeBtn.textContent = "RUNE CLAIMED";
-          takeBtn.disabled = true;
-        }
-        if (nextBtn) nextBtn.style.display = "inline-block";
-      }
     }
 
     function check(){
@@ -636,127 +789,10 @@
     btn.addEventListener("click", check);
     pw.addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
 
-    /* =========================
-       🎒 Inventory (with migration)
-    ========================== */
-    const INV_KEY = "ofs_inventory";
-
-    function loadInv(){
-      try{
-        const raw = localStorage.getItem(INV_KEY);
-        const parsed = raw ? JSON.parse(raw) : null;
-        if (Array.isArray(parsed) && parsed.length === 3) return parsed;
-      }catch(e){}
-      return [null, null, null];
-    }
-
-    function saveInv(inv){
-      try{ localStorage.setItem(INV_KEY, JSON.stringify(inv)); }catch(e){}
-    }
-
-    // ✅ migrate old strings -> objects (so older pages stop showing text)
-    function migrateInv(inv){
-      let changed = false;
-
-      const out = inv.map(it => {
-        if (!it) return it;
-
-        if (typeof it === "string"){
-          const s = normalize(it);
-
-          // old saved label variants
-          if (s === "EMERALD RUNE" || s === "RUNE_EMERALD" || s === "RUNE EMERALD"){
-            changed = true;
-            return EMERALD_RUNE;
-          }
-        }
-        return it;
-      });
-
-      if (changed) saveInv(out);
-      return out;
-    }
-
-    function renderSlot(el, item){
-      if (!el) return;
-
-      if (!item){
-        el.textContent = "—";
-        el.classList.remove("filled");
-        return;
-      }
-
-      if (typeof item === "object" && item.img){
-        el.innerHTML = `<img class="invIcon" src="${item.img}" alt="${(item.alt||"Item").replace(/"/g,'&quot;')}" />`;
-        el.classList.add("filled");
-        return;
-      }
-
-      el.textContent = String(item).slice(0, 10);
-      el.classList.add("filled");
-    }
-
-    function renderInv(inv){
-      for (let i = 0; i < 3; i++){
-        const el = document.getElementById("slot" + i);
-        renderSlot(el, inv[i]);
-      }
-    }
-
-    window.ofsInv = {
-      get(){ return loadInv().slice(); },
-      set(slotIndex, value){
-        const inv = migrateInv(loadInv());
-        if (slotIndex < 0 || slotIndex > 2) return inv;
-        inv[slotIndex] = value ? value : null;
-        saveInv(inv);
-        renderInv(inv);
-        return inv;
-      },
-      add(value){
-        const inv = migrateInv(loadInv());
-
-        const newId = getItemId(value);
-        if (newId && inv.some(it => getItemId(it) === newId)) return inv;
-
-        const idx = inv.findIndex(x => !x);
-        if (idx === -1) return inv;
-
-        inv[idx] = value ? value : "Item";
-        saveInv(inv);
-        renderInv(inv);
-        return inv;
-      },
-      clear(){
-        const inv = [null,null,null];
-        saveInv(inv);
-        renderInv(inv);
-        return inv;
-      }
-    };
-
-    // ✅ Load + migrate once on page load
-    const initialInv = migrateInv(loadInv());
-    renderInv(initialInv);
-
     function takeRune(){
-      if (!window.ofsInv) return;
-
-      if (invHasId(EMERALD_RUNE.id)){
-        msg.textContent = "The pedestal is empty now.";
-        if (takeBtn){
-          takeBtn.textContent = "RUNE CLAIMED";
-          takeBtn.disabled = true;
-        }
-        if (nextBtn) nextBtn.style.display = "inline-block";
-        localStorage.setItem(TAKEN_KEY, "1");
-        return;
-      }
-
-      const before = window.ofsInv.get();
-      const emptyIndex = before.findIndex(x => !x);
-
-      if (emptyIndex === -1){
+      const inv = migrateInv(loadInv());
+      const empty = inv.findIndex(x => !x);
+      if (empty === -1){
         msg.textContent = "Your inventory is full.";
         wrap.classList.remove("wrong");
         void wrap.offsetWidth;
@@ -767,7 +803,7 @@
       window.ofsInv.add(EMERALD_RUNE);
       localStorage.setItem(TAKEN_KEY, "1");
 
-      msg.textContent = "You lift the gem. The rune crawls into your palm… then into your inventory.";
+      msg.textContent = "You lift the emerald. The rune burns cold… then settles into your inventory.";
       if (takeBtn){
         takeBtn.textContent = "RUNE CLAIMED";
         takeBtn.disabled = true;
@@ -784,7 +820,20 @@
     });
 
     /* =========================
+       INIT INVENTORY + TEST RESET
+    ========================== */
+    const initial = migrateInv(loadInv());
+    renderInv(initial);
+
+    /* ✅ Your request: reload Level 7 resets puzzle so you can test */
+    if (TEST_RESET_ON_RELOAD){
+      // run after first paint
+      setTimeout(resetForTesting, 0);
+    }
+
+    /* =========================
        🎬 Visuals + 🔊 Audio + 🌫 Line Reveal (LOCKED)
+       ✅ SPEED FIX: same rhythm as Level 6, slightly faster
     ========================== */
     (() => {
       const heroEl = document.getElementById("hero");
@@ -798,6 +847,7 @@
 
       if (!muteBtn || !voice || !amb || !heroEl || !bg || !veil || !revealLines.length) return;
 
+      // ✅ MIX (locked baseline)
       const VOICE_TARGET = 0.74;
       const AMB_TARGET   = 0.30;
 
@@ -833,7 +883,6 @@
           if (!voice.muted){
             voice.volume = 0;
             amb.volume = 0;
-
             fadeTo(voice, VOICE_TARGET, 0.09, 70);
             fadeTo(amb, AMB_TARGET, 0.02, 140);
           }
@@ -857,17 +906,15 @@
 
       function startLineReveal(){
         const n = revealLines.length;
-        const voiceDur = (isFinite(voice.duration) && voice.duration > 2) ? voice.duration : 0;
 
-        const MIN_TOTAL    = 74;
-        const MIN_LINE_DUR = 5.8;
-        const MIN_GAP      = 1.15;
-        const START_DELAY  = 1.35;
+        // ✅ Fixed speed like Level 6, but a hair faster
+        const TOTAL        = 66;   // (Level 6 was ~74 minimum) — this is slightly faster
+        const MIN_LINE_DUR = 5.2;  // slightly faster than 5.8
+        const MIN_GAP      = 1.00; // slightly faster than 1.15
+        const START_DELAY  = 1.15; // slightly faster than 1.35
 
-        const total = Math.max(MIN_TOTAL, voiceDur ? (voiceDur * 1.10) : 0);
-
-        let gap = (total / n) * 0.22;
-        let lineDur = (total / n) * 1.05;
+        let gap = (TOTAL / n) * 0.22;
+        let lineDur = (TOTAL / n) * 1.05;
 
         gap = Math.max(MIN_GAP, gap);
         lineDur = Math.max(MIN_LINE_DUR, lineDur);
