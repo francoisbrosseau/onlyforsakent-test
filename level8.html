@@ -16,21 +16,25 @@
       --shadow: rgba(0,0,0,0.72);
 
       /* =========================
-         🖼 FULL-FRAME IMAGE MODE (MASTER CANDIDATE)
-         - Shows the WHOLE image on desktop + mobile (no cropping)
-         - If you want to re-center later, adjust these:
-      ========================= */
-      --img-pos-desktop: 50% 50%; /* move up/down by changing 2nd % */
-      --img-pos-mobile:  50% 50%;
-      --img-scale-desktop: 1.00;  /* tiny zoom if needed (keep near 1.0) */
-      --img-scale-mobile:  1.00;
+         🎬 BACKGROUND (CINEMATIC, NO STRETCH)
+         IMPORTANT:
+         - We are back to COVER (so NO huge side black bands).
+         - We add a SAFE "ZOOM-OUT" control that keeps cover (no borders).
+         - If you want to re-center later, change --bg-pos-*
+      ========================== */
+      --bg-pos-desktop: 50% 58%;
+      --bg-pos-mobile:  50% 52%;
+
+      /* ✅ Zoom-out control WITHOUT borders (because bg layer is oversized via inset:-14%) */
+      --bg-zoom-desktop: 0.88;  /* lower = show more of image */
+      --bg-zoom-mobile:  0.92;  /* mobile can be slightly closer */
     }
 
     *{ box-sizing:border-box; }
     html,body{ height:100%; margin:0; background:#000; font-family: Georgia, "Times New Roman", serif; }
 
     /* =========================
-       🎬 HERO (LOCKED)
+       🎬 HERO / BACKGROUND (LOCKED)
     ========================== */
     .hero{
       min-height:100vh;
@@ -44,67 +48,68 @@
     }
 
     /* =========================
-       🖼 FULL-FRAME BACKGROUND LAYER
-       - IMPORTANT: This replaces CSS background-image cover cropping
-       - It keeps the image fixed while text scrolls
+       🖼 BACKGROUND IMAGE LAYER (FIXED)
+       - COVER so it fills the screen
+       - Oversized inset + scale lets us zoom OUT without black borders
+       - No blur-square hack
     ========================== */
-    .bgFrame{
+    .bg{
       position: fixed;
-      inset: 0;
+      inset: -14%;                  /* KEY: gives us room to scale down */
       z-index: 0;
-      background:#000;
-      opacity: 0;
-      transform: translateZ(0);
-      transition: opacity 2200ms ease;
-      will-change: opacity;
-    }
-    .bgFrame.show{ opacity: 1; }
 
-    /* The actual image (always fully visible) */
-    #bgImg{
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-      object-fit: contain;              /* ✅ FULL IMAGE ALWAYS */
-      object-position: var(--img-pos-desktop);
-      transform: scale(var(--img-scale-desktop));
-      filter: brightness(1.12) contrast(1.10) saturate(1.02);
-      will-change: transform;
+      background-image: url("level8.jpg");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: var(--bg-pos-desktop);
+
+      filter: brightness(1.14) contrast(1.12) saturate(1.04);
+      transform: scale(var(--bg-zoom-desktop));
+      opacity: 0;
+      transition: opacity 2200ms ease, transform 2800ms ease;
+      will-change: opacity, transform;
+    }
+    .bg.show{
+      opacity: 1;
+      transform: scale(var(--bg-zoom-desktop));
     }
     @media (max-width: 700px){
-      #bgImg{
-        object-position: var(--img-pos-mobile);
-        transform: scale(var(--img-scale-mobile));
+      .bg{
+        background-position: var(--bg-pos-mobile);
+        transform: scale(var(--bg-zoom-mobile));
+      }
+      .bg.show{
+        transform: scale(var(--bg-zoom-mobile));
       }
     }
 
-    /* Cinematic veil over unused letterbox areas (NOT blur-fill) */
-    .bgFrame::before{
+    /* Overlays (LOCKED) */
+    .hero::before{
       content:"";
-      position:absolute; inset:0;
+      position: fixed;
+      inset:0;
       background:
-        radial-gradient(circle at 50% 40%, rgba(0,0,0,0.10), rgba(0,0,0,0.62)),
-        linear-gradient(to bottom, rgba(0,0,0,0.20), rgba(0,0,0,0.70));
+        radial-gradient(circle at 50% 40%, rgba(0,0,0,0.08), rgba(0,0,0,0.56)),
+        linear-gradient(to bottom, rgba(0,0,0,0.18), rgba(0,0,0,0.66));
+      z-index:1;
       pointer-events:none;
-      z-index: 1;
       opacity: 0;
       transition: opacity 2200ms ease;
     }
-    .hero.reveal .bgFrame::before{ opacity: 1; }
+    .hero.reveal::before{ opacity: 1; }
 
-    /* Grain overlay (LOCKED) */
-    .bgFrame::after{
+    .hero::after{
       content:"";
-      position:absolute; inset:0;
+      position: fixed;
+      inset:0;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
       mix-blend-mode: overlay;
       opacity: 0;
       pointer-events:none;
-      z-index: 2;
+      z-index:1;
       transition: opacity 2200ms ease;
     }
-    .hero.reveal .bgFrame::after{ opacity: .10; }
+    .hero.reveal::after{ opacity: .10; }
 
     /* 🎬 Veil (LOCKED) */
     #veil{
@@ -179,7 +184,6 @@
       text-shadow: 0 0 10px rgba(120,0,0,0.35);
     }
 
-    /* Subtle password-letter hint (LOCKED pattern) */
     .sigil{
       color: rgba(232, 210, 170, 0.66);
       text-shadow: 0 0 10px rgba(160,60,40,0.18);
@@ -255,8 +259,7 @@
     }
 
     /* =========================
-       🗝 ANTIQUE SEAL GATE (LOCKED)
-       - Isolated classes only
+       🗝 ANTIQUE SEAL (LOCKED)
     ========================== */
     .seal{
       width: min(560px, 92vw);
@@ -396,9 +399,8 @@
     .sealBtn:hover::after{ opacity: 1; }
     .sealBtn:active{ transform: translateY(0px); }
 
-    /* Gate locked/disabled state (for ritual phase) */
     .seal.locked{
-      opacity: 0.62;
+      opacity: 0.64;
       filter: saturate(0.92);
     }
     .seal.locked .sealInput,
@@ -462,7 +464,6 @@
       pointer-events: none;
       user-select: none;
     }
-
     #invLabel{
       font-family: "Cinzel Decorative", serif;
       letter-spacing: 0.22em;
@@ -472,7 +473,6 @@
       text-shadow: 0 0 18px rgba(0,0,0,0.65);
       opacity: 0.95;
     }
-
     #invSlots{
       display:flex;
       gap: 10px;
@@ -483,7 +483,6 @@
       backdrop-filter: blur(6px);
       box-shadow: 0 18px 34px rgba(0,0,0,0.40);
     }
-
     .slot{
       width: 54px;
       height: 54px;
@@ -503,13 +502,11 @@
       position:relative;
       overflow:hidden;
     }
-
     .slot.filled{
       color: rgba(255,255,255,0.90);
       border-color: rgba(255,255,255,0.22);
       text-shadow: 0 0 14px rgba(120,0,0,0.28);
     }
-
     .slot img.invIcon{
       width: 34px;
       height: 34px;
@@ -519,7 +516,6 @@
       pointer-events:none;
       user-select:none;
     }
-
     @media (max-width: 520px){
       #invSlots{ gap: 8px; padding: 9px 10px; }
       .slot{ width: 48px; height: 48px; border-radius: 13px; }
@@ -527,60 +523,54 @@
     }
 
     /* =========================
-       🧩 RITUAL MECHANIC A — CLICK SEQUENCE
-       - Invisible hotspots over 4 faces (no new UI controls)
-       - If you ever need to move hitboxes, edit --hotspots below.
+       🧩 RITUAL HOTSPOTS (FIXED)
+       PROBLEM YOU HAD:
+       - Hotspots were landing on “bands” instead of faces because the image wasn’t filling.
+       FIX:
+       - Background now fills the screen (cover), so hotspots map correctly to viewport.
+       - Hotspots are WIDE and forgiving so they actually catch clicks.
+       - If you later want perfect precision, we tweak these % values.
     ========================== */
-    .hotspots{
+    #hotspots{
       position: fixed;
       inset: 0;
-      z-index: 2; /* above bg, below text */
-      pointer-events: none; /* enabled only when ready */
+      z-index: 2;          /* above bg, below story */
+      pointer-events: auto;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
     }
     .hotspot{
       position:absolute;
       border-radius: 18px;
-      pointer-events:auto;
-      cursor: pointer;
+      cursor:pointer;
       background: rgba(0,0,0,0.0); /* invisible */
       outline: 1px solid rgba(232,210,170,0.0);
       transition: outline-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
-      -webkit-tap-highlight-color: transparent;
     }
     .hotspot:hover{
       outline-color: rgba(232,210,170,0.14);
       box-shadow: 0 0 22px rgba(160,60,40,0.12);
       transform: translateY(-1px);
     }
-    .hotspots.enabled{ pointer-events: auto; }
-    .hotspots.disabled{ pointer-events: none; }
 
-    /* Desktop hotspot positions (percent-based) */
-    .hotspots{
-      --h1-x: 14%; --h1-y: 34%; --h1-w: 14%; --h1-h: 22%; /* Face 1 (left) */
-      --h2-x: 30%; --h2-y: 32%; --h2-w: 14%; --h2-h: 23%; /* Face 2 */
-      --h3-x: 56%; --h3-y: 33%; --h3-w: 14%; --h3-h: 23%; /* Face 3 */
-      --h4-x: 72%; --h4-y: 34%; --h4-w: 14%; --h4-h: 22%; /* Face 4 (right) */
-    }
-    /* Mobile hotspot positions (tuned for contain framing) */
+    /* DESKTOP: four big “mouth zones” across the center band */
+    #hs1{ left: 10%; top: 28%; width: 18%; height: 30%; }
+    #hs2{ left: 30%; top: 27%; width: 18%; height: 31%; }
+    #hs3{ left: 52%; top: 27%; width: 18%; height: 31%; }
+    #hs4{ left: 72%; top: 28%; width: 18%; height: 30%; }
+
+    /* MOBILE: slightly lower and taller (thumb friendly) */
     @media (max-width: 700px){
-      .hotspots{
-        --h1-x: 10%; --h1-y: 36%; --h1-w: 18%; --h1-h: 20%;
-        --h2-x: 28%; --h2-y: 35%; --h2-w: 18%; --h2-h: 21%;
-        --h3-x: 54%; --h3-y: 35%; --h3-w: 18%; --h3-h: 21%;
-        --h4-x: 72%; --h4-y: 36%; --h4-w: 18%; --h4-h: 20%;
-      }
+      #hs1{ left: 6%;  top: 32%; width: 22%; height: 30%; }
+      #hs2{ left: 28%; top: 31%; width: 22%; height: 31%; }
+      #hs3{ left: 50%; top: 31%; width: 22%; height: 31%; }
+      #hs4{ left: 72%; top: 32%; width: 22%; height: 30%; }
     }
 
-    #hs1{ left: var(--h1-x); top: var(--h1-y); width: var(--h1-w); height: var(--h1-h); }
-    #hs2{ left: var(--h2-x); top: var(--h2-y); width: var(--h2-w); height: var(--h2-h); }
-    #hs3{ left: var(--h3-x); top: var(--h3-y); width: var(--h3-w); height: var(--h3-h); }
-    #hs4{ left: var(--h4-x); top: var(--h4-y); width: var(--h4-w); height: var(--h4-h); }
-
-    /* Reduced-motion friendliness */
     @media (prefers-reduced-motion: reduce){
       .fogLine.run{ animation: none !important; filter: none !important; opacity: 1 !important; }
-      .bgFrame, .bgFrame::before, .bgFrame::after{ transition: none !important; }
+      .bg{ transition: none !important; }
+      .hero::before, .hero::after{ transition: none !important; }
     }
   </style>
 </head>
@@ -589,23 +579,15 @@
   <div id="veil" aria-hidden="true"></div>
 
   <main class="hero" id="hero">
-    <!-- =========================
-         🖼 BACKGROUND IMAGE (FULL-FRAME)
-         - Place your file: level8.jpg (project root)
-    ========================== -->
-    <div class="bgFrame" id="bgFrame" aria-hidden="true">
-      <img id="bgImg" src="level8.jpg" alt="" />
-    </div>
+    <!-- ✅ Background image (fills screen, no side borders) -->
+    <div class="bg" id="bg" aria-hidden="true"></div>
 
-    <!-- =========================
-         🧩 HOTSPOTS (INVISIBLE)
-         - Click-sequence ritual uses these (no new UI)
-    ========================== -->
-    <div class="hotspots enabled" id="hotspots" aria-hidden="true">
-      <div class="hotspot" id="hs1" title=""></div>
-      <div class="hotspot" id="hs2" title=""></div>
-      <div class="hotspot" id="hs3" title=""></div>
-      <div class="hotspot" id="hs4" title=""></div>
+    <!-- ✅ Ritual click zones (invisible, forgiving) -->
+    <div id="hotspots" aria-hidden="true">
+      <div class="hotspot" id="hs1"></div>
+      <div class="hotspot" id="hs2"></div>
+      <div class="hotspot" id="hs3"></div>
+      <div class="hotspot" id="hs4"></div>
     </div>
 
     <section class="wrap" id="wrap">
@@ -617,9 +599,8 @@
         <span class="fogLine">The corridor widens into a long gallery where the walls are polished stone, too smooth to be honest. Your torchlight refuses to sit still.</span>
         <span class="fogLine">Sound behaves badly here. A footfall arrives twice. A swallow returns… softer… as if the room tastes it before giving it back.</span>
         <span class="fogLine">Along the arches, four niches hold mouths carved without faces—open, waiting—each one angled toward the center like an audience that never claps.</span>
-        <span class="fogLine">Beneath each niche, a fresh scratch marks a letter in trembling order: <span class="sigil">R</span> — <span class="sigil">E</span> — <span class="sigil">S</span> — <span class="sigil">O</span>.</span>
-        <span class="fogLine">You speak without meaning to, a single word just to prove you still own your voice… and the gallery answers with the same word, delayed by a heartbeat.</span>
-        <span class="fogLine">Not an imitation. Not a trick. A <em>decision</em>—as if the stone chooses what to return… and what to keep.</span>
+        <span class="fogLine">Beneath the stone, a fresh scratch marks a trembling sequence: <span class="sigil">R</span> — <span class="sigil">E</span> — <span class="sigil">S</span> — <span class="sigil">O</span>.</span>
+        <span class="fogLine">Touch them in order… and the room stops repeating you… and starts <em>agreeing</em> with you.</span>
         <span class="fogLine">At the far end, a sealed arch waits—its surface rippled like cooled wax—stamped with the same antique mark you’ve learned to fear.</span>
       </div>
 
@@ -635,11 +616,6 @@
         NAME ME.
       </div>
 
-      <!-- =========================
-           🗝 SEAL GATE (LOCKED)
-           - Starts LOCKED until ritual sequence is completed
-           - Password: RESONANCE (see JS constants)
-      ========================== -->
       <div class="seal locked" id="seal">
         <div class="sealLabel"><span class="mark">⟡</span> Offer your answer <span class="mark">⟡</span></div>
         <div class="sealRow">
@@ -661,15 +637,8 @@
     </div>
   </div>
 
-  <!-- ✅ Single mute/unmute button (LOCKED) -->
   <button id="muteBtn" aria-label="Toggle audio">🔊</button>
 
-  <!-- =========================
-       🔊 AUDIO FILE NAMES (LOCKED)
-       Put these files in /audio/
-       - audio/mordain-level8.mp3
-       - audio/level8-ambience.mp3
-  ========================== -->
   <audio id="mordainVoice" preload="auto" playsinline>
     <source src="audio/mordain-level8.mp3" type="audio/mpeg">
   </audio>
@@ -683,20 +652,14 @@
        ✅ LEVEL CONSTANTS
     ========================== */
     const CURRENT_LEVEL = 8;
-
-    // 🗝 Password for seal
     const PASSWORD = "RESONANCE";
     const NEXT_PAGE = "level9.html";
 
     /* =========================
        ✅ INVENTORY SYSTEM (LOCKED)
-       - 3 slots
-       - persistent: localStorage ofs_inventory
-       - hidden contents until ofs_inv_reveal_level >= 7
     ========================== */
     const INV_KEY = "ofs_inventory";
     const REVEAL_KEY = "ofs_inv_reveal_level";
-
     const EMERALD_RUNE = { id:"RUNE_EMERALD", img:"ui/rune-emerald.png", alt:"Emerald Rune" };
 
     function normalize(v){ return (v || "").toString().trim().toUpperCase(); }
@@ -745,25 +708,16 @@
 
     function renderSlot(el, item, allowItems){
       if (!el) return;
-
-      if (!allowItems){
+      if (!allowItems || !item){
         el.innerHTML = "—";
         el.classList.remove("filled");
         return;
       }
-
-      if (!item){
-        el.innerHTML = "—";
-        el.classList.remove("filled");
-        return;
-      }
-
       if (typeof item === "object" && item.img){
         el.innerHTML = `<img class="invIcon" src="${item.img}" alt="${(item.alt||"Item").replace(/"/g,'&quot;')}" />`;
         el.classList.add("filled");
         return;
       }
-
       el.textContent = String(item).slice(0, 10);
       el.classList.add("filled");
     }
@@ -771,12 +725,10 @@
     function renderInv(inv){
       const allowItems = canShowInventoryItems();
       for (let i=0;i<3;i++){
-        const el = document.getElementById("slot"+i);
-        renderSlot(el, inv[i], allowItems);
+        renderSlot(document.getElementById("slot"+i), inv[i], allowItems);
       }
     }
 
-    // Expose inventory helpers (consistent with canon)
     window.ofsInv = {
       get(){ return loadInv().slice(); },
       setAll(inv){ saveInv(inv); renderInv(inv); },
@@ -792,27 +744,6 @@
         return inv;
       }
     };
-
-    /* =========================
-       🧩 RITUAL MECHANIC A (CLICK SEQUENCE)
-       - Player must click the 4 faces in correct order
-       - Correct order matches the scratched letters: R E S O (left→right)
-       - After success: seal unlocks (input + UNSEAL)
-       - No new UI controls
-    ========================== */
-    const hotspots = document.getElementById("hotspots");
-    const hs = [
-      document.getElementById("hs1"),
-      document.getElementById("hs2"),
-      document.getElementById("hs3"),
-      document.getElementById("hs4")
-    ];
-
-    // This order is indices of hs[]: 0,1,2,3 = left→right
-    const RITUAL_ORDER = [0,1,2,3];
-
-    let ritualProgress = 0;
-    let ritualDone = false;
 
     /* =========================
        🗝 SEAL GATE LOGIC
@@ -839,7 +770,6 @@
       msg.textContent = "The gallery returns your word… and the seal loosens.";
       try{ pw.disabled = true; }catch(e){}
       try{ btn.disabled = true; }catch(e){}
-
       setTimeout(() => wrap.classList.add("fadeOut"), 900);
       setTimeout(() => window.location.href = NEXT_PAGE, 1650);
     }
@@ -847,7 +777,6 @@
     function checkPassword(){
       const val = normalize(pw.value);
       if (!val) return;
-
       if (val === PASSWORD){
         msg.textContent = "…";
         setTimeout(unlockAndGo, 520);
@@ -864,18 +793,11 @@
     pw.addEventListener("keydown", (e) => { if (e.key === "Enter") checkPassword(); });
 
     /* =========================
-       🔊 AUDIO ENGINE (LOCKED BEHAVIOR)
-       - One mute button controls voice + ambience + ritual sfx
-       - persistent localStorage: ofs_mute
-       - autoplay unlock on first pointerdown
-       - pageshow restart
-       - baseline mix: voice 0.74 / ambience 0.30
+       🔊 AUDIO ENGINE (LOCKED)
     ========================== */
     const muteBtn = document.getElementById("muteBtn");
     const voice = document.getElementById("mordainVoice");
     const amb = document.getElementById("level8Ambience");
-
-    // 🔊 Volume controls (change here if needed)
     const VOICE_TARGET = 0.74;
     const AMB_TARGET   = 0.30;
 
@@ -883,9 +805,7 @@
     voice.muted = savedMuted;
     amb.muted = savedMuted;
     muteBtn.textContent = savedMuted ? "🔇" : "🔊";
-
-    voice.volume = 0;
-    amb.volume = 0;
+    voice.volume = 0; amb.volume = 0;
 
     function fadeTo(audio, target, step=0.06, interval=80){
       try{
@@ -902,48 +822,33 @@
       try{
         voice.currentTime = 0;
         amb.currentTime = 0;
-
         const p1 = voice.play();
         const p2 = amb.play();
         if (p1 && p1.catch) p1.catch(()=>{});
         if (p2 && p2.catch) p2.catch(()=>{});
-
         if (!voice.muted){
-          voice.volume = 0;
-          amb.volume = 0;
+          voice.volume = 0; amb.volume = 0;
           fadeTo(voice, VOICE_TARGET, 0.09, 70);
           fadeTo(amb, AMB_TARGET, 0.02, 140);
         }
       }catch(e){}
     }
-
-    function stopBoth(){
-      try{ voice.pause(); }catch(e){}
-      try{ amb.pause(); }catch(e){}
-    }
+    function stopBoth(){ try{ voice.pause(); }catch(e){} try{ amb.pause(); }catch(e){} }
 
     muteBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-
+      e.preventDefault(); e.stopPropagation();
       const newMuted = !voice.muted;
-      voice.muted = newMuted;
-      amb.muted = newMuted;
-
+      voice.muted = newMuted; amb.muted = newMuted;
       localStorage.setItem("ofs_mute", newMuted ? "1" : "0");
       muteBtn.textContent = newMuted ? "🔇" : "🔊";
-
-      if (!newMuted) playBoth();
-      else stopBoth();
+      if (!newMuted) playBoth(); else stopBoth();
     }, true);
 
     /* =========================
-       🔊 Ritual SFX (no external files)
-       - Uses WebAudio oscillator tones
-       - Automatically respects mute state (ofs_mute)
+       🔊 Ritual SFX (WebAudio)
+       - respects ofs_mute
     ========================== */
     let audioCtx = null;
-
     function ensureAudioCtx(){
       if (audioCtx) return audioCtx;
       const Ctx = window.AudioContext || window.webkitAudioContext;
@@ -953,41 +858,43 @@
     }
 
     function playTone(type="ok"){
-      // Respect mute button
       if (localStorage.getItem("ofs_mute") === "1") return;
-
       const ctx = ensureAudioCtx();
       if (!ctx) return;
-
       const t0 = ctx.currentTime;
       const o = ctx.createOscillator();
       const g = ctx.createGain();
-
-      // Soft, ritualistic tones
-      const freq = (type === "ok") ? 220 : 92;
       o.type = (type === "ok") ? "sine" : "triangle";
-      o.frequency.setValueAtTime(freq, t0);
-
-      // Fade envelope
+      o.frequency.setValueAtTime(type === "ok" ? 220 : 92, t0);
       g.gain.setValueAtTime(0.0001, t0);
       g.gain.exponentialRampToValueAtTime(type === "ok" ? 0.12 : 0.10, t0 + 0.02);
       g.gain.exponentialRampToValueAtTime(0.0001, t0 + (type === "ok" ? 0.20 : 0.28));
-
-      o.connect(g);
-      g.connect(ctx.destination);
-      o.start(t0);
-      o.stop(t0 + (type === "ok" ? 0.24 : 0.32));
+      o.connect(g); g.connect(ctx.destination);
+      o.start(t0); o.stop(t0 + (type === "ok" ? 0.24 : 0.32));
     }
 
-    function pulseHotspot(el, good=true){
+    function pulse(el, good=true){
       if (!el) return;
       el.style.outlineColor = good ? "rgba(232,210,170,0.32)" : "rgba(190,70,50,0.30)";
       el.style.boxShadow = good ? "0 0 26px rgba(160,60,40,0.18)" : "0 0 28px rgba(190,70,50,0.14)";
-      setTimeout(() => {
-        el.style.outlineColor = "rgba(232,210,170,0.0)";
-        el.style.boxShadow = "";
-      }, good ? 260 : 340);
+      setTimeout(() => { el.style.outlineColor = "rgba(232,210,170,0.0)"; el.style.boxShadow = ""; }, good ? 260 : 340);
     }
+
+    /* =========================
+       🧩 RITUAL MECHANIC A (FIXED)
+       - Guaranteed clicks (big zones)
+       - Sequence = left → right (R E S O)
+    ========================== */
+    const hs = [
+      document.getElementById("hs1"),
+      document.getElementById("hs2"),
+      document.getElementById("hs3"),
+      document.getElementById("hs4")
+    ];
+
+    const RITUAL_ORDER = [0,1,2,3];
+    let ritualProgress = 0;
+    let ritualDone = false;
 
     function ritualReset(){
       ritualProgress = 0;
@@ -1003,19 +910,19 @@
 
       const expected = RITUAL_ORDER[ritualProgress];
       if (which !== expected){
-        pulseHotspot(hs[which], false);
+        pulse(hs[which], false);
         ritualReset();
         return;
       }
 
-      pulseHotspot(hs[which], true);
+      pulse(hs[which], true);
       playTone("ok");
       ritualProgress++;
 
       if (ritualProgress >= RITUAL_ORDER.length){
         ritualDone = true;
         msg.textContent = "A low resonance spreads through the stone…";
-        setTimeout(() => unlockSeal(), 480);
+        setTimeout(unlockSeal, 520);
       } else {
         msg.textContent = "…";
       }
@@ -1031,30 +938,24 @@
     });
 
     /* =========================
-       🎬 Visuals + 🌫 Fog timing (LOCKED)
+       🎬 Visuals + 🌫 Fog timing (LOCKED FLOORS)
     ========================== */
     (() => {
       const heroEl = document.getElementById("hero");
-      const bgFrame = document.getElementById("bgFrame");
+      const bg = document.getElementById("bg");
       const veil = document.getElementById("veil");
       const revealLines = Array.from(document.querySelectorAll(".fogLine"));
-
-      if (!heroEl || !bgFrame || !veil || !revealLines.length) return;
+      if (!heroEl || !bg || !veil || !revealLines.length) return;
 
       function revealVisuals(){
         setTimeout(() => veil.classList.add("hide"), 380);
         setTimeout(() => { try{ veil.remove(); }catch(e){} }, 1500);
-
-        setTimeout(() => {
-          bgFrame.classList.add("show");
-          heroEl.classList.add("reveal");
-        }, 420);
+        setTimeout(() => { bg.classList.add("show"); heroEl.classList.add("reveal"); }, 420);
       }
 
       function startLineReveal(){
         const n = revealLines.length;
 
-        /* ✅ LOCKED pacing floors */
         const MIN_TOTAL    = 74;
         const MIN_LINE_DUR = 5.8;
         const MIN_GAP      = 1.15;
@@ -1084,11 +985,8 @@
         startLineReveal();
       });
 
-      // Autoplay unlock + WebAudio unlock on first gesture (LOCKED)
       window.addEventListener("pointerdown", () => {
-        // unlock HTMLAudio if needed
         if (!voice.muted && (voice.paused || amb.paused)) playBoth();
-        // unlock WebAudio for ritual tones
         try{
           const ctx = ensureAudioCtx();
           if (ctx && ctx.state === "suspended") ctx.resume();
@@ -1097,10 +995,9 @@
     })();
 
     /* =========================
-       INIT STATE
+       INIT
     ========================== */
-    const initial = migrateInv(loadInv());
-    renderInv(initial);
+    renderInv(migrateInv(loadInv()));
     lockSeal(); // ritual must be completed first
   </script>
 </body>
