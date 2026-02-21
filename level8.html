@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ONLYFORSAKEN — Level 8</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.78);
+      --hint: rgba(255,255,255,0.42);
+      --shadow: rgba(0,0,0,0.72);
+      --bg-pos-desktop: 50% 50%;
+      --bg-pos-mobile:  50% 52%;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; margin:0; background:#000; font-family: Georgia, "Times New Roman", serif; }
+
+    .hero{
+      min-height:100vh;
+      min-height:100svh;
+      position:relative;
+      overflow:hidden;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      background:#000;
+    }
+
+    .bg{
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image: url("level8.jpg");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: var(--bg-pos-desktop);
+      filter: brightness(1.12) contrast(1.10) saturate(1.02);
+      transform: scale(1.01);
+      opacity: 0;
+      transition: opacity 2200ms ease, transform 2800ms ease;
+    }
+    .bg.show{ opacity: 1; transform: scale(1); }
+
+    @media (max-width: 700px){
+      .bg{ background-position: var(--bg-pos-mobile); }
+    }
+
+    #veil{
+      position: fixed;
+      inset: 0;
+      background: #000;
+      opacity: 1;
+      z-index: 2147483646;
+      pointer-events:none;
+      transition: opacity 900ms ease;
+    }
+    #veil.hide{ opacity: 0; }
+
+    .wrap{
+      position: relative;
+      z-index: 3;
+      width: min(820px, 92vw);
+      padding: 42px 22px 112px;
+      text-align: center;
+      filter: drop-shadow(0 16px 22px var(--shadow));
+    }
+
+    h1{
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: clamp(24px, 3.6vw, 40px);
+      color: #e8e2d6;
+      margin: 0 0 14px;
+    }
+
+    .story{
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(20px, 2.1vw, 24px);
+      line-height: 1.75;
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.78);
+      margin: 0 auto 18px;
+      max-width: 62ch;
+      text-align: left;
+    }
+
+    .seal{
+      width: min(560px, 92vw);
+      margin: 16px auto 0;
+      padding: 18px 16px 18px;
+      border-radius: 22px;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.28), rgba(0,0,0,0.10));
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(7px);
+    }
+
+    .sealRow{
+      display:flex;
+      gap: 12px;
+      justify-content:center;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .sealInput{
+      width: min(340px, 86vw);
+      padding: 13px 16px;
+      border-radius: 16px;
+      background: rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.16);
+      color: rgba(245,236,216,0.92);
+      letter-spacing: 0.16em;
+      font-size: 14px;
+      font-family: "Cormorant Garamond", serif;
+    }
+
+    .sealBtn{
+      padding: 13px 18px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.16);
+      cursor:pointer;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(0,0,0,0.18));
+      color: rgba(245,236,216,0.92);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-family: "Cormorant Garamond", serif;
+    }
+
+    #muteBtn{
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 2147483647;
+      cursor:pointer;
+      background: rgba(0,0,0,.45);
+      border: 1px solid rgba(255,255,255,.28);
+      color: rgba(255,255,255,.95);
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-family:'Cormorant Garamond',serif;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div id="veil"></div>
+
+  <main class="hero">
+    <div class="bg" id="bg"></div>
+
+    <section class="wrap">
+      <h1>The Unseen Marks</h1>
+
+      <div class="story">
+        The corridor narrows until the walls feel close enough to listen.<br><br>
+        Four faces stare from the plaster—half-formed, half-erased.<br><br>
+        Touch what the hall hides. Then speak what it spells.
+      </div>
+
+      <div class="seal">
+        <div class="sealRow">
+          <input class="sealInput" type="password" placeholder="whisper it…" />
+          <button class="sealBtn">UNSEAL</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <button id="muteBtn">🔊</button>
+
+</body>
+</html>
