@@ -13,19 +13,9 @@
       --muted: rgba(255,255,255,0.58);
       --shadow: rgba(0,0,0,0.65);
 
-      /* ✅ Framing knobs */
+      /* ✅ ONLY controls you edit for framing */
       --bg-pos-desktop: 50% 50%;
       --bg-pos-mobile:  50% 52%;
-
-      /* ✅ Main image fit behavior:
-         Desktop wants MORE width visible => fit HEIGHT
-         Mobile can stay cover-ish */
-      --main-size-desktop: auto 100%;
-      --main-size-mobile:  cover;
-
-      /* ✅ Blur fill strength */
-      --blur: 22px;
-      --blur-dim: 0.72; /* lower = darker blur */
     }
 
     *{ box-sizing:border-box; }
@@ -33,8 +23,10 @@
 
     /* =========================
        HERO / BACKGROUND (LOCKED)
-       - bgBlur fills sides (cover + blur)
-       - bgMain is the ONLY sharp image (fit-height on desktop)
+       - ONE image
+       - cover
+       - fixed
+       - no blur, no overlay image, no borders
     ========================== */
     .hero{
       min-height:100vh;
@@ -47,36 +39,23 @@
       background:#000;
     }
 
-    .bgBlur, .bgMain{
+    .bg{
       position: fixed;
       inset: 0;
       z-index: 0;
       background-image: url("level8.jpg");
       background-repeat: no-repeat;
+      background-size: cover;
       background-position: var(--bg-pos-desktop);
+      filter: brightness(1.10) contrast(1.08) saturate(1.02);
       opacity: 0;
       transition: opacity 2200ms ease;
       will-change: opacity;
     }
-
-    /* Behind: fills EVERYTHING so there are NO black bars */
-    .bgBlur{
-      background-size: cover;
-      filter: blur(var(--blur)) brightness(var(--blur-dim)) contrast(1.12) saturate(1.05);
-      transform: scale(1.10); /* avoid edge seams from blur */
-    }
-
-    /* Front: the real image framing */
-    .bgMain{
-      background-size: var(--main-size-desktop); /* auto 100% => show more width */
-      filter: brightness(1.10) contrast(1.06) saturate(1.02);
-    }
-
-    .bgBlur.show, .bgMain.show{ opacity: 1; }
+    .bg.show{ opacity: 1; }
 
     @media (max-width: 700px){
-      .bgBlur, .bgMain{ background-position: var(--bg-pos-mobile); }
-      .bgMain{ background-size: var(--main-size-mobile); } /* cover on mobile */
+      .bg{ background-position: var(--bg-pos-mobile); }
     }
 
     .hero::before{
@@ -158,6 +137,9 @@
       user-select:none;
     }
 
+    /* =========================
+       FOG REVEAL (LOCKED)
+    ========================== */
     .story{
       font-family: "Cormorant Garamond", serif;
       font-size: clamp(20px, 2.1vw, 24px);
@@ -238,6 +220,9 @@
       user-select:none;
     }
 
+    /* =========================
+       ANTIQUE SEAL (LOCKED)
+    ========================== */
     .seal{
       width: min(560px, 92vw);
       margin: 16px auto 0;
@@ -326,6 +311,9 @@
       text-align:center;
     }
 
+    /* =========================
+       AUDIO BUTTON (LOCKED)
+    ========================== */
     #muteBtn{
       position: fixed;
       top: 18px;
@@ -344,6 +332,9 @@
       user-select:none;
     }
 
+    /* =========================
+       INVENTORY (LOCKED UI ONLY)
+    ========================== */
     #inventory{
       position: fixed;
       left: 50%;
@@ -395,13 +386,12 @@
       position:relative;
       overflow:hidden;
     }
-
     @media (max-width: 520px){
       #invSlots{ gap: 8px; padding: 9px 10px; }
       .slot{ width: 48px; height: 48px; border-radius: 13px; }
     }
 
-    /* Hotspots disabled */
+    /* Puzzle disabled for tonight */
     .hotspot{ position: fixed; width: 90px; height: 90px; border-radius: 999px; z-index:2; pointer-events:none; opacity:0; }
   </style>
 </head>
@@ -410,8 +400,7 @@
   <div id="veil" aria-hidden="true"></div>
 
   <main class="hero" id="hero">
-    <div class="bgBlur" id="bgBlur" aria-hidden="true"></div>
-    <div class="bgMain" id="bgMain" aria-hidden="true"></div>
+    <div class="bg" id="bg" aria-hidden="true"></div>
 
     <button class="hotspot" id="hs0" aria-label="mark"></button>
 
@@ -469,21 +458,20 @@
   </audio>
 
   <script>
-    /* Seal message only (no puzzle yet) */
+    /* Seal message only (no puzzle tonight) */
     (function(){
       const btn = document.getElementById("btn");
       const msg = document.getElementById("msg");
       if (!btn || !msg) return;
       btn.addEventListener("click", () => {
-        msg.textContent = "Hold. We lock the framing first — then we bind the marks.";
+        msg.textContent = "Framing locked first. Marks come next.";
       });
     })();
 
-    /* Visuals + audio + fog reveal */
+    /* Visuals + audio + fog reveal (locked pacing floors) */
     (() => {
       const heroEl = document.getElementById("hero");
-      const bgBlur = document.getElementById("bgBlur");
-      const bgMain = document.getElementById("bgMain");
+      const bg = document.getElementById("bg");
       const veil = document.getElementById("veil");
       const lines = Array.from(document.querySelectorAll(".fogLine"));
 
@@ -491,7 +479,7 @@
       const voice = document.getElementById("mordainVoice");
       const amb = document.getElementById("levelAmbience");
 
-      if (!heroEl || !bgBlur || !bgMain || !veil || !muteBtn || !voice || !amb) return;
+      if (!heroEl || !bg || !veil || !muteBtn || !voice || !amb) return;
 
       const VOICE_TARGET = 0.74;
       const AMB_TARGET   = 0.30;
@@ -500,6 +488,7 @@
       voice.muted = savedMuted;
       amb.muted = savedMuted;
       muteBtn.textContent = savedMuted ? "🔇" : "🔊";
+
       voice.volume = 0;
       amb.volume = 0;
 
@@ -518,33 +507,39 @@
         try{
           voice.currentTime = 0;
           amb.currentTime = 0;
+
           const p1 = voice.play();
           const p2 = amb.play();
           if (p1 && p1.catch) p1.catch(()=>{});
           if (p2 && p2.catch) p2.catch(()=>{});
+
           if (!voice.muted){
-            voice.volume = 0; amb.volume = 0;
+            voice.volume = 0;
+            amb.volume = 0;
             fadeTo(voice, VOICE_TARGET, 0.09, 70);
             fadeTo(amb, AMB_TARGET, 0.02, 140);
           }
         }catch(e){}
       }
 
-      function stopBoth(){ try{ voice.pause(); }catch(e){} try{ amb.pause(); }catch(e){} }
+      function stopBoth(){
+        try{ voice.pause(); }catch(e){}
+        try{ amb.pause(); }catch(e){}
+      }
 
       function revealVisuals(){
         setTimeout(() => veil.classList.add("hide"), 380);
         setTimeout(() => { try{ veil.remove(); }catch(e){} }, 1500);
 
         setTimeout(() => {
-          bgBlur.classList.add("show");
-          bgMain.classList.add("show");
+          bg.classList.add("show");
           heroEl.classList.add("reveal");
         }, 420);
       }
 
       function startLineReveal(){
         if (!lines.length) return;
+
         const n = lines.length;
         const MIN_TOTAL    = 74;
         const MIN_LINE_DUR = 5.8;
@@ -558,6 +553,7 @@
 
         let gap = (TOTAL / n) * 0.22;
         let lineDur = (TOTAL / n) * 1.05;
+
         gap = Math.max(MIN_GAP, gap);
         lineDur = Math.max(MIN_LINE_DUR, lineDur);
 
@@ -569,13 +565,18 @@
       }
 
       muteBtn.addEventListener("click", (e) => {
-        e.preventDefault(); e.stopPropagation();
+        e.preventDefault();
+        e.stopPropagation();
+
         const newMuted = !voice.muted;
         voice.muted = newMuted;
         amb.muted = newMuted;
+
         localStorage.setItem("ofs_mute", newMuted ? "1" : "0");
         muteBtn.textContent = newMuted ? "🔇" : "🔊";
-        if (!newMuted) playBoth(); else stopBoth();
+
+        if (!newMuted) playBoth();
+        else stopBoth();
       }, true);
 
       window.addEventListener("pageshow", async () => {
