@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ONLYFORSAKEN — Level 8</title>
 
+  <!-- ✅ Fonts (LOCKED) -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
@@ -13,6 +14,8 @@
       --muted: rgba(255,255,255,0.78);
       --hint: rgba(255,255,255,0.42);
       --shadow: rgba(0,0,0,0.72);
+
+      /* ✅ Desktop/mobile framing (LOCKED) */
       --bg-pos-desktop: 50% 50%;
       --bg-pos-mobile:  50% 52%;
     }
@@ -20,6 +23,9 @@
     *{ box-sizing:border-box; }
     html,body{ height:100%; margin:0; background:#000; font-family: Georgia, "Times New Roman", serif; }
 
+    /* =========================
+       🎬 HERO / BACKGROUND (LOCKED)
+    ========================== */
     .hero{
       min-height:100vh;
       min-height:100svh;
@@ -35,14 +41,18 @@
       position: fixed;
       inset: 0;
       z-index: 0;
+
+      /* ✅ Must be in same folder as this HTML */
       background-image: url("level8.jpg");
       background-size: cover;
       background-repeat: no-repeat;
       background-position: var(--bg-pos-desktop);
+
       filter: brightness(1.12) contrast(1.10) saturate(1.02);
       transform: scale(1.01);
       opacity: 0;
       transition: opacity 2200ms ease, transform 2800ms ease;
+      will-change: opacity, transform;
     }
     .bg.show{ opacity: 1; transform: scale(1); }
 
@@ -50,6 +60,34 @@
       .bg{ background-position: var(--bg-pos-mobile); }
     }
 
+    .hero::before{
+      content:"";
+      position: fixed;
+      inset:0;
+      background:
+        radial-gradient(circle at 50% 40%, rgba(0,0,0,0.08), rgba(0,0,0,0.58)),
+        linear-gradient(to bottom, rgba(0,0,0,0.18), rgba(0,0,0,0.70));
+      z-index:1;
+      pointer-events:none;
+      opacity: 0;
+      transition: opacity 2200ms ease;
+    }
+    .hero.reveal::before{ opacity: 1; }
+
+    .hero::after{
+      content:"";
+      position: fixed;
+      inset:0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+      opacity: 0;
+      pointer-events:none;
+      z-index:1;
+      transition: opacity 2200ms ease;
+    }
+    .hero.reveal::after{ opacity: .10; }
+
+    /* 🎬 Veil */
     #veil{
       position: fixed;
       inset: 0;
@@ -61,6 +99,9 @@
     }
     #veil.hide{ opacity: 0; }
 
+    /* =========================
+       🕯 UI (LOCKED)
+    ========================== */
     .wrap{
       position: relative;
       z-index: 3;
@@ -68,6 +109,24 @@
       padding: 42px 22px 112px;
       text-align: center;
       filter: drop-shadow(0 16px 22px var(--shadow));
+      pointer-events:auto;
+    }
+
+    .kicker{
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      font-size: 12px;
+      color: rgba(255,255,255,0.46);
+      margin: 0 0 10px;
+      user-select:none;
+    }
+
+    @keyframes candleFlicker {
+      0%   { opacity: 0.92; text-shadow: 0 0 6px rgba(255,255,255,0.10), 0 0 18px rgba(120,0,0,0.18); }
+      25%  { opacity: 1;    text-shadow: 0 0 10px rgba(255,255,255,0.18), 0 0 28px rgba(120,0,0,0.28); }
+      50%  { opacity: 0.96; text-shadow: 0 0 7px rgba(255,255,255,0.12), 0 0 20px rgba(120,0,0,0.22); }
+      75%  { opacity: 1;    text-shadow: 0 0 12px rgba(255,255,255,0.20), 0 0 34px rgba(120,0,0,0.32); }
+      100% { opacity: 0.94; text-shadow: 0 0 6px rgba(255,255,255,0.10), 0 0 18px rgba(120,0,0,0.18); }
     }
 
     h1{
@@ -77,8 +136,13 @@
       font-size: clamp(24px, 3.6vw, 40px);
       color: #e8e2d6;
       margin: 0 0 14px;
+      animation: candleFlicker 3.5s infinite ease-in-out;
+      user-select:none;
     }
 
+    /* =========================
+       🌫 FOG REVEAL (LOCKED)
+    ========================== */
     .story{
       font-family: "Cormorant Garamond", serif;
       font-size: clamp(20px, 2.1vw, 24px);
@@ -87,17 +151,122 @@
       color: rgba(255,255,255,0.78);
       margin: 0 auto 18px;
       max-width: 62ch;
+      animation: candleFlicker 5s infinite ease-in-out;
       text-align: left;
     }
+    .story em{
+      font-style: normal;
+      color: #d2c7b3;
+      text-shadow: 0 0 10px rgba(120,0,0,0.35);
+    }
 
+    .fogLine{
+      display:block;
+      margin: 0 0 0.55em 0;
+      opacity: 0.85;
+      filter: blur(2.1px);
+
+      -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 60%);
+      -webkit-mask-size: 240% 100%;
+      -webkit-mask-position: 100% 0;
+
+      mask-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 60%);
+      mask-size: 240% 100%;
+      mask-position: 100% 0;
+    }
+    .fogLine.run{
+      animation: fogLineReveal var(--dur, 5.8s) ease forwards;
+      animation-delay: var(--delay, 0s);
+    }
+    @keyframes fogLineReveal{
+      0%{ -webkit-mask-position: 100% 0; mask-position: 100% 0; filter: blur(2.1px); opacity: 0.80; }
+      100%{ -webkit-mask-position: 0% 0; mask-position: 0% 0; filter: blur(0px); opacity: 1; }
+    }
+
+    .hint{
+      margin: 14px auto 18px;
+      max-width: 64ch;
+      color: var(--hint);
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      user-select:none;
+      text-align:center;
+    }
+
+    .sep{
+      height:1px;
+      width:min(560px, 92vw);
+      margin: 18px auto 14px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent);
+      opacity: .85;
+    }
+
+    .riddleTitle{
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: 11px;
+      color: rgba(255,255,255,0.34);
+      margin: 0 0 8px;
+      user-select:none;
+    }
+
+    .riddleText{
+      font-family: "Cormorant Garamond", serif;
+      font-size: 16px;
+      line-height: 1.35;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      text-align:center;
+      color: rgba(255,255,255,0.58);
+      text-shadow:
+      0 0 14px rgba(255,255,255,0.10),
+      0 0 28px rgba(160,60,40,0.12);
+      max-width: 62ch;
+      margin: 0 auto;
+      user-select:none;
+    }
+
+    /* =========================
+       🗝 ANTIQUE SEAL GATE (LOCKED)
+    ========================== */
     .seal{
       width: min(560px, 92vw);
       margin: 16px auto 0;
       padding: 18px 16px 18px;
       border-radius: 22px;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.28), rgba(0,0,0,0.10));
+      background:
+        radial-gradient(circle at 18% 18%, rgba(255,255,255,0.06), transparent 55%),
+        radial-gradient(circle at 82% 38%, rgba(160,60,40,0.10), transparent 62%),
+        linear-gradient(to bottom, rgba(0,0,0,0.28), rgba(0,0,0,0.10));
       border: 1px solid rgba(255,255,255,0.12);
       backdrop-filter: blur(7px);
+      box-shadow:
+        0 22px 44px rgba(0,0,0,0.46),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      position: relative;
+      overflow:hidden;
+    }
+
+    .sealLabel{
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      font-size: 10px;
+      color: rgba(255,255,255,0.42);
+      margin: 0 0 14px;
+      user-select:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      text-shadow: 0 0 18px rgba(0,0,0,0.55);
+    }
+    .sealLabel .mark{
+      color: rgba(232, 210, 170, 0.52);
+      text-shadow: 0 0 16px rgba(160,60,40,0.20);
+      font-size: 12px;
     }
 
     .sealRow{
@@ -106,18 +275,27 @@
       justify-content:center;
       align-items:center;
       flex-wrap:wrap;
+      position: relative;
     }
 
     .sealInput{
       width: min(340px, 86vw);
       padding: 13px 16px;
       border-radius: 16px;
-      background: rgba(0,0,0,0.6);
+      background:
+        radial-gradient(circle at 30% 28%, rgba(240,225,190,0.10), transparent 55%),
+        radial-gradient(circle at 70% 70%, rgba(140,60,40,0.08), transparent 60%),
+        linear-gradient(to bottom, rgba(18,14,12,0.68), rgba(8,7,7,0.78));
       border: 1px solid rgba(255,255,255,0.16);
       color: rgba(245,236,216,0.92);
+      outline: none;
       letter-spacing: 0.16em;
       font-size: 14px;
       font-family: "Cormorant Garamond", serif;
+      box-shadow:
+        inset 0 0 0 1px rgba(0,0,0,0.55),
+        inset 0 0 26px rgba(0,0,0,0.45);
+      -webkit-text-security: disc;
     }
 
     .sealBtn{
@@ -125,18 +303,44 @@
       border-radius: 16px;
       border: 1px solid rgba(255,255,255,0.16);
       cursor:pointer;
-      background: linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(0,0,0,0.18));
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.10), transparent 55%),
+        linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(0,0,0,0.18));
       color: rgba(245,236,216,0.92);
       letter-spacing: 0.16em;
       text-transform: uppercase;
       font-family: "Cormorant Garamond", serif;
     }
 
+    .msg{
+      margin-top: 14px;
+      min-height: 18px;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.08em;
+      font-size: 12px;
+      user-select:none;
+    }
+
+    .wrong{ animation: shake 340ms ease; }
+    @keyframes shake{
+      0%{ transform: translateX(0); }
+      20%{ transform: translateX(-6px); }
+      40%{ transform: translateX(6px); }
+      60%{ transform: translateX(-4px); }
+      80%{ transform: translateX(4px); }
+      100%{ transform: translateX(0); }
+    }
+
+    .fadeOut{ animation: fade 700ms ease forwards; }
+    @keyframes fade{ to{ opacity:0; transform: translateY(6px); } }
+
+    /* ✅ Audio button (LOCKED) */
     #muteBtn{
       position: fixed;
       top: 18px;
       right: 18px;
       z-index: 2147483647;
+      pointer-events:auto;
       cursor:pointer;
       background: rgba(0,0,0,.45);
       border: 1px solid rgba(255,255,255,.28);
@@ -144,36 +348,468 @@
       padding: 10px 12px;
       border-radius: 999px;
       font-family:'Cormorant Garamond',serif;
+      backdrop-filter: blur(6px);
+      -webkit-tap-highlight-color: transparent;
+      user-select:none;
     }
 
+    /* ✅ Inventory (LOCKED) */
+    #inventory{
+      position: fixed;
+      left: 50%;
+      bottom: 14px;
+      transform: translateX(-50%);
+      z-index: 2147483645;
+      display:flex;
+      flex-direction: column;
+      align-items:center;
+      gap: 8px;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    #invLabel{
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-size: 10px;
+      color: rgba(255,255,255,0.40);
+      text-shadow: 0 0 18px rgba(0,0,0,0.65);
+      opacity: 0.95;
+    }
+
+    #invSlots{
+      display:flex;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.28);
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 18px 34px rgba(0,0,0,0.40);
+    }
+
+    .slot{
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255,255,255,0.10), rgba(0,0,0,0.12) 60%),
+        rgba(0,0,0,0.18);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color: rgba(255,255,255,0.58);
+      font-family: "Cormorant Garamond", serif;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 16px rgba(0,0,0,0.75);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .slot.filled{
+      color: rgba(255,255,255,0.90);
+      border-color: rgba(255,255,255,0.22);
+      text-shadow: 0 0 14px rgba(120,0,0,0.28);
+    }
+
+    .slot img.invIcon{
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(0,0,0,0.65));
+      opacity: 0.95;
+      pointer-events:none;
+      user-select:none;
+    }
+
+    @media (max-width: 520px){
+      #invSlots{ gap: 8px; padding: 9px 10px; }
+      .slot{ width: 48px; height: 48px; border-radius: 13px; }
+      .slot img.invIcon{ width: 30px; height: 30px; }
+    }
+
+    /* =========================
+       🕳 INVISIBLE HOTSPOTS (PUZZLE)
+       No new visible UI controls
+    ========================== */
+    .hotspot{
+      position: fixed;
+      width: 86px;
+      height: 86px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.00);
+      border: 1px solid rgba(255,255,255,0.00);
+      z-index: 2;
+      pointer-events: auto;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .hotspot:focus{ outline: none; }
+    .hotspot:hover{
+      border-color: rgba(232,210,170,0.10);
+      background: rgba(232,210,170,0.02);
+    }
+    .hotspot.found{
+      border-color: rgba(232,210,170,0.16);
+      background: rgba(232,210,170,0.03);
+    }
   </style>
 </head>
 
 <body>
-  <div id="veil"></div>
+  <div id="veil" aria-hidden="true"></div>
 
-  <main class="hero">
-    <div class="bg" id="bg"></div>
+  <main class="hero" id="hero">
+    <div class="bg" id="bg" aria-hidden="true"></div>
 
-    <section class="wrap">
+    <!-- ✅ Hotspots (tweak % only if needed) -->
+    <button class="hotspot" id="hs0" aria-label="Unseen mark 1" style="left: 10%; top: 34%;"></button>
+    <button class="hotspot" id="hs1" aria-label="Unseen mark 2" style="left: 86%; top: 34%;"></button>
+    <button class="hotspot" id="hs2" aria-label="Unseen mark 3" style="left: 56%; top: 54%;"></button>
+    <button class="hotspot" id="hs3" aria-label="Unseen mark 4" style="left: 22%; top: 70%;"></button>
+    <button class="hotspot" id="hs4" aria-label="Unseen mark 5" style="left: 74%; top: 74%;"></button>
+
+    <section class="wrap" id="wrap">
+      <div class="kicker">Level 8</div>
       <h1>The Unseen Marks</h1>
 
-      <div class="story">
-        The corridor narrows until the walls feel close enough to listen.<br><br>
-        Four faces stare from the plaster—half-formed, half-erased.<br><br>
-        Touch what the hall hides. Then speak what it spells.
+      <div class="story" id="story">
+        <span class="fogLine">The corridor narrows until the walls feel close enough to <em>listen</em>.</span>
+        <span class="fogLine">Faces stare from the stone, half-swallowed by old mortar—witnesses that were never allowed to die.</span>
+        <span class="fogLine">Their mouths are wrong. Not open. Not closed. As if they wait for you to supply the sound.</span>
+        <span class="fogLine">Beneath the grime, you sense five disturbances—marks that do not belong to the wall.</span>
+        <span class="fogLine">Touch them, and the hall will confess a word it has been holding in its throat.</span>
       </div>
 
-      <div class="seal">
+      <div class="hint">The image hides five marks. Touch them to assemble the word.</div>
+
+      <div class="sep"></div>
+
+      <div class="riddleTitle">Riddle</div>
+      <div class="riddleText">
+        FIVE SIGNS IN A HALL THAT LIES.<br>
+        TOUCH WHAT IT HIDES—<br>
+        THEN SPEAK WHAT IT SPELLS.
+      </div>
+
+      <div class="seal" id="seal">
+        <div class="sealLabel"><span class="mark">⟡</span> Offer your answer <span class="mark">⟡</span></div>
         <div class="sealRow">
-          <input class="sealInput" type="password" placeholder="whisper it…" />
-          <button class="sealBtn">UNSEAL</button>
+          <input id="pw" class="sealInput" type="password" placeholder="whisper it…" autocomplete="off" />
+          <button id="btn" class="sealBtn">UNSEAL</button>
         </div>
       </div>
+
+      <div class="msg" id="msg"></div>
     </section>
   </main>
 
-  <button id="muteBtn">🔊</button>
+  <div id="inventory" aria-hidden="true">
+    <div id="invLabel">Inventory</div>
+    <div id="invSlots">
+      <div class="slot" id="slot0">—</div>
+      <div class="slot" id="slot1">—</div>
+      <div class="slot" id="slot2">—</div>
+    </div>
+  </div>
 
+  <button id="muteBtn" aria-label="Toggle audio">🔊</button>
+
+  <audio id="mordainVoice" preload="auto" playsinline>
+    <source src="audio/mordain-level8.mp3" type="audio/mpeg">
+  </audio>
+
+  <audio id="levelAmbience" loop preload="auto" playsinline>
+    <source src="audio/level8-ambience.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    /* =========================
+       ✅ Inventory (LOCKED)
+    ========================== */
+    const INV_KEY = "ofs_inventory";
+    const REVEAL_KEY = "ofs_inv_reveal_level";
+
+    const EMERALD_RUNE = { id:"RUNE_EMERALD", img:"ui/rune-emerald.png", alt:"Emerald Rune" };
+
+    function normalize(v){ return (v||"").toString().trim().toUpperCase(); }
+
+    function canShowInventoryItems(){
+      const gate = parseInt(localStorage.getItem(REVEAL_KEY) || "0", 10);
+      return Number.isFinite(gate) && gate >= 7;
+    }
+
+    function loadInv(){
+      try{
+        const raw = localStorage.getItem(INV_KEY);
+        const parsed = raw ? JSON.parse(raw) : null;
+        if (Array.isArray(parsed) && parsed.length === 3) return parsed;
+      }catch(e){}
+      return [null,null,null];
+    }
+    function saveInv(inv){ try{ localStorage.setItem(INV_KEY, JSON.stringify(inv)); }catch(e){} }
+
+    function migrateInv(inv){
+      let changed=false;
+      const out = inv.map(it=>{
+        if (!it) return it;
+        if (typeof it === "string"){
+          const s = normalize(it);
+          if (s === "EMERALD RUNE" || s === "RUNE EMERALD" || s === "RUNE_EMERALD"){
+            changed=true; return EMERALD_RUNE;
+          }
+        }
+        return it;
+      });
+      if (changed) saveInv(out);
+      return out;
+    }
+
+    function renderSlot(el, item, allow){
+      if (!el) return;
+      if (!allow || !item){
+        el.innerHTML="—";
+        el.classList.remove("filled");
+        return;
+      }
+      if (typeof item === "object" && item.img){
+        el.innerHTML = `<img class="invIcon" src="${item.img}" alt="${(item.alt||"Item").replace(/"/g,'&quot;')}" />`;
+        el.classList.add("filled");
+        return;
+      }
+      el.textContent = String(item).slice(0,10);
+      el.classList.add("filled");
+    }
+
+    function renderInv(inv){
+      const allow = canShowInventoryItems();
+      for (let i=0;i<3;i++){
+        renderSlot(document.getElementById("slot"+i), inv[i], allow);
+      }
+    }
+
+    const initialInv = migrateInv(loadInv());
+    renderInv(initialInv);
+
+    /* =========================
+       🧩 Level 8 Puzzle (LOCKED)
+    ========================== */
+    const FOUND_KEY = "ofs_level8_found";
+    const LETTERS = ["F","A","C","E","S"];
+    const PASSWORD = "FACES";
+    const NEXT_PAGE = "level9.html";
+
+    const wrap = document.getElementById("wrap");
+    const pw = document.getElementById("pw");
+    const btn = document.getElementById("btn");
+    const msg = document.getElementById("msg");
+
+    const hotspots = [
+      document.getElementById("hs0"),
+      document.getElementById("hs1"),
+      document.getElementById("hs2"),
+      document.getElementById("hs3"),
+      document.getElementById("hs4")
+    ];
+
+    function loadFound(){
+      try{
+        const raw = localStorage.getItem(FOUND_KEY);
+        const parsed = raw ? JSON.parse(raw) : null;
+        if (Array.isArray(parsed) && parsed.length === 5) return parsed.map(x=>!!x);
+      }catch(e){}
+      return [false,false,false,false,false];
+    }
+    function saveFound(found){ try{ localStorage.setItem(FOUND_KEY, JSON.stringify(found)); }catch(e){} }
+
+    let found = loadFound();
+
+    function assembledWord(){
+      let out="";
+      for (let i=0;i<5;i++) if (found[i]) out += LETTERS[i];
+      return out;
+    }
+
+    function updatePuzzleUI(){
+      for (let i=0;i<5;i++){
+        const hs = hotspots[i];
+        if (!hs) continue;
+        hs.classList.toggle("found", !!found[i]);
+      }
+      const w = assembledWord();
+      msg.textContent = w.length ? `The hall whispers: ${w}` : "";
+    }
+
+    function touchMark(i){
+      if (found[i]) return;
+      found[i] = true;
+      saveFound(found);
+      updatePuzzleUI();
+      const w = assembledWord();
+      if (w.length === 5){
+        msg.textContent = `The word completes itself: ${w}`;
+        try{ pw.focus(); }catch(e){}
+      }
+    }
+
+    hotspots.forEach((hs,i)=>{
+      if (!hs) return;
+      hs.addEventListener("click", ()=>touchMark(i));
+      hs.addEventListener("touchstart", (e)=>{ e.preventDefault(); touchMark(i); }, { passive:false });
+    });
+
+    function check(){
+      const val = normalize(pw.value);
+      if (!val) return;
+
+      const w = normalize(assembledWord());
+      const complete = (w.length === 5);
+      const ok = complete && (val === normalize(PASSWORD));
+
+      if (ok){
+        msg.textContent = "…";
+        setTimeout(()=>wrap.classList.add("fadeOut"), 650);
+        setTimeout(()=>window.location.href = NEXT_PAGE, 1350);
+      }else{
+        msg.textContent = complete ? "Not yet." : "Not yet. The hall still hides marks.";
+        wrap.classList.remove("wrong"); void wrap.offsetWidth; wrap.classList.add("wrong");
+        pw.select();
+      }
+    }
+
+    btn.addEventListener("click", check);
+    pw.addEventListener("keydown", (e)=>{ if (e.key === "Enter") check(); });
+
+    updatePuzzleUI();
+
+    /* =========================
+       🎬 Visuals + 🔊 Audio + 🌫 Line Reveal (LOCKED)
+       THIS is what prevents the “all black” bug.
+    ========================== */
+    (() => {
+      const heroEl = document.getElementById("hero");
+      const bg = document.getElementById("bg");
+      const veil = document.getElementById("veil");
+      const lines = Array.from(document.querySelectorAll(".fogLine"));
+
+      const muteBtn = document.getElementById("muteBtn");
+      const voice = document.getElementById("mordainVoice");
+      const amb = document.getElementById("levelAmbience");
+
+      if (!heroEl || !bg || !veil || !muteBtn || !voice || !amb || !lines.length) return;
+
+      const VOICE_TARGET = 0.74;
+      const AMB_TARGET   = 0.30;
+
+      const savedMuted = localStorage.getItem("ofs_mute") === "1";
+      voice.muted = savedMuted;
+      amb.muted = savedMuted;
+      muteBtn.textContent = savedMuted ? "🔇" : "🔊";
+
+      voice.volume = 0;
+      amb.volume = 0;
+
+      function fadeTo(audio, target, step=0.06, interval=80){
+        try{
+          let v = audio.volume || 0;
+          const id = setInterval(() => {
+            v = Math.min(target, v + step);
+            audio.volume = v;
+            if (v >= target) clearInterval(id);
+          }, interval);
+        }catch(e){}
+      }
+
+      async function playBoth(){
+        try{
+          voice.currentTime = 0;
+          amb.currentTime = 0;
+
+          const p1 = voice.play();
+          const p2 = amb.play();
+          if (p1 && p1.catch) p1.catch(()=>{});
+          if (p2 && p2.catch) p2.catch(()=>{});
+
+          if (!voice.muted){
+            voice.volume = 0;
+            amb.volume = 0;
+            fadeTo(voice, VOICE_TARGET, 0.09, 70);
+            fadeTo(amb, AMB_TARGET, 0.02, 140);
+          }
+        }catch(e){}
+      }
+
+      function stopBoth(){
+        try{ voice.pause(); }catch(e){}
+        try{ amb.pause(); }catch(e){}
+      }
+
+      function revealVisuals(){
+        setTimeout(() => veil.classList.add("hide"), 380);
+        setTimeout(() => { try{ veil.remove(); }catch(e){} }, 1500);
+
+        setTimeout(() => {
+          bg.classList.add("show");
+          heroEl.classList.add("reveal");
+        }, 420);
+      }
+
+      function startLineReveal(){
+        const n = lines.length;
+
+        /* ✅ LOCKED pacing floors */
+        const MIN_TOTAL    = 74;
+        const MIN_LINE_DUR = 5.8;
+        const MIN_GAP      = 1.15;
+        const START_DELAY  = 1.35;
+
+        const TOTAL = Math.max(
+          MIN_TOTAL,
+          (voice && voice.duration && isFinite(voice.duration)) ? (voice.duration + 6) : MIN_TOTAL
+        );
+
+        let gap = (TOTAL / n) * 0.22;
+        let lineDur = (TOTAL / n) * 1.05;
+
+        gap = Math.max(MIN_GAP, gap);
+        lineDur = Math.max(MIN_LINE_DUR, lineDur);
+
+        lines.forEach((line, i) => {
+          line.style.setProperty("--dur", `${lineDur.toFixed(2)}s`);
+          line.style.setProperty("--delay", `${(START_DELAY + i * gap).toFixed(2)}s`);
+          line.classList.add("run");
+        });
+      }
+
+      muteBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const newMuted = !voice.muted;
+        voice.muted = newMuted;
+        amb.muted = newMuted;
+
+        localStorage.setItem("ofs_mute", newMuted ? "1" : "0");
+        muteBtn.textContent = newMuted ? "🔇" : "🔊";
+
+        if (!newMuted) playBoth();
+        else stopBoth();
+      }, true);
+
+      window.addEventListener("pageshow", async () => {
+        revealVisuals();
+        if (!voice.muted) await playBoth();
+        startLineReveal();
+      });
+
+      window.addEventListener("pointerdown", () => {
+        if (!voice.muted && (voice.paused || amb.paused)) playBoth();
+      }, { once:true });
+    })();
+  </script>
 </body>
 </html>
