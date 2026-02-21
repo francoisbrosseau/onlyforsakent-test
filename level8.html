@@ -15,9 +15,16 @@
       --hint: rgba(255,255,255,0.42);
       --shadow: rgba(0,0,0,0.72);
 
-      /* ✅ Desktop/mobile framing knobs (LOCKED) */
+      /* ✅ Level 8 framing (NO STRETCH, NO CONTAIN BARS) */
       --bg-pos-desktop: 50% 50%;
       --bg-pos-mobile:  50% 52%;
+
+      /* Key change: desktop fits WIDTH (kills side bars), mobile fits HEIGHT */
+      --bg-size-desktop: 100% auto;  /* fills width, crops top/bottom if needed */
+      --bg-size-mobile:  auto 100%;  /* fills height on tall screens */
+
+      /* tiny safety zoom to avoid 1px seams */
+      --bg-scale: 1.01;
     }
 
     *{ box-sizing:border-box; }
@@ -25,10 +32,6 @@
 
     /* =========================
        🎬 HERO / BACKGROUND (LOCKED)
-       ✅ FIX: smart "contain" to show FULL image with minimal borders
-       - No stretch
-       - No blur borders
-       - No double image
     ========================== */
     .hero{
       min-height:100vh;
@@ -49,26 +52,27 @@
       background-image: url("level8.jpg");
       background-repeat: no-repeat;
       background-position: var(--bg-pos-desktop);
+      background-size: var(--bg-size-desktop);
 
-      /* ✅ DEFAULT: fit HEIGHT (best for wide desktop, minimal side bars) */
-      background-size: auto 100%;
-      background-color: #000;
-
-      filter: brightness(1.12) contrast(1.10) saturate(1.02);
-      transform: scale(1.01);
+      /* IMPORTANT: no distortion. This never stretches the bitmap. */
+      filter: brightness(1.10) contrast(1.10) saturate(1.03);
+      transform: scale(var(--bg-scale));
       opacity: 0;
       transition: opacity 2200ms ease, transform 2800ms ease;
       will-change: opacity, transform;
     }
     .bg.show{ opacity: 1; transform: scale(1); }
 
-    /* ✅ If viewport is taller/narrower than the image aspect, fit WIDTH instead
-       Your generated Level8 is portrait-ish; this prevents giant side bars on mobile. */
-    @media (max-aspect-ratio: 2/3){
+    @media (max-width: 700px){
       .bg{
-        background-size: 100% auto; /* fit WIDTH */
         background-position: var(--bg-pos-mobile);
+        background-size: var(--bg-size-mobile);
       }
+    }
+
+    /* Wide desktops: keep fit-width behavior (no side bars) */
+    @media (min-width: 1000px){
+      .bg{ background-size: var(--bg-size-desktop); }
     }
 
     .hero::before{
@@ -76,8 +80,8 @@
       position: fixed;
       inset:0;
       background:
-        radial-gradient(circle at 50% 40%, rgba(0,0,0,0.06), rgba(0,0,0,0.58)),
-        linear-gradient(to bottom, rgba(0,0,0,0.16), rgba(0,0,0,0.70));
+        radial-gradient(circle at 50% 40%, rgba(0,0,0,0.08), rgba(0,0,0,0.56)),
+        linear-gradient(to bottom, rgba(0,0,0,0.18), rgba(0,0,0,0.66));
       z-index:1;
       pointer-events:none;
       opacity: 0;
@@ -391,7 +395,6 @@
       letter-spacing: 0.08em;
       font-size: 12px;
       user-select:none;
-      text-align:center;
     }
 
     .wrong{ animation: shake 340ms ease; }
@@ -520,7 +523,7 @@
         <span class="fogLine">The corridor is longer than it should be.</span>
         <span class="fogLine">Six faces stare from the stone—some intact, some half-swallowed by the wall, all of them wrong in the same familiar way.</span>
         <span class="fogLine">At the end, a door waits in old iron, as if it has been listening for days.</span>
-        <span class="fogLine">You hear a hum… not in your ears—<em>in your bones</em>.</span>
+        <span class="fogLine">You hear a hum… not in your ears—in your bones.</span>
       </div>
 
       <div class="hint">Lock the framing. Then we bind the puzzle.</div>
@@ -557,6 +560,7 @@
 
   <button id="muteBtn" aria-label="Toggle audio">🔊</button>
 
+  <!-- If these files don't exist yet, page still works (JS guards). -->
   <audio id="mordainVoice" preload="auto" playsinline>
     <source src="audio/mordain-level8.mp3" type="audio/mpeg">
   </audio>
@@ -566,12 +570,8 @@
   </audio>
 
   <script>
-    /* ✅ Keep reveal gate enabled from Level 7 onward (safe + prevents "blank inventory") */
-    localStorage.setItem("ofs_inv_reveal_level", "7");
-
     const INV_KEY = "ofs_inventory";
     const REVEAL_KEY = "ofs_inv_reveal_level";
-    const TAKEN_KEY_LEVEL7 = "ofs_level7_rune_taken";
 
     const EMERALD_RUNE = {
       id: "RUNE_EMERALD",
@@ -610,35 +610,39 @@
 
     function migrateInv(inv){
       let changed = false;
+
+      // normalize legacy objects that became plain strings or odd shapes
       const out = inv.map(it => {
-        if (!it) return it;
+        if (!it) return null;
+
+        // legacy string
         if (typeof it === "string"){
           const s = normalize(it);
           if (s === "EMERALD RUNE" || s === "RUNE EMERALD" || s === "RUNE_EMERALD"){
             changed = true;
             return EMERALD_RUNE;
           }
+          return it;
         }
-        return it;
+
+        // object without img but has id/alt
+        if (typeof it === "object"){
+          const id = normalize(it.id || it.alt || "");
+          if (id === "RUNE_EMERALD" || id === "EMERALD RUNE" || id === "RUNE EMERALD"){
+            changed = true;
+            return EMERALD_RUNE;
+          }
+          return it;
+        }
+
+        return null;
       });
-      if (changed) saveInv(out);
-      return out;
-    }
 
-    function ensureEmeraldRuneIfTaken(inv){
-      // ✅ If Level 7 was completed, force the rune back in if missing (no duplicates)
-      const taken = localStorage.getItem(TAKEN_KEY_LEVEL7) === "1";
-      if (!taken) return inv;
+      while (out.length < 3) out.push(null);
+      const fixed = out.slice(0,3);
 
-      const has = inv.some(it => getItemId(it) === normalize(EMERALD_RUNE.id));
-      if (has) return inv;
-
-      const idx = inv.findIndex(x => !x);
-      if (idx !== -1){
-        inv[idx] = EMERALD_RUNE;
-        saveInv(inv);
-      }
-      return inv;
+      if (changed) saveInv(fixed);
+      return fixed;
     }
 
     function renderSlot(el, item, allowItems){
@@ -673,16 +677,15 @@
       }
     }
 
-    // ✅ Load -> migrate -> ensure rune -> render
-    let inv = migrateInv(loadInv());
-    inv = ensureEmeraldRuneIfTaken(inv);
-    renderInv(inv);
+    // render inventory immediately
+    const inv0 = migrateInv(loadInv());
+    renderInv(inv0);
 
     /* =========================
-       ✅ Gate (TEMP, puzzle later)
+       Gate / password
     ========================== */
     const PASSWORD = "RESONANCE";
-    const NEXT_PAGE = "level9.html"; // change later when you have it
+    const NEXT_PAGE = "level9.html"; // change when you have it
 
     const wrap = document.getElementById("wrap");
     const pw = document.getElementById("pw");
@@ -702,7 +705,7 @@
         wrap.classList.remove("wrong");
         void wrap.offsetWidth;
         wrap.classList.add("wrong");
-        try{ pw.select(); }catch(e){}
+        pw.select();
       }
     }
 
@@ -710,7 +713,7 @@
     pw.addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
 
     /* =========================
-       🎬 Visuals + 🔊 Audio + 🌫 Line Reveal (LOCKED)
+       🎬 Visuals + 🔊 Audio + 🌫 Line Reveal
     ========================== */
     (() => {
       const heroEl = document.getElementById("hero");
@@ -722,21 +725,27 @@
       const voice = document.getElementById("mordainVoice");
       const amb = document.getElementById("level8Ambience");
 
-      if (!muteBtn || !heroEl || !bg || !veil || !revealLines.length) return;
+      if (!heroEl || !bg || !veil || !revealLines.length) return;
+
+      // audio is optional; if missing, still keep the button (does nothing harmful)
+      const hasAudio = (voice && amb);
 
       const VOICE_TARGET = 0.74;
       const AMB_TARGET   = 0.30;
 
       const savedMuted = localStorage.getItem("ofs_mute") === "1";
-      if (voice) voice.muted = savedMuted;
-      if (amb)   amb.muted   = savedMuted;
+      if (hasAudio){
+        voice.muted = savedMuted;
+        amb.muted = savedMuted;
+      }
       muteBtn.textContent = savedMuted ? "🔇" : "🔊";
 
-      if (voice) voice.volume = 0;
-      if (amb)   amb.volume   = 0;
+      if (hasAudio){
+        voice.volume = 0;
+        amb.volume = 0;
+      }
 
       function fadeTo(audio, target, step=0.06, interval=80){
-        if (!audio) return;
         try{
           let v = audio.volume || 0;
           const id = setInterval(() => {
@@ -748,34 +757,29 @@
       }
 
       async function playBoth(){
+        if (!hasAudio) return;
         try{
-          if (voice){
-            voice.currentTime = 0;
-            const p1 = voice.play();
-            if (p1 && p1.catch) p1.catch(()=>{});
-          }
-          if (amb){
-            amb.currentTime = 0;
-            const p2 = amb.play();
-            if (p2 && p2.catch) p2.catch(()=>{});
-          }
+          voice.currentTime = 0;
+          amb.currentTime = 0;
 
-          if (localStorage.getItem("ofs_mute") !== "1"){
-            if (voice){
-              voice.volume = 0;
-              fadeTo(voice, VOICE_TARGET, 0.09, 70);
-            }
-            if (amb){
-              amb.volume = 0;
-              fadeTo(amb, AMB_TARGET, 0.02, 140);
-            }
+          const p1 = voice.play();
+          const p2 = amb.play();
+          if (p1 && p1.catch) p1.catch(()=>{});
+          if (p2 && p2.catch) p2.catch(()=>{});
+
+          if (!voice.muted){
+            voice.volume = 0;
+            amb.volume = 0;
+            fadeTo(voice, VOICE_TARGET, 0.09, 70);
+            fadeTo(amb, AMB_TARGET, 0.02, 140);
           }
         }catch(e){}
       }
 
       function stopBoth(){
-        try{ if (voice) voice.pause(); }catch(e){}
-        try{ if (amb) amb.pause(); }catch(e){}
+        if (!hasAudio) return;
+        try{ voice.pause(); }catch(e){}
+        try{ amb.pause(); }catch(e){}
       }
 
       function revealVisuals(){
@@ -796,8 +800,10 @@
         const MIN_GAP      = 1.15;
         const START_DELAY  = 1.35;
 
-        const dur = (voice && isFinite(voice.duration) && voice.duration > 0) ? (voice.duration + 6) : MIN_TOTAL;
-        const TOTAL = Math.max(MIN_TOTAL, dur);
+        let voiceDur = MIN_TOTAL;
+        if (hasAudio && voice && voice.duration && isFinite(voice.duration)) voiceDur = voice.duration + 6;
+
+        const TOTAL = Math.max(MIN_TOTAL, voiceDur);
 
         let gap = (TOTAL / n) * 0.22;
         let lineDur = (TOTAL / n) * 1.05;
@@ -816,29 +822,27 @@
         e.preventDefault();
         e.stopPropagation();
 
-        const nowMuted = !(localStorage.getItem("ofs_mute") === "1");
-        localStorage.setItem("ofs_mute", nowMuted ? "1" : "0");
-        muteBtn.textContent = nowMuted ? "🔇" : "🔊";
+        const newMuted = (localStorage.getItem("ofs_mute") !== "1") ? true : false;
+        localStorage.setItem("ofs_mute", newMuted ? "1" : "0");
+        muteBtn.textContent = newMuted ? "🔇" : "🔊";
 
-        if (voice) voice.muted = nowMuted;
-        if (amb)   amb.muted   = nowMuted;
+        if (!hasAudio) return;
 
-        if (!nowMuted) playBoth();
+        voice.muted = newMuted;
+        amb.muted = newMuted;
+
+        if (!newMuted) playBoth();
         else stopBoth();
       }, true);
 
       window.addEventListener("pageshow", async () => {
         revealVisuals();
-        if (localStorage.getItem("ofs_mute") !== "1") await playBoth();
+        if (hasAudio && localStorage.getItem("ofs_mute") !== "1") await playBoth();
         startLineReveal();
       });
 
       window.addEventListener("pointerdown", () => {
-        if (localStorage.getItem("ofs_mute") === "1") return;
-        try{
-          if (voice && voice.paused) voice.play().catch(()=>{});
-          if (amb && amb.paused) amb.play().catch(()=>{});
-        }catch(e){}
+        if (hasAudio && localStorage.getItem("ofs_mute") !== "1" && (voice.paused || amb.paused)) playBoth();
       }, { once:true });
 
     })();
