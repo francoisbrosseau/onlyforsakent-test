@@ -13,9 +13,17 @@
       --muted: rgba(255,255,255,0.58);
       --shadow: rgba(0,0,0,0.65);
 
-      /* ✅ Framing knobs (match Level 1–7 behavior) */
+      /* ✅ Framing knobs */
       --bg-pos-desktop: 50% 50%;
       --bg-pos-mobile:  50% 52%;
+
+      /* ✅ Contain overlay scale (lower = show MORE of the scene) */
+      --contain-scale-desktop: 0.96;
+      --contain-scale-mobile:  1.02;
+
+      /* ✅ Feather edge (higher = softer blend, less “poster”) */
+      --feather-inner: 58%;
+      --feather-outer: 100%;
     }
 
     *{ box-sizing:border-box; }
@@ -23,6 +31,7 @@
 
     /* =========================
        HERO / BACKGROUND (LOCKED)
+       Solution: cover base + contain overlay (feather blended)
     ========================== */
     .hero{
       min-height:100vh;
@@ -35,26 +44,60 @@
       background:#000;
     }
 
-    .bg{
+    .bgCover, .bgContain{
       position: fixed;
       inset: 0;
       z-index: 0;
-
-      /* ✅ SAME FILE NAME RULE */
       background-image: url("level8.jpg");
       background-repeat: no-repeat;
-      background-size: cover;
-      background-position: var(--bg-pos-desktop);
-
-      filter: brightness(1.10) contrast(1.08) saturate(1.02);
       opacity: 0;
       transition: opacity 2200ms ease;
       will-change: opacity;
     }
-    .bg.show{ opacity: 1; }
+
+    /* Base: full-bleed cinematic (no black sides) */
+    .bgCover{
+      background-size: cover;
+      background-position: var(--bg-pos-desktop);
+      filter: brightness(1.08) contrast(1.08) saturate(1.02);
+      transform: scale(1.01);
+    }
+
+    /* Overlay: entire image visible (shows the missing faces) */
+    .bgContain{
+      background-size: contain;
+      background-position: var(--bg-pos-desktop);
+      filter: brightness(1.02) contrast(1.06) saturate(1.02);
+      transform: scale(var(--contain-scale-desktop));
+      transform-origin: center center;
+
+      /* ✅ Feather mask so it blends into the cover base (no “poster box”) */
+      -webkit-mask-image: radial-gradient(ellipse at center,
+        rgba(0,0,0,1) var(--feather-inner),
+        rgba(0,0,0,0) var(--feather-outer)
+      );
+      -webkit-mask-size: 100% 100%;
+      -webkit-mask-repeat: no-repeat;
+
+      mask-image: radial-gradient(ellipse at center,
+        rgba(0,0,0,1) var(--feather-inner),
+        rgba(0,0,0,0) var(--feather-outer)
+      );
+      mask-size: 100% 100%;
+      mask-repeat: no-repeat;
+
+      /* slight lift to help visibility without “box” */
+      opacity: 0;
+    }
+
+    .bgCover.show, .bgContain.show{ opacity: 1; }
 
     @media (max-width: 700px){
-      .bg{ background-position: var(--bg-pos-mobile); }
+      .bgCover{ background-position: var(--bg-pos-mobile); }
+      .bgContain{
+        background-position: var(--bg-pos-mobile);
+        transform: scale(var(--contain-scale-mobile));
+      }
     }
 
     .hero::before{
@@ -310,10 +353,6 @@
       text-align:center;
     }
 
-    /* Fade out on success (kept) */
-    .fadeOut{ animation: fade 700ms ease forwards; }
-    @keyframes fade{ to{ opacity:0; transform: translateY(6px); } }
-
     /* =========================
        AUDIO BUTTON (LOCKED)
     ========================== */
@@ -410,19 +449,15 @@
       .slot img.invIcon{ width: 30px; height: 30px; }
     }
 
-    /* =========================
-       HOTSPOTS (PUZZLE)
-       ✅ Disabled tonight (no random letters / no mismatch)
-       (No new UI controls.)
-    ========================== */
+    /* Hotspots disabled for now */
     .hotspot{
       position: fixed;
       width: 90px;
       height: 90px;
       border-radius: 999px;
       z-index: 2;
-      pointer-events: none; /* disabled */
-      opacity: 0;           /* invisible */
+      pointer-events: none;
+      opacity: 0;
       background: transparent;
       border: 1px solid transparent;
     }
@@ -433,9 +468,9 @@
   <div id="veil" aria-hidden="true"></div>
 
   <main class="hero" id="hero">
-    <div class="bg" id="bg" aria-hidden="true"></div>
+    <div class="bgCover" id="bgCover" aria-hidden="true"></div>
+    <div class="bgContain" id="bgContain" aria-hidden="true"></div>
 
-    <!-- kept in DOM (disabled) -->
     <button class="hotspot" id="hs0" aria-label="mark"></button>
 
     <section class="wrap" id="wrap">
@@ -492,15 +527,10 @@
   </audio>
 
   <script>
-    /* =========================
-       INVENTORY (LOCKED + repair)
-       - does NOT add items
-       - only ensures display gate + migrates legacy strings
-    ========================== */
+    /* Inventory display + safe migration (no item injection) */
     const INV_KEY = "ofs_inventory";
     const REVEAL_KEY = "ofs_inv_reveal_level";
     const EMERALD_RUNE = { id:"RUNE_EMERALD", img:"ui/rune-emerald.png", alt:"Emerald Rune" };
-
     function norm(v){ return (v||"").toString().trim().toUpperCase(); }
 
     (function ensureRevealGate(){
@@ -564,12 +594,11 @@
       renderSlot(document.getElementById("slot"+i), inv[i], allow);
     }
 
-    /* =========================
-       VISUALS + AUDIO + FOG (LOCKED)
-    ========================== */
+    /* Visuals + audio + fog reveal */
     (() => {
       const heroEl = document.getElementById("hero");
-      const bg = document.getElementById("bg");
+      const bgCover = document.getElementById("bgCover");
+      const bgContain = document.getElementById("bgContain");
       const veil = document.getElementById("veil");
       const lines = Array.from(document.querySelectorAll(".fogLine"));
 
@@ -577,7 +606,7 @@
       const voice = document.getElementById("mordainVoice");
       const amb = document.getElementById("levelAmbience");
 
-      if (!heroEl || !bg || !veil || !muteBtn || !voice || !amb) return;
+      if (!heroEl || !bgCover || !bgContain || !veil || !muteBtn || !voice || !amb) return;
 
       const VOICE_TARGET = 0.74;
       const AMB_TARGET   = 0.30;
@@ -586,7 +615,6 @@
       voice.muted = savedMuted;
       amb.muted = savedMuted;
       muteBtn.textContent = savedMuted ? "🔇" : "🔊";
-
       voice.volume = 0;
       amb.volume = 0;
 
@@ -605,39 +633,32 @@
         try{
           voice.currentTime = 0;
           amb.currentTime = 0;
-
           const p1 = voice.play();
           const p2 = amb.play();
           if (p1 && p1.catch) p1.catch(()=>{});
           if (p2 && p2.catch) p2.catch(()=>{});
-
           if (!voice.muted){
-            voice.volume = 0;
-            amb.volume = 0;
+            voice.volume = 0; amb.volume = 0;
             fadeTo(voice, VOICE_TARGET, 0.09, 70);
             fadeTo(amb, AMB_TARGET, 0.02, 140);
           }
         }catch(e){}
       }
 
-      function stopBoth(){
-        try{ voice.pause(); }catch(e){}
-        try{ amb.pause(); }catch(e){}
-      }
+      function stopBoth(){ try{ voice.pause(); }catch(e){} try{ amb.pause(); }catch(e){} }
 
       function revealVisuals(){
         setTimeout(() => veil.classList.add("hide"), 380);
         setTimeout(() => { try{ veil.remove(); }catch(e){} }, 1500);
-
         setTimeout(() => {
-          bg.classList.add("show");
+          bgCover.classList.add("show");
+          bgContain.classList.add("show");
           heroEl.classList.add("reveal");
         }, 420);
       }
 
       function startLineReveal(){
         if (!lines.length) return;
-
         const n = lines.length;
         const MIN_TOTAL    = 74;
         const MIN_LINE_DUR = 5.8;
@@ -651,7 +672,6 @@
 
         let gap = (TOTAL / n) * 0.22;
         let lineDur = (TOTAL / n) * 1.05;
-
         gap = Math.max(MIN_GAP, gap);
         lineDur = Math.max(MIN_LINE_DUR, lineDur);
 
@@ -663,18 +683,13 @@
       }
 
       muteBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
+        e.preventDefault(); e.stopPropagation();
         const newMuted = !voice.muted;
         voice.muted = newMuted;
         amb.muted = newMuted;
-
         localStorage.setItem("ofs_mute", newMuted ? "1" : "0");
         muteBtn.textContent = newMuted ? "🔇" : "🔊";
-
-        if (!newMuted) playBoth();
-        else stopBoth();
+        if (!newMuted) playBoth(); else stopBoth();
       }, true);
 
       window.addEventListener("pageshow", async () => {
@@ -688,17 +703,13 @@
       }, { once:true });
     })();
 
-    /* =========================
-       SEAL BUTTON (IMAGE-ONLY TONIGHT)
-       - does NOT validate puzzle yet
-       - prevents “nothing happens” feel
-    ========================== */
+    /* Seal button message (no puzzle yet) */
     (function(){
       const btn = document.getElementById("btn");
       const msg = document.getElementById("msg");
       if (!btn || !msg) return;
       btn.addEventListener("click", () => {
-        msg.textContent = "Hold. We bind the marks after the framing is locked.";
+        msg.textContent = "Hold. We lock the framing first — then we bind the marks.";
       });
     })();
   </script>
