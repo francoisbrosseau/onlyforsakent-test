@@ -9,12 +9,11 @@
 
   <style>
     :root{
-      --text: rgba(255,255,255,0.92);
-      --muted: rgba(255,255,255,0.78);
-      --hint: rgba(255,255,255,0.42);
-      --shadow: rgba(0,0,0,0.72);
+      --text: rgba(255,255,255,0.90);
+      --muted: rgba(255,255,255,0.58);
+      --shadow: rgba(0,0,0,0.65);
 
-      /* ✅ Framing knobs (match Level 7 behavior) */
+      /* ✅ Framing knobs (match Level 1–7 behavior) */
       --bg-pos-desktop: 50% 50%;
       --bg-pos-mobile:  50% 52%;
     }
@@ -22,6 +21,9 @@
     *{ box-sizing:border-box; }
     html,body{ height:100%; margin:0; background:#000; font-family: Georgia, "Times New Roman", serif; }
 
+    /* =========================
+       HERO / BACKGROUND (LOCKED)
+    ========================== */
     .hero{
       min-height:100vh;
       min-height:100svh;
@@ -33,24 +35,23 @@
       background:#000;
     }
 
-    /* ✅ EXACT Level 7 background system */
     .bg{
       position: fixed;
       inset: 0;
       z-index: 0;
 
+      /* ✅ SAME FILE NAME RULE */
       background-image: url("level8.jpg");
-      background-size: cover;
       background-repeat: no-repeat;
+      background-size: cover;
       background-position: var(--bg-pos-desktop);
 
-      filter: brightness(1.12) contrast(1.10) saturate(1.03);
-      transform: scale(1.01);
+      filter: brightness(1.10) contrast(1.08) saturate(1.02);
       opacity: 0;
-      transition: opacity 2200ms ease, transform 2800ms ease;
-      will-change: opacity, transform;
+      transition: opacity 2200ms ease;
+      will-change: opacity;
     }
-    .bg.show{ opacity: 1; transform: scale(1); }
+    .bg.show{ opacity: 1; }
 
     @media (max-width: 700px){
       .bg{ background-position: var(--bg-pos-mobile); }
@@ -61,8 +62,8 @@
       position: fixed;
       inset:0;
       background:
-        radial-gradient(circle at 50% 40%, rgba(0,0,0,0.08), rgba(0,0,0,0.56)),
-        linear-gradient(to bottom, rgba(0,0,0,0.18), rgba(0,0,0,0.66));
+        radial-gradient(circle at 50% 38%, rgba(0,0,0,0.06), rgba(0,0,0,0.60)),
+        linear-gradient(to bottom, rgba(0,0,0,0.16), rgba(0,0,0,0.70));
       z-index:1;
       pointer-events:none;
       opacity: 0;
@@ -95,6 +96,9 @@
     }
     #veil.hide{ opacity: 0; }
 
+    /* =========================
+       CONTENT WRAP (LOCKED)
+    ========================== */
     .wrap{
       position: relative;
       z-index: 3;
@@ -132,6 +136,9 @@
       user-select:none;
     }
 
+    /* =========================
+       FOG REVEAL (LOCKED)
+    ========================== */
     .story{
       font-family: "Cormorant Garamond", serif;
       font-size: clamp(20px, 2.1vw, 24px);
@@ -144,7 +151,172 @@
       text-align: left;
     }
 
-    /* ✅ Audio button (LOCKED) */
+    .fogLine{
+      display:block;
+      margin: 0 0 0.55em 0;
+      opacity: 0.85;
+      filter: blur(2.1px);
+
+      -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 60%);
+      -webkit-mask-size: 240% 100%;
+      -webkit-mask-position: 100% 0;
+
+      mask-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 60%);
+      mask-size: 240% 100%;
+      mask-position: 100% 0;
+    }
+    .fogLine.run{
+      animation: fogLineReveal var(--dur, 5.8s) ease forwards;
+      animation-delay: var(--delay, 0s);
+    }
+    @keyframes fogLineReveal{
+      0%{ -webkit-mask-position: 100% 0; mask-position: 100% 0; filter: blur(2.1px); opacity: 0.80; }
+      100%{ -webkit-mask-position: 0% 0; mask-position: 0% 0; filter: blur(0px); opacity: 1; }
+    }
+
+    .hint{
+      margin: 14px auto 18px;
+      max-width: 64ch;
+      color: rgba(255,255,255,0.42);
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      user-select:none;
+      text-align:center;
+    }
+
+    .sep{
+      height:1px;
+      width:min(560px, 92vw);
+      margin: 18px auto 14px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent);
+      opacity: .85;
+    }
+
+    .riddleTitle{
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: 11px;
+      color: rgba(255,255,255,0.34);
+      margin: 0 0 8px;
+      user-select:none;
+    }
+
+    .riddleText{
+      font-family: "Cormorant Garamond", serif;
+      font-size: 16px;
+      line-height: 1.35;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      text-align:center;
+      color: rgba(255,255,255,0.58);
+      text-shadow:
+        0 0 14px rgba(255,255,255,0.10),
+        0 0 28px rgba(160,60,40,0.12);
+      max-width: 62ch;
+      margin: 0 auto;
+      user-select:none;
+    }
+
+    /* =========================
+       ANTIQUE SEAL (LOCKED)
+    ========================== */
+    .seal{
+      width: min(560px, 92vw);
+      margin: 16px auto 0;
+      padding: 18px 16px 18px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(255,255,255,0.06), transparent 55%),
+        radial-gradient(circle at 82% 38%, rgba(160,60,40,0.10), transparent 62%),
+        linear-gradient(to bottom, rgba(0,0,0,0.28), rgba(0,0,0,0.10));
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(7px);
+      box-shadow:
+        0 22px 44px rgba(0,0,0,0.46),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      position: relative;
+      overflow:hidden;
+    }
+
+    .sealLabel{
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      font-size: 10px;
+      color: rgba(255,255,255,0.42);
+      margin: 0 0 14px;
+      user-select:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      text-shadow: 0 0 18px rgba(0,0,0,0.55);
+    }
+    .sealLabel .mark{
+      color: rgba(232, 210, 170, 0.52);
+      text-shadow: 0 0 16px rgba(160,60,40,0.20);
+      font-size: 12px;
+    }
+
+    .sealRow{
+      display:flex;
+      gap: 12px;
+      justify-content:center;
+      align-items:center;
+      flex-wrap:wrap;
+      position: relative;
+    }
+
+    .sealInput{
+      width: min(340px, 86vw);
+      padding: 13px 16px;
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at 30% 28%, rgba(240,225,190,0.10), transparent 55%),
+        radial-gradient(circle at 70% 70%, rgba(140,60,40,0.08), transparent 60%),
+        linear-gradient(to bottom, rgba(18,14,12,0.68), rgba(8,7,7,0.78));
+      border: 1px solid rgba(255,255,255,0.16);
+      color: rgba(245,236,216,0.92);
+      outline: none;
+      letter-spacing: 0.16em;
+      font-size: 14px;
+      font-family: "Cormorant Garamond", serif;
+      -webkit-text-security: disc;
+    }
+
+    .sealBtn{
+      padding: 13px 18px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.16);
+      cursor:pointer;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.10), transparent 55%),
+        linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(0,0,0,0.18));
+      color: rgba(245,236,216,0.92);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-family: "Cormorant Garamond", serif;
+    }
+
+    .msg{
+      margin-top: 14px;
+      min-height: 18px;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.08em;
+      font-size: 12px;
+      user-select:none;
+      text-align:center;
+    }
+
+    /* Fade out on success (kept) */
+    .fadeOut{ animation: fade 700ms ease forwards; }
+    @keyframes fade{ to{ opacity:0; transform: translateY(6px); } }
+
+    /* =========================
+       AUDIO BUTTON (LOCKED)
+    ========================== */
     #muteBtn{
       position: fixed;
       top: 18px;
@@ -163,7 +335,9 @@
       user-select:none;
     }
 
-    /* ✅ Inventory (LOCKED) */
+    /* =========================
+       INVENTORY (LOCKED)
+    ========================== */
     #inventory{
       position: fixed;
       left: 50%;
@@ -177,7 +351,6 @@
       pointer-events: none;
       user-select: none;
     }
-
     #invLabel{
       font-family: "Cinzel Decorative", serif;
       letter-spacing: 0.22em;
@@ -187,7 +360,6 @@
       text-shadow: 0 0 18px rgba(0,0,0,0.65);
       opacity: 0.95;
     }
-
     #invSlots{
       display:flex;
       gap: 10px;
@@ -198,7 +370,6 @@
       backdrop-filter: blur(6px);
       box-shadow: 0 18px 34px rgba(0,0,0,0.40);
     }
-
     .slot{
       width: 54px;
       height: 54px;
@@ -218,13 +389,11 @@
       position:relative;
       overflow:hidden;
     }
-
     .slot.filled{
       color: rgba(255,255,255,0.90);
       border-color: rgba(255,255,255,0.22);
       text-shadow: 0 0 14px rgba(120,0,0,0.28);
     }
-
     .slot img.invIcon{
       width: 34px;
       height: 34px;
@@ -240,6 +409,23 @@
       .slot{ width: 48px; height: 48px; border-radius: 13px; }
       .slot img.invIcon{ width: 30px; height: 30px; }
     }
+
+    /* =========================
+       HOTSPOTS (PUZZLE)
+       ✅ Disabled tonight (no random letters / no mismatch)
+       (No new UI controls.)
+    ========================== */
+    .hotspot{
+      position: fixed;
+      width: 90px;
+      height: 90px;
+      border-radius: 999px;
+      z-index: 2;
+      pointer-events: none; /* disabled */
+      opacity: 0;           /* invisible */
+      background: transparent;
+      border: 1px solid transparent;
+    }
   </style>
 </head>
 
@@ -249,14 +435,40 @@
   <main class="hero" id="hero">
     <div class="bg" id="bg" aria-hidden="true"></div>
 
+    <!-- kept in DOM (disabled) -->
+    <button class="hotspot" id="hs0" aria-label="mark"></button>
+
     <section class="wrap" id="wrap">
       <div class="kicker">Level 8</div>
       <h1>The Unseen Marks</h1>
 
-      <div class="story">
-        The corridor tightens. The faces remain.<br><br>
-        Tonight we lock the framing first. Then we bind the marks.
+      <div class="story" id="story">
+        <span class="fogLine">The corridor tightens. The faces remain.</span>
+        <span class="fogLine">You feel watched from inside the stone—like something learned your name and kept it.</span>
+        <span class="fogLine">At the far end, the door’s emblem is slick with old intent.</span>
+        <span class="fogLine">Tonight we lock the framing first. Then we bind the marks.</span>
       </div>
+
+      <div class="hint">IMAGE FIRST. PUZZLE AFTER. NO CHAOS.</div>
+
+      <div class="sep"></div>
+
+      <div class="riddleTitle">Riddle</div>
+      <div class="riddleText">
+        IT HUMS IN STONE WITHOUT A TONGUE.<br>
+        IT ANSWERS WHEN YOU STOP ASKING.<br>
+        HOLD THE HALL — THEN SPEAK.
+      </div>
+
+      <div class="seal" id="seal">
+        <div class="sealLabel"><span class="mark">⟡</span> UNSEAL THE WORD <span class="mark">⟡</span></div>
+        <div class="sealRow">
+          <input id="pw" class="sealInput" type="password" placeholder="whisper it…" autocomplete="off" />
+          <button id="btn" class="sealBtn">UNSEAL</button>
+        </div>
+      </div>
+
+      <div class="msg" id="msg"></div>
     </section>
   </main>
 
@@ -281,7 +493,9 @@
 
   <script>
     /* =========================
-       ✅ Inventory (LOCKED + non-destructive repair)
+       INVENTORY (LOCKED + repair)
+       - does NOT add items
+       - only ensures display gate + migrates legacy strings
     ========================== */
     const INV_KEY = "ofs_inventory";
     const REVEAL_KEY = "ofs_inv_reveal_level";
@@ -289,7 +503,6 @@
 
     function norm(v){ return (v||"").toString().trim().toUpperCase(); }
 
-    // ✅ ensure inventory is allowed to DISPLAY (does NOT add items)
     (function ensureRevealGate(){
       try{
         const cur = parseInt(localStorage.getItem(REVEAL_KEY) || "0", 10);
@@ -352,12 +565,13 @@
     }
 
     /* =========================
-       🎬 Visuals + 🔊 Audio (LOCKED)
+       VISUALS + AUDIO + FOG (LOCKED)
     ========================== */
     (() => {
       const heroEl = document.getElementById("hero");
       const bg = document.getElementById("bg");
       const veil = document.getElementById("veil");
+      const lines = Array.from(document.querySelectorAll(".fogLine"));
 
       const muteBtn = document.getElementById("muteBtn");
       const voice = document.getElementById("mordainVoice");
@@ -421,6 +635,33 @@
         }, 420);
       }
 
+      function startLineReveal(){
+        if (!lines.length) return;
+
+        const n = lines.length;
+        const MIN_TOTAL    = 74;
+        const MIN_LINE_DUR = 5.8;
+        const MIN_GAP      = 1.15;
+        const START_DELAY  = 1.35;
+
+        const TOTAL = Math.max(
+          MIN_TOTAL,
+          (voice && voice.duration && isFinite(voice.duration)) ? (voice.duration + 6) : MIN_TOTAL
+        );
+
+        let gap = (TOTAL / n) * 0.22;
+        let lineDur = (TOTAL / n) * 1.05;
+
+        gap = Math.max(MIN_GAP, gap);
+        lineDur = Math.max(MIN_LINE_DUR, lineDur);
+
+        lines.forEach((line, i) => {
+          line.style.setProperty("--dur", `${lineDur.toFixed(2)}s`);
+          line.style.setProperty("--delay", `${(START_DELAY + i * gap).toFixed(2)}s`);
+          line.classList.add("run");
+        });
+      }
+
       muteBtn.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -439,11 +680,26 @@
       window.addEventListener("pageshow", async () => {
         revealVisuals();
         if (!voice.muted) await playBoth();
+        startLineReveal();
       });
 
       window.addEventListener("pointerdown", () => {
         if (!voice.muted && (voice.paused || amb.paused)) playBoth();
       }, { once:true });
+    })();
+
+    /* =========================
+       SEAL BUTTON (IMAGE-ONLY TONIGHT)
+       - does NOT validate puzzle yet
+       - prevents “nothing happens” feel
+    ========================== */
+    (function(){
+      const btn = document.getElementById("btn");
+      const msg = document.getElementById("msg");
+      if (!btn || !msg) return;
+      btn.addEventListener("click", () => {
+        msg.textContent = "Hold. We bind the marks after the framing is locked.";
+      });
     })();
   </script>
 </body>
