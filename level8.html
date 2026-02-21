@@ -17,13 +17,15 @@
       --bg-pos-desktop: 50% 50%;
       --bg-pos-mobile:  50% 52%;
 
-      /* ✅ Contain overlay scale (lower = show MORE of the scene) */
-      --contain-scale-desktop: 0.96;
-      --contain-scale-mobile:  1.02;
+      /* ✅ Main image fit behavior:
+         Desktop wants MORE width visible => fit HEIGHT
+         Mobile can stay cover-ish */
+      --main-size-desktop: auto 100%;
+      --main-size-mobile:  cover;
 
-      /* ✅ Feather edge (higher = softer blend, less “poster”) */
-      --feather-inner: 58%;
-      --feather-outer: 100%;
+      /* ✅ Blur fill strength */
+      --blur: 22px;
+      --blur-dim: 0.72; /* lower = darker blur */
     }
 
     *{ box-sizing:border-box; }
@@ -31,7 +33,8 @@
 
     /* =========================
        HERO / BACKGROUND (LOCKED)
-       Solution: cover base + contain overlay (feather blended)
+       - bgBlur fills sides (cover + blur)
+       - bgMain is the ONLY sharp image (fit-height on desktop)
     ========================== */
     .hero{
       min-height:100vh;
@@ -44,60 +47,36 @@
       background:#000;
     }
 
-    .bgCover, .bgContain{
+    .bgBlur, .bgMain{
       position: fixed;
       inset: 0;
       z-index: 0;
       background-image: url("level8.jpg");
       background-repeat: no-repeat;
+      background-position: var(--bg-pos-desktop);
       opacity: 0;
       transition: opacity 2200ms ease;
       will-change: opacity;
     }
 
-    /* Base: full-bleed cinematic (no black sides) */
-    .bgCover{
+    /* Behind: fills EVERYTHING so there are NO black bars */
+    .bgBlur{
       background-size: cover;
-      background-position: var(--bg-pos-desktop);
-      filter: brightness(1.08) contrast(1.08) saturate(1.02);
-      transform: scale(1.01);
+      filter: blur(var(--blur)) brightness(var(--blur-dim)) contrast(1.12) saturate(1.05);
+      transform: scale(1.10); /* avoid edge seams from blur */
     }
 
-    /* Overlay: entire image visible (shows the missing faces) */
-    .bgContain{
-      background-size: contain;
-      background-position: var(--bg-pos-desktop);
-      filter: brightness(1.02) contrast(1.06) saturate(1.02);
-      transform: scale(var(--contain-scale-desktop));
-      transform-origin: center center;
-
-      /* ✅ Feather mask so it blends into the cover base (no “poster box”) */
-      -webkit-mask-image: radial-gradient(ellipse at center,
-        rgba(0,0,0,1) var(--feather-inner),
-        rgba(0,0,0,0) var(--feather-outer)
-      );
-      -webkit-mask-size: 100% 100%;
-      -webkit-mask-repeat: no-repeat;
-
-      mask-image: radial-gradient(ellipse at center,
-        rgba(0,0,0,1) var(--feather-inner),
-        rgba(0,0,0,0) var(--feather-outer)
-      );
-      mask-size: 100% 100%;
-      mask-repeat: no-repeat;
-
-      /* slight lift to help visibility without “box” */
-      opacity: 0;
+    /* Front: the real image framing */
+    .bgMain{
+      background-size: var(--main-size-desktop); /* auto 100% => show more width */
+      filter: brightness(1.10) contrast(1.06) saturate(1.02);
     }
 
-    .bgCover.show, .bgContain.show{ opacity: 1; }
+    .bgBlur.show, .bgMain.show{ opacity: 1; }
 
     @media (max-width: 700px){
-      .bgCover{ background-position: var(--bg-pos-mobile); }
-      .bgContain{
-        background-position: var(--bg-pos-mobile);
-        transform: scale(var(--contain-scale-mobile));
-      }
+      .bgBlur, .bgMain{ background-position: var(--bg-pos-mobile); }
+      .bgMain{ background-size: var(--main-size-mobile); } /* cover on mobile */
     }
 
     .hero::before{
@@ -179,9 +158,6 @@
       user-select:none;
     }
 
-    /* =========================
-       FOG REVEAL (LOCKED)
-    ========================== */
     .story{
       font-family: "Cormorant Garamond", serif;
       font-size: clamp(20px, 2.1vw, 24px);
@@ -262,9 +238,6 @@
       user-select:none;
     }
 
-    /* =========================
-       ANTIQUE SEAL (LOCKED)
-    ========================== */
     .seal{
       width: min(560px, 92vw);
       margin: 16px auto 0;
@@ -353,9 +326,6 @@
       text-align:center;
     }
 
-    /* =========================
-       AUDIO BUTTON (LOCKED)
-    ========================== */
     #muteBtn{
       position: fixed;
       top: 18px;
@@ -374,9 +344,6 @@
       user-select:none;
     }
 
-    /* =========================
-       INVENTORY (LOCKED)
-    ========================== */
     #inventory{
       position: fixed;
       left: 50%;
@@ -428,39 +395,14 @@
       position:relative;
       overflow:hidden;
     }
-    .slot.filled{
-      color: rgba(255,255,255,0.90);
-      border-color: rgba(255,255,255,0.22);
-      text-shadow: 0 0 14px rgba(120,0,0,0.28);
-    }
-    .slot img.invIcon{
-      width: 34px;
-      height: 34px;
-      object-fit: contain;
-      filter: drop-shadow(0 0 10px rgba(0,0,0,0.65));
-      opacity: 0.95;
-      pointer-events:none;
-      user-select:none;
-    }
 
     @media (max-width: 520px){
       #invSlots{ gap: 8px; padding: 9px 10px; }
       .slot{ width: 48px; height: 48px; border-radius: 13px; }
-      .slot img.invIcon{ width: 30px; height: 30px; }
     }
 
-    /* Hotspots disabled for now */
-    .hotspot{
-      position: fixed;
-      width: 90px;
-      height: 90px;
-      border-radius: 999px;
-      z-index: 2;
-      pointer-events: none;
-      opacity: 0;
-      background: transparent;
-      border: 1px solid transparent;
-    }
+    /* Hotspots disabled */
+    .hotspot{ position: fixed; width: 90px; height: 90px; border-radius: 999px; z-index:2; pointer-events:none; opacity:0; }
   </style>
 </head>
 
@@ -468,8 +410,8 @@
   <div id="veil" aria-hidden="true"></div>
 
   <main class="hero" id="hero">
-    <div class="bgCover" id="bgCover" aria-hidden="true"></div>
-    <div class="bgContain" id="bgContain" aria-hidden="true"></div>
+    <div class="bgBlur" id="bgBlur" aria-hidden="true"></div>
+    <div class="bgMain" id="bgMain" aria-hidden="true"></div>
 
     <button class="hotspot" id="hs0" aria-label="mark"></button>
 
@@ -527,78 +469,21 @@
   </audio>
 
   <script>
-    /* Inventory display + safe migration (no item injection) */
-    const INV_KEY = "ofs_inventory";
-    const REVEAL_KEY = "ofs_inv_reveal_level";
-    const EMERALD_RUNE = { id:"RUNE_EMERALD", img:"ui/rune-emerald.png", alt:"Emerald Rune" };
-    function norm(v){ return (v||"").toString().trim().toUpperCase(); }
-
-    (function ensureRevealGate(){
-      try{
-        const cur = parseInt(localStorage.getItem(REVEAL_KEY) || "0", 10);
-        if (!Number.isFinite(cur) || cur < 7) localStorage.setItem(REVEAL_KEY, "7");
-      }catch(e){}
-    })();
-
-    function canShow(){
-      const gate = parseInt(localStorage.getItem(REVEAL_KEY) || "0", 10);
-      return Number.isFinite(gate) && gate >= 7;
-    }
-
-    function loadInv(){
-      try{
-        const raw = localStorage.getItem(INV_KEY);
-        const parsed = raw ? JSON.parse(raw) : null;
-        if (Array.isArray(parsed) && parsed.length === 3) return parsed;
-      }catch(e){}
-      return [null,null,null];
-    }
-
-    function saveInv(inv){ try{ localStorage.setItem(INV_KEY, JSON.stringify(inv)); }catch(e){} }
-
-    function migrateInv(inv){
-      let changed=false;
-      const out = inv.map(it=>{
-        if (!it) return it;
-        if (typeof it === "string"){
-          const s = norm(it);
-          if (s === "EMERALD RUNE" || s === "RUNE EMERALD" || s === "RUNE_EMERALD"){
-            changed=true; return EMERALD_RUNE;
-          }
-        }
-        return it;
+    /* Seal message only (no puzzle yet) */
+    (function(){
+      const btn = document.getElementById("btn");
+      const msg = document.getElementById("msg");
+      if (!btn || !msg) return;
+      btn.addEventListener("click", () => {
+        msg.textContent = "Hold. We lock the framing first — then we bind the marks.";
       });
-      if (changed) saveInv(out);
-      return out;
-    }
-
-    function renderSlot(el, item, allow){
-      if (!el) return;
-      if (!allow || !item){
-        el.innerHTML="—";
-        el.classList.remove("filled");
-        return;
-      }
-      if (typeof item === "object" && item.img){
-        el.innerHTML = `<img class="invIcon" src="${item.img}" alt="${(item.alt||"Item").replace(/"/g,'&quot;')}" />`;
-        el.classList.add("filled");
-        return;
-      }
-      el.textContent = String(item).slice(0,10);
-      el.classList.add("filled");
-    }
-
-    const inv = migrateInv(loadInv());
-    const allow = canShow();
-    for (let i=0;i<3;i++){
-      renderSlot(document.getElementById("slot"+i), inv[i], allow);
-    }
+    })();
 
     /* Visuals + audio + fog reveal */
     (() => {
       const heroEl = document.getElementById("hero");
-      const bgCover = document.getElementById("bgCover");
-      const bgContain = document.getElementById("bgContain");
+      const bgBlur = document.getElementById("bgBlur");
+      const bgMain = document.getElementById("bgMain");
       const veil = document.getElementById("veil");
       const lines = Array.from(document.querySelectorAll(".fogLine"));
 
@@ -606,7 +491,7 @@
       const voice = document.getElementById("mordainVoice");
       const amb = document.getElementById("levelAmbience");
 
-      if (!heroEl || !bgCover || !bgContain || !veil || !muteBtn || !voice || !amb) return;
+      if (!heroEl || !bgBlur || !bgMain || !veil || !muteBtn || !voice || !amb) return;
 
       const VOICE_TARGET = 0.74;
       const AMB_TARGET   = 0.30;
@@ -650,9 +535,10 @@
       function revealVisuals(){
         setTimeout(() => veil.classList.add("hide"), 380);
         setTimeout(() => { try{ veil.remove(); }catch(e){} }, 1500);
+
         setTimeout(() => {
-          bgCover.classList.add("show");
-          bgContain.classList.add("show");
+          bgBlur.classList.add("show");
+          bgMain.classList.add("show");
           heroEl.classList.add("reveal");
         }, 420);
       }
@@ -701,16 +587,6 @@
       window.addEventListener("pointerdown", () => {
         if (!voice.muted && (voice.paused || amb.paused)) playBoth();
       }, { once:true });
-    })();
-
-    /* Seal button message (no puzzle yet) */
-    (function(){
-      const btn = document.getElementById("btn");
-      const msg = document.getElementById("msg");
-      if (!btn || !msg) return;
-      btn.addEventListener("click", () => {
-        msg.textContent = "Hold. We lock the framing first — then we bind the marks.";
-      });
     })();
   </script>
 </body>
