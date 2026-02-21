@@ -5,15 +5,17 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ONLYFORSAKEN — Level 8</title>
 
+  <!-- ✅ Fonts (LOCKED) -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --text: rgba(255,255,255,0.90);
-      --muted: rgba(255,255,255,0.58);
-      --shadow: rgba(0,0,0,0.65);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.78);
+      --hint: rgba(255,255,255,0.42);
+      --shadow: rgba(0,0,0,0.72);
 
-      /* ✅ ONLY controls you edit for framing */
+      /* ✅ Desktop/mobile framing (LOCKED) — adjust ONLY these if needed */
       --bg-pos-desktop: 50% 50%;
       --bg-pos-mobile:  50% 52%;
     }
@@ -22,11 +24,7 @@
     html,body{ height:100%; margin:0; background:#000; font-family: Georgia, "Times New Roman", serif; }
 
     /* =========================
-       HERO / BACKGROUND (LOCKED)
-       - ONE image
-       - cover
-       - fixed
-       - no blur, no overlay image, no borders
+       🎬 HERO / BACKGROUND (LOCKED)
     ========================== */
     .hero{
       min-height:100vh;
@@ -43,16 +41,20 @@
       position: fixed;
       inset: 0;
       z-index: 0;
+
+      /* ✅ Level 8 image (JPG, no webp, no folders) */
       background-image: url("level8.jpg");
+      background-size: cover;           /* ✅ NO STRETCH */
       background-repeat: no-repeat;
-      background-size: cover;
       background-position: var(--bg-pos-desktop);
-      filter: brightness(1.10) contrast(1.08) saturate(1.02);
+
+      filter: brightness(1.10) contrast(1.12) saturate(1.02);
+      transform: scale(1.01);
       opacity: 0;
-      transition: opacity 2200ms ease;
-      will-change: opacity;
+      transition: opacity 2200ms ease, transform 2800ms ease;
+      will-change: opacity, transform;
     }
-    .bg.show{ opacity: 1; }
+    .bg.show{ opacity: 1; transform: scale(1); }
 
     @media (max-width: 700px){
       .bg{ background-position: var(--bg-pos-mobile); }
@@ -63,8 +65,8 @@
       position: fixed;
       inset:0;
       background:
-        radial-gradient(circle at 50% 38%, rgba(0,0,0,0.06), rgba(0,0,0,0.60)),
-        linear-gradient(to bottom, rgba(0,0,0,0.16), rgba(0,0,0,0.70));
+        radial-gradient(circle at 50% 40%, rgba(0,0,0,0.06), rgba(0,0,0,0.58)),
+        linear-gradient(to bottom, rgba(0,0,0,0.18), rgba(0,0,0,0.70));
       z-index:1;
       pointer-events:none;
       opacity: 0;
@@ -85,7 +87,7 @@
     }
     .hero.reveal::after{ opacity: .10; }
 
-    /* Veil */
+    /* 🎬 Veil */
     #veil{
       position: fixed;
       inset: 0;
@@ -98,7 +100,7 @@
     #veil.hide{ opacity: 0; }
 
     /* =========================
-       CONTENT WRAP (LOCKED)
+       🕯 UI (LOCKED)
     ========================== */
     .wrap{
       position: relative;
@@ -107,6 +109,7 @@
       padding: 42px 22px 112px;
       text-align: center;
       filter: drop-shadow(0 16px 22px var(--shadow));
+      pointer-events:auto;
     }
 
     .kicker{
@@ -138,7 +141,7 @@
     }
 
     /* =========================
-       FOG REVEAL (LOCKED)
+       🌫 FOG REVEAL (LOCKED)
     ========================== */
     .story{
       font-family: "Cormorant Garamond", serif;
@@ -150,6 +153,11 @@
       max-width: 62ch;
       animation: candleFlicker 5s infinite ease-in-out;
       text-align: left;
+    }
+    .story em{
+      font-style: normal;
+      color: #d2c7b3;
+      text-shadow: 0 0 10px rgba(120,0,0,0.35);
     }
 
     .fogLine{
@@ -178,7 +186,7 @@
     .hint{
       margin: 14px auto 18px;
       max-width: 64ch;
-      color: rgba(255,255,255,0.42);
+      color: var(--hint);
       font-size: 12px;
       letter-spacing: 0.16em;
       text-transform: uppercase;
@@ -213,15 +221,16 @@
       text-align:center;
       color: rgba(255,255,255,0.58);
       text-shadow:
-        0 0 14px rgba(255,255,255,0.10),
-        0 0 28px rgba(160,60,40,0.12);
+      0 0 14px rgba(255,255,255,0.10),
+      0 0 28px rgba(160,60,40,0.12);
       max-width: 62ch;
       margin: 0 auto;
       user-select:none;
     }
 
     /* =========================
-       ANTIQUE SEAL (LOCKED)
+       🗝 ANTIQUE SEAL GATE (LOCKED)
+       - Isolated classes only
     ========================== */
     .seal{
       width: min(560px, 92vw);
@@ -241,6 +250,23 @@
       overflow:hidden;
     }
 
+    .seal::after{
+      content:"";
+      position:absolute;
+      left: 18px; right: 18px;
+      top: 46px;
+      height: 1px;
+      background: linear-gradient(90deg,
+        transparent,
+        rgba(232,210,170,0.14),
+        rgba(255,255,255,0.06),
+        rgba(232,210,170,0.12),
+        transparent
+      );
+      opacity: 0.85;
+      pointer-events:none;
+    }
+
     .sealLabel{
       font-family: "Cinzel Decorative", serif;
       letter-spacing: 0.24em;
@@ -255,6 +281,7 @@
       gap: 10px;
       text-shadow: 0 0 18px rgba(0,0,0,0.55);
     }
+
     .sealLabel .mark{
       color: rgba(232, 210, 170, 0.52);
       text-shadow: 0 0 16px rgba(160,60,40,0.20);
@@ -284,7 +311,26 @@
       letter-spacing: 0.16em;
       font-size: 14px;
       font-family: "Cormorant Garamond", serif;
+      box-shadow:
+        inset 0 0 0 1px rgba(0,0,0,0.55),
+        inset 0 0 26px rgba(0,0,0,0.45);
+      transition: border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
       -webkit-text-security: disc;
+    }
+
+    .sealInput::placeholder{
+      color: rgba(232,210,170,0.35);
+      letter-spacing: 0.10em;
+    }
+
+    .sealInput:focus{
+      border-color: rgba(232, 210, 170, 0.30);
+      box-shadow:
+        0 0 0 3px rgba(232, 210, 170, 0.06),
+        0 0 28px rgba(160,60,40,0.12),
+        inset 0 0 0 1px rgba(0,0,0,0.55),
+        inset 0 0 28px rgba(0,0,0,0.50);
+      transform: translateY(-1px);
     }
 
     .sealBtn{
@@ -299,7 +345,34 @@
       letter-spacing: 0.16em;
       text-transform: uppercase;
       font-family: "Cormorant Garamond", serif;
+      box-shadow:
+        0 14px 26px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      transition: transform 180ms ease, border-color 220ms ease, box-shadow 220ms ease, filter 220ms ease;
+      position: relative;
+      overflow:hidden;
     }
+
+    .sealBtn::after{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(circle at 50% 20%, rgba(232,210,170,0.14), transparent 55%);
+      opacity: 0;
+      transition: opacity 220ms ease;
+      pointer-events:none;
+    }
+
+    .sealBtn:hover{
+      border-color: rgba(232, 210, 170, 0.24);
+      box-shadow:
+        0 18px 34px rgba(0,0,0,0.42),
+        0 0 22px rgba(160,60,40,0.10),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+    }
+    .sealBtn:hover::after{ opacity: 1; }
+    .sealBtn:active{ transform: translateY(0px); }
 
     .msg{
       margin-top: 14px;
@@ -308,12 +381,22 @@
       letter-spacing: 0.08em;
       font-size: 12px;
       user-select:none;
-      text-align:center;
     }
 
-    /* =========================
-       AUDIO BUTTON (LOCKED)
-    ========================== */
+    .wrong{ animation: shake 340ms ease; }
+    @keyframes shake{
+      0%{ transform: translateX(0); }
+      20%{ transform: translateX(-6px); }
+      40%{ transform: translateX(6px); }
+      60%{ transform: translateX(-4px); }
+      80%{ transform: translateX(4px); }
+      100%{ transform: translateX(0); }
+    }
+
+    .fadeOut{ animation: fade 700ms ease forwards; }
+    @keyframes fade{ to{ opacity:0; transform: translateY(6px); } }
+
+    /* ✅ Audio button (LOCKED) */
     #muteBtn{
       position: fixed;
       top: 18px;
@@ -332,9 +415,7 @@
       user-select:none;
     }
 
-    /* =========================
-       INVENTORY (LOCKED UI ONLY)
-    ========================== */
+    /* ✅ Inventory (LOCKED) */
     #inventory{
       position: fixed;
       left: 50%;
@@ -348,6 +429,7 @@
       pointer-events: none;
       user-select: none;
     }
+
     #invLabel{
       font-family: "Cinzel Decorative", serif;
       letter-spacing: 0.22em;
@@ -357,6 +439,7 @@
       text-shadow: 0 0 18px rgba(0,0,0,0.65);
       opacity: 0.95;
     }
+
     #invSlots{
       display:flex;
       gap: 10px;
@@ -367,6 +450,7 @@
       backdrop-filter: blur(6px);
       box-shadow: 0 18px 34px rgba(0,0,0,0.40);
     }
+
     .slot{
       width: 54px;
       height: 54px;
@@ -386,13 +470,28 @@
       position:relative;
       overflow:hidden;
     }
+
+    .slot.filled{
+      color: rgba(255,255,255,0.90);
+      border-color: rgba(255,255,255,0.22);
+      text-shadow: 0 0 14px rgba(120,0,0,0.28);
+    }
+
+    .slot img.invIcon{
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(0,0,0,0.65));
+      opacity: 0.95;
+      pointer-events:none;
+      user-select:none;
+    }
+
     @media (max-width: 520px){
       #invSlots{ gap: 8px; padding: 9px 10px; }
       .slot{ width: 48px; height: 48px; border-radius: 13px; }
+      .slot img.invIcon{ width: 30px; height: 30px; }
     }
-
-    /* Puzzle disabled for tonight */
-    .hotspot{ position: fixed; width: 90px; height: 90px; border-radius: 999px; z-index:2; pointer-events:none; opacity:0; }
   </style>
 </head>
 
@@ -402,20 +501,19 @@
   <main class="hero" id="hero">
     <div class="bg" id="bg" aria-hidden="true"></div>
 
-    <button class="hotspot" id="hs0" aria-label="mark"></button>
-
     <section class="wrap" id="wrap">
       <div class="kicker">Level 8</div>
       <h1>The Unseen Marks</h1>
 
       <div class="story" id="story">
         <span class="fogLine">The corridor tightens. The faces remain.</span>
-        <span class="fogLine">You feel watched from inside the stone—like something learned your name and kept it.</span>
+        <span class="fogLine">They don’t watch you—<em>they remember you</em>, as if the stone has been keeping count.</span>
         <span class="fogLine">At the far end, the door’s emblem is slick with old intent.</span>
+        <span class="fogLine">Something in the hall keeps answering without a tongue… and you realize you’ve been hearing it for a while.</span>
         <span class="fogLine">Tonight we lock the framing first. Then we bind the marks.</span>
       </div>
 
-      <div class="hint">IMAGE FIRST. PUZZLE AFTER. NO CHAOS.</div>
+      <div class="hint">Image first. Puzzle after. No chaos.</div>
 
       <div class="sep"></div>
 
@@ -427,7 +525,7 @@
       </div>
 
       <div class="seal" id="seal">
-        <div class="sealLabel"><span class="mark">⟡</span> UNSEAL THE WORD <span class="mark">⟡</span></div>
+        <div class="sealLabel"><span class="mark">⟡</span> Unseal the word <span class="mark">⟡</span></div>
         <div class="sealRow">
           <input id="pw" class="sealInput" type="password" placeholder="whisper it…" autocomplete="off" />
           <button id="btn" class="sealBtn">UNSEAL</button>
@@ -449,50 +547,166 @@
 
   <button id="muteBtn" aria-label="Toggle audio">🔊</button>
 
+  <!-- If these files don't exist yet, the page still works (no black screen). -->
   <audio id="mordainVoice" preload="auto" playsinline>
     <source src="audio/mordain-level8.mp3" type="audio/mpeg">
   </audio>
 
-  <audio id="levelAmbience" loop preload="auto" playsinline>
+  <audio id="level8Ambience" loop preload="auto" playsinline>
     <source src="audio/level8-ambience.mp3" type="audio/mpeg">
   </audio>
 
   <script>
-    /* Seal message only (no puzzle tonight) */
-    (function(){
-      const btn = document.getElementById("btn");
-      const msg = document.getElementById("msg");
-      if (!btn || !msg) return;
-      btn.addEventListener("click", () => {
-        msg.textContent = "Framing locked first. Marks come next.";
-      });
-    })();
+    /* =========================
+       ✅ Inventory (LOCKED behavior)
+       - DO NOT reset / do not delete items
+       - only read + render
+    ========================== */
+    const INV_KEY = "ofs_inventory";
+    const REVEAL_KEY = "ofs_inv_reveal_level";
 
-    /* Visuals + audio + fog reveal (locked pacing floors) */
+    const EMERALD_RUNE = {
+      id: "RUNE_EMERALD",
+      img: "ui/rune-emerald.png",
+      alt: "Emerald Rune"
+    };
+
+    function normalize(v){
+      return (v || "").toString().trim().toUpperCase();
+    }
+
+    function canShowInventoryItems(){
+      const gate = parseInt(localStorage.getItem(REVEAL_KEY) || "0", 10);
+      return Number.isFinite(gate) && gate >= 7;
+    }
+
+    function loadInv(){
+      try{
+        const raw = localStorage.getItem(INV_KEY);
+        const parsed = raw ? JSON.parse(raw) : null;
+        if (Array.isArray(parsed) && parsed.length === 3) return parsed;
+      }catch(e){}
+      return [null, null, null];
+    }
+
+    function saveInv(inv){
+      try{ localStorage.setItem(INV_KEY, JSON.stringify(inv)); }catch(e){}
+    }
+
+    function migrateInv(inv){
+      // migrate legacy strings -> icon object (does NOT delete anything)
+      let changed = false;
+      const out = inv.map(it => {
+        if (!it) return it;
+        if (typeof it === "string"){
+          const s = normalize(it);
+          if (s === "EMERALD RUNE" || s === "RUNE EMERALD" || s === "RUNE_EMERALD"){
+            changed = true;
+            return EMERALD_RUNE;
+          }
+        }
+        return it;
+      });
+      if (changed) saveInv(out);
+      return out;
+    }
+
+    function renderSlot(el, item, allowItems){
+      if (!el) return;
+
+      if (!allowItems){
+        el.innerHTML = "—";
+        el.classList.remove("filled");
+        return;
+      }
+
+      if (!item){
+        el.innerHTML = "—";
+        el.classList.remove("filled");
+        return;
+      }
+
+      if (typeof item === "object" && item.img){
+        el.innerHTML = `<img class="invIcon" src="${item.img}" alt="${(item.alt||"Item").replace(/"/g,'&quot;')}" />`;
+        el.classList.add("filled");
+        return;
+      }
+
+      el.textContent = String(item).slice(0, 10);
+      el.classList.add("filled");
+    }
+
+    function renderInv(inv){
+      const allowItems = canShowInventoryItems();
+      for (let i=0;i<3;i++){
+        renderSlot(document.getElementById("slot"+i), inv[i], allowItems);
+      }
+    }
+
+    const inv0 = migrateInv(loadInv());
+    renderInv(inv0);
+
+    /* =========================
+       ✅ Password gate (TEMP)
+       - keep your canon password
+       - puzzle comes after we lock framing
+    ========================== */
+    const PASSWORD = "RESONANCE";
+    const NEXT_PAGE = "level9.html"; // change later if you want
+
+    const wrap = document.getElementById("wrap");
+    const pw = document.getElementById("pw");
+    const btn = document.getElementById("btn");
+    const msg = document.getElementById("msg");
+
+    function check(){
+      const val = normalize(pw.value);
+      if (!val) return;
+
+      if (val === PASSWORD){
+        msg.textContent = "…";
+        setTimeout(() => wrap.classList.add("fadeOut"), 650);
+        setTimeout(() => window.location.href = NEXT_PAGE, 1350);
+      } else {
+        msg.textContent = "Not yet.";
+        wrap.classList.remove("wrong");
+        void wrap.offsetWidth;
+        wrap.classList.add("wrong");
+        try{ pw.select(); }catch(e){}
+      }
+    }
+
+    btn.addEventListener("click", check);
+    pw.addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
+
+    /* =========================
+       🎬 Visuals + 🔊 Audio + 🌫 Line Reveal (LOCKED)
+    ========================== */
     (() => {
       const heroEl = document.getElementById("hero");
       const bg = document.getElementById("bg");
       const veil = document.getElementById("veil");
-      const lines = Array.from(document.querySelectorAll(".fogLine"));
+      const revealLines = Array.from(document.querySelectorAll(".fogLine"));
 
       const muteBtn = document.getElementById("muteBtn");
       const voice = document.getElementById("mordainVoice");
-      const amb = document.getElementById("levelAmbience");
+      const amb = document.getElementById("level8Ambience");
 
-      if (!heroEl || !bg || !veil || !muteBtn || !voice || !amb) return;
+      if (!muteBtn || !heroEl || !bg || !veil || !revealLines.length) return;
 
       const VOICE_TARGET = 0.74;
       const AMB_TARGET   = 0.30;
 
       const savedMuted = localStorage.getItem("ofs_mute") === "1";
-      voice.muted = savedMuted;
-      amb.muted = savedMuted;
+      if (voice) voice.muted = savedMuted;
+      if (amb)   amb.muted   = savedMuted;
       muteBtn.textContent = savedMuted ? "🔇" : "🔊";
 
-      voice.volume = 0;
-      amb.volume = 0;
+      if (voice) voice.volume = 0;
+      if (amb)   amb.volume   = 0;
 
       function fadeTo(audio, target, step=0.06, interval=80){
+        if (!audio) return;
         try{
           let v = audio.volume || 0;
           const id = setInterval(() => {
@@ -505,26 +719,33 @@
 
       async function playBoth(){
         try{
-          voice.currentTime = 0;
-          amb.currentTime = 0;
+          if (voice){
+            voice.currentTime = 0;
+            const p1 = voice.play();
+            if (p1 && p1.catch) p1.catch(()=>{});
+          }
+          if (amb){
+            amb.currentTime = 0;
+            const p2 = amb.play();
+            if (p2 && p2.catch) p2.catch(()=>{});
+          }
 
-          const p1 = voice.play();
-          const p2 = amb.play();
-          if (p1 && p1.catch) p1.catch(()=>{});
-          if (p2 && p2.catch) p2.catch(()=>{});
-
-          if (!voice.muted){
-            voice.volume = 0;
-            amb.volume = 0;
-            fadeTo(voice, VOICE_TARGET, 0.09, 70);
-            fadeTo(amb, AMB_TARGET, 0.02, 140);
+          if (!savedMuted){
+            if (voice){
+              voice.volume = 0;
+              fadeTo(voice, VOICE_TARGET, 0.09, 70);
+            }
+            if (amb){
+              amb.volume = 0;
+              fadeTo(amb, AMB_TARGET, 0.02, 140);
+            }
           }
         }catch(e){}
       }
 
       function stopBoth(){
-        try{ voice.pause(); }catch(e){}
-        try{ amb.pause(); }catch(e){}
+        try{ if (voice) voice.pause(); }catch(e){}
+        try{ if (amb) amb.pause(); }catch(e){}
       }
 
       function revealVisuals(){
@@ -538,18 +759,16 @@
       }
 
       function startLineReveal(){
-        if (!lines.length) return;
+        const n = revealLines.length;
 
-        const n = lines.length;
+        /* ✅ LOCKED pacing floors */
         const MIN_TOTAL    = 74;
         const MIN_LINE_DUR = 5.8;
         const MIN_GAP      = 1.15;
         const START_DELAY  = 1.35;
 
-        const TOTAL = Math.max(
-          MIN_TOTAL,
-          (voice && voice.duration && isFinite(voice.duration)) ? (voice.duration + 6) : MIN_TOTAL
-        );
+        const dur = (voice && isFinite(voice.duration) && voice.duration > 0) ? (voice.duration + 6) : MIN_TOTAL;
+        const TOTAL = Math.max(MIN_TOTAL, dur);
 
         let gap = (TOTAL / n) * 0.22;
         let lineDur = (TOTAL / n) * 1.05;
@@ -557,7 +776,7 @@
         gap = Math.max(MIN_GAP, gap);
         lineDur = Math.max(MIN_LINE_DUR, lineDur);
 
-        lines.forEach((line, i) => {
+        revealLines.forEach((line, i) => {
           line.style.setProperty("--dur", `${lineDur.toFixed(2)}s`);
           line.style.setProperty("--delay", `${(START_DELAY + i * gap).toFixed(2)}s`);
           line.classList.add("run");
@@ -568,25 +787,29 @@
         e.preventDefault();
         e.stopPropagation();
 
-        const newMuted = !voice.muted;
-        voice.muted = newMuted;
-        amb.muted = newMuted;
+        const nowMuted = !(localStorage.getItem("ofs_mute") === "1");
+        localStorage.setItem("ofs_mute", nowMuted ? "1" : "0");
+        muteBtn.textContent = nowMuted ? "🔇" : "🔊";
 
-        localStorage.setItem("ofs_mute", newMuted ? "1" : "0");
-        muteBtn.textContent = newMuted ? "🔇" : "🔊";
+        if (voice) voice.muted = nowMuted;
+        if (amb)   amb.muted   = nowMuted;
 
-        if (!newMuted) playBoth();
+        if (!nowMuted) playBoth();
         else stopBoth();
       }, true);
 
       window.addEventListener("pageshow", async () => {
         revealVisuals();
-        if (!voice.muted) await playBoth();
+        if (localStorage.getItem("ofs_mute") !== "1") await playBoth();
         startLineReveal();
       });
 
       window.addEventListener("pointerdown", () => {
-        if (!voice.muted && (voice.paused || amb.paused)) playBoth();
+        if (localStorage.getItem("ofs_mute") === "1") return;
+        try{
+          if (voice && voice.paused) voice.play().catch(()=>{});
+          if (amb && amb.paused) amb.play().catch(()=>{});
+        }catch(e){}
       }, { once:true });
     })();
   </script>
