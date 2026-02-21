@@ -15,7 +15,7 @@
       --hint: rgba(255,255,255,0.42);
       --shadow: rgba(0,0,0,0.72);
 
-      /* ✅ Desktop/mobile framing (LOCKED) — adjust ONLY these if needed */
+      /* ✅ Desktop/mobile framing knobs (LOCKED) */
       --bg-pos-desktop: 50% 50%;
       --bg-pos-mobile:  50% 52%;
     }
@@ -25,6 +25,10 @@
 
     /* =========================
        🎬 HERO / BACKGROUND (LOCKED)
+       ✅ FIX: smart "contain" to show FULL image with minimal borders
+       - No stretch
+       - No blur borders
+       - No double image
     ========================== */
     .hero{
       min-height:100vh;
@@ -42,13 +46,15 @@
       inset: 0;
       z-index: 0;
 
-      /* ✅ Level 8 image (JPG, no webp, no folders) */
       background-image: url("level8.jpg");
-      background-size: cover;           /* ✅ NO STRETCH */
       background-repeat: no-repeat;
       background-position: var(--bg-pos-desktop);
 
-      filter: brightness(1.10) contrast(1.12) saturate(1.02);
+      /* ✅ DEFAULT: fit HEIGHT (best for wide desktop, minimal side bars) */
+      background-size: auto 100%;
+      background-color: #000;
+
+      filter: brightness(1.12) contrast(1.10) saturate(1.02);
       transform: scale(1.01);
       opacity: 0;
       transition: opacity 2200ms ease, transform 2800ms ease;
@@ -56,8 +62,13 @@
     }
     .bg.show{ opacity: 1; transform: scale(1); }
 
-    @media (max-width: 700px){
-      .bg{ background-position: var(--bg-pos-mobile); }
+    /* ✅ If viewport is taller/narrower than the image aspect, fit WIDTH instead
+       Your generated Level8 is portrait-ish; this prevents giant side bars on mobile. */
+    @media (max-aspect-ratio: 2/3){
+      .bg{
+        background-size: 100% auto; /* fit WIDTH */
+        background-position: var(--bg-pos-mobile);
+      }
     }
 
     .hero::before{
@@ -66,7 +77,7 @@
       inset:0;
       background:
         radial-gradient(circle at 50% 40%, rgba(0,0,0,0.06), rgba(0,0,0,0.58)),
-        linear-gradient(to bottom, rgba(0,0,0,0.18), rgba(0,0,0,0.70));
+        linear-gradient(to bottom, rgba(0,0,0,0.16), rgba(0,0,0,0.70));
       z-index:1;
       pointer-events:none;
       opacity: 0;
@@ -230,7 +241,6 @@
 
     /* =========================
        🗝 ANTIQUE SEAL GATE (LOCKED)
-       - Isolated classes only
     ========================== */
     .seal{
       width: min(560px, 92vw);
@@ -381,6 +391,7 @@
       letter-spacing: 0.08em;
       font-size: 12px;
       user-select:none;
+      text-align:center;
     }
 
     .wrong{ animation: shake 340ms ease; }
@@ -503,29 +514,28 @@
 
     <section class="wrap" id="wrap">
       <div class="kicker">Level 8</div>
-      <h1>The Unseen Marks</h1>
+      <h1>Resonance</h1>
 
       <div class="story" id="story">
-        <span class="fogLine">The corridor tightens. The faces remain.</span>
-        <span class="fogLine">They don’t watch you—<em>they remember you</em>, as if the stone has been keeping count.</span>
-        <span class="fogLine">At the far end, the door’s emblem is slick with old intent.</span>
-        <span class="fogLine">Something in the hall keeps answering without a tongue… and you realize you’ve been hearing it for a while.</span>
-        <span class="fogLine">Tonight we lock the framing first. Then we bind the marks.</span>
+        <span class="fogLine">The corridor is longer than it should be.</span>
+        <span class="fogLine">Six faces stare from the stone—some intact, some half-swallowed by the wall, all of them wrong in the same familiar way.</span>
+        <span class="fogLine">At the end, a door waits in old iron, as if it has been listening for days.</span>
+        <span class="fogLine">You hear a hum… not in your ears—<em>in your bones</em>.</span>
       </div>
 
-      <div class="hint">Image first. Puzzle after. No chaos.</div>
+      <div class="hint">Lock the framing. Then we bind the puzzle.</div>
 
       <div class="sep"></div>
 
-      <div class="riddleTitle">Riddle</div>
+      <div class="riddleTitle">Seal</div>
       <div class="riddleText">
-        IT HUMS IN STONE WITHOUT A TONGUE.<br>
-        IT ANSWERS WHEN YOU STOP ASKING.<br>
-        HOLD THE HALL — THEN SPEAK.
+        A WORD THAT VIBRATES THROUGH STONE.<br>
+        A SOUND WITH NO MOUTH.<br>
+        SPEAK IT CLEAN.
       </div>
 
       <div class="seal" id="seal">
-        <div class="sealLabel"><span class="mark">⟡</span> Unseal the word <span class="mark">⟡</span></div>
+        <div class="sealLabel"><span class="mark">⟡</span> Offer your answer <span class="mark">⟡</span></div>
         <div class="sealRow">
           <input id="pw" class="sealInput" type="password" placeholder="whisper it…" autocomplete="off" />
           <button id="btn" class="sealBtn">UNSEAL</button>
@@ -547,7 +557,6 @@
 
   <button id="muteBtn" aria-label="Toggle audio">🔊</button>
 
-  <!-- If these files don't exist yet, the page still works (no black screen). -->
   <audio id="mordainVoice" preload="auto" playsinline>
     <source src="audio/mordain-level8.mp3" type="audio/mpeg">
   </audio>
@@ -557,13 +566,12 @@
   </audio>
 
   <script>
-    /* =========================
-       ✅ Inventory (LOCKED behavior)
-       - DO NOT reset / do not delete items
-       - only read + render
-    ========================== */
+    /* ✅ Keep reveal gate enabled from Level 7 onward (safe + prevents "blank inventory") */
+    localStorage.setItem("ofs_inv_reveal_level", "7");
+
     const INV_KEY = "ofs_inventory";
     const REVEAL_KEY = "ofs_inv_reveal_level";
+    const TAKEN_KEY_LEVEL7 = "ofs_level7_rune_taken";
 
     const EMERALD_RUNE = {
       id: "RUNE_EMERALD",
@@ -593,8 +601,14 @@
       try{ localStorage.setItem(INV_KEY, JSON.stringify(inv)); }catch(e){}
     }
 
+    function getItemId(item){
+      if (!item) return "";
+      if (typeof item === "string") return normalize(item);
+      if (typeof item === "object") return normalize(item.id || item.alt || "");
+      return "";
+    }
+
     function migrateInv(inv){
-      // migrate legacy strings -> icon object (does NOT delete anything)
       let changed = false;
       const out = inv.map(it => {
         if (!it) return it;
@@ -609,6 +623,22 @@
       });
       if (changed) saveInv(out);
       return out;
+    }
+
+    function ensureEmeraldRuneIfTaken(inv){
+      // ✅ If Level 7 was completed, force the rune back in if missing (no duplicates)
+      const taken = localStorage.getItem(TAKEN_KEY_LEVEL7) === "1";
+      if (!taken) return inv;
+
+      const has = inv.some(it => getItemId(it) === normalize(EMERALD_RUNE.id));
+      if (has) return inv;
+
+      const idx = inv.findIndex(x => !x);
+      if (idx !== -1){
+        inv[idx] = EMERALD_RUNE;
+        saveInv(inv);
+      }
+      return inv;
     }
 
     function renderSlot(el, item, allowItems){
@@ -643,16 +673,16 @@
       }
     }
 
-    const inv0 = migrateInv(loadInv());
-    renderInv(inv0);
+    // ✅ Load -> migrate -> ensure rune -> render
+    let inv = migrateInv(loadInv());
+    inv = ensureEmeraldRuneIfTaken(inv);
+    renderInv(inv);
 
     /* =========================
-       ✅ Password gate (TEMP)
-       - keep your canon password
-       - puzzle comes after we lock framing
+       ✅ Gate (TEMP, puzzle later)
     ========================== */
     const PASSWORD = "RESONANCE";
-    const NEXT_PAGE = "level9.html"; // change later if you want
+    const NEXT_PAGE = "level9.html"; // change later when you have it
 
     const wrap = document.getElementById("wrap");
     const pw = document.getElementById("pw");
@@ -730,7 +760,7 @@
             if (p2 && p2.catch) p2.catch(()=>{});
           }
 
-          if (!savedMuted){
+          if (localStorage.getItem("ofs_mute") !== "1"){
             if (voice){
               voice.volume = 0;
               fadeTo(voice, VOICE_TARGET, 0.09, 70);
@@ -761,7 +791,6 @@
       function startLineReveal(){
         const n = revealLines.length;
 
-        /* ✅ LOCKED pacing floors */
         const MIN_TOTAL    = 74;
         const MIN_LINE_DUR = 5.8;
         const MIN_GAP      = 1.15;
@@ -811,6 +840,7 @@
           if (amb && amb.paused) amb.play().catch(()=>{});
         }catch(e){}
       }, { once:true });
+
     })();
   </script>
 </body>
