@@ -3,50 +3,72 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ONLYFORSAKEN — Level 8 (Image Fit Test)</title>
+  <title>ONLYFORSAKEN — Level 8 (Mechanic Test)</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      /* 🔧 TUNE THESE TWO FIRST (match Level 5 behavior) */
+      /* ✅ GOLDEN IMAGE FIT (LOCK THIS) */
       --bg-pos-desktop: center 42%;
       --bg-pos-mobile:  center 54%;
+
+      /* global image shift as bindings break */
+      --desat: 0;  /* 0 → 0.22 recommended max */
+
+      --shadow: rgba(0,0,0,0.72);
     }
 
     *{ box-sizing:border-box; }
     html,body{ height:100%; margin:0; background:#000; }
 
-    /* Fullscreen fixed cinematic background */
-    .bg{
+    .hero{
+      min-height:100vh;
+      position:relative;
+      overflow:hidden;
+      background:#000;
+      touch-action: manipulation;
+    }
+
+    /* Fixed cinematic "background" implemented as an <img> for perfect hotspot alignment */
+    .bgWrap{
       position: fixed;
       inset: 0;
       z-index: 0;
+      overflow:hidden;
+      background:#000;
+    }
 
-      background-image: url("level8.jpg");
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: var(--bg-pos-desktop);
-
-      /* Match Level 5 “golden” feel */
-      filter: brightness(1.14) contrast(1.16) saturate(1.05);
+    .bgImg{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      object-position: var(--bg-pos-desktop);
       transform: scale(1.01);
       opacity: 0;
       transition: opacity 2200ms ease, transform 2800ms ease;
       will-change: opacity, transform;
+
+      /* Level 5 vibe + controlled desaturation via CSS var */
+      filter:
+        brightness(1.14)
+        contrast(1.16)
+        saturate(calc(1.05 - var(--desat)));
     }
-    .bg.show{ opacity: 1; transform: scale(1); }
+    .bgImg.show{ opacity: 1; transform: scale(1); }
 
     @media (max-width: 700px){
-      .bg{ background-position: var(--bg-pos-mobile); }
+      .bgImg{ object-position: var(--bg-pos-mobile); }
     }
 
-    /* Light cinematic overlay to judge framing in-context */
+    /* Cinematic overlay */
     .overlay{
       position: fixed;
-      inset: 0;
-      z-index: 1;
-      pointer-events: none;
+      inset:0;
+      z-index:1;
+      pointer-events:none;
       background:
         radial-gradient(circle at 50% 40%, rgba(0,0,0,0.06), rgba(0,0,0,0.52)),
         linear-gradient(to bottom, rgba(0,0,0,0.14), rgba(0,0,0,0.62));
@@ -55,11 +77,11 @@
     }
     .overlay.show{ opacity: 1; }
 
-    /* Grain (subtle) */
+    /* Grain */
     .grain{
       position: fixed;
-      inset: 0;
-      z-index: 2;
+      inset:0;
+      z-index:2;
       pointer-events:none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
       mix-blend-mode: overlay;
@@ -80,54 +102,212 @@
     }
     #veil.hide{ opacity: 0; }
 
-    /* Safe-zone guides (no new controls; just passive lines for testing) */
-    .guides{
+    /* Click layer */
+    .clickLayer{
       position: fixed;
       inset: 0;
-      z-index: 3;
-      pointer-events:none;
-      opacity: 0.35;
-    }
-    .safeBox{
-      position:absolute;
-      left: 50%;
-      top: 50%;
-      width: min(820px, 92vw);
-      height: min(520px, 62vh);
-      transform: translate(-50%, -50%);
-      border: 1px dashed rgba(255,255,255,0.22);
-      border-radius: 18px;
-      box-shadow: 0 0 0 1px rgba(0,0,0,0.35) inset;
-    }
-    .crossX, .crossY{
-      position:absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(255,255,255,0.14);
-    }
-    .crossX{ width: 68vw; height: 1px; }
-    .crossY{ width: 1px; height: 68vh; }
-
-    /* Tiny label (passive) */
-    .label{
-      position: fixed;
-      left: 18px;
-      top: 18px;
       z-index: 4;
-      font-family: "Cormorant Garamond", serif;
-      color: rgba(255,255,255,0.65);
-      letter-spacing: 0.08em;
-      font-size: 14px;
-      text-shadow: 0 0 18px rgba(0,0,0,0.7);
-      user-select:none;
-      pointer-events:none;
+      cursor: default;
+      -webkit-tap-highlight-color: transparent;
     }
-    .label b{
+
+    /* Wither marks (subtle “something died here”) */
+    .wither{
+      position:absolute;
+      width: 12vmin;
+      height: 12vmin;
+      min-width: 86px;
+      min-height: 86px;
+      border-radius: 999px;
+      transform: translate(-50%,-50%) scale(0.92);
+      opacity: 0;
+      pointer-events:none;
+      filter: blur(0.2px);
+      background:
+        radial-gradient(circle at 50% 50%,
+          rgba(0,0,0,0.00) 0%,
+          rgba(0,0,0,0.10) 38%,
+          rgba(0,0,0,0.22) 62%,
+          rgba(0,0,0,0.00) 82%
+        );
+      mix-blend-mode: multiply;
+      transition: opacity 520ms ease, transform 900ms ease;
+    }
+    .wither.on{
+      opacity: 0.92;
+      transform: translate(-50%,-50%) scale(1);
+    }
+
+    /* Door glow (cinematic, not UI) */
+    #doorGlow{
+      position: absolute;
+      left: 50%;
+      top: 34%;
+      width: min(320px, 46vw);
+      height: min(420px, 56vh);
+      transform: translate(-50%,-50%);
+      border-radius: 26px;
+      pointer-events:none;
+      opacity: 0;
+      transition: opacity 680ms ease;
+      background:
+        radial-gradient(circle at 50% 52%,
+          rgba(0,0,0,0.0) 0%,
+          rgba(0,0,0,0.0) 34%,
+          rgba(10, 255, 170, 0.10) 60%,
+          rgba(10, 255, 170, 0.00) 78%
+        );
+      filter: blur(1px) saturate(1.2);
+      mix-blend-mode: screen;
+    }
+
+    /* Rune resonance pulse (bottom-center) */
+    #runePulse{
+      position: fixed;
+      left: 50%;
+      bottom: 10px;
+      width: min(720px, 92vw);
+      height: min(520px, 66vh);
+      transform: translateX(-50%);
+      pointer-events:none;
+      z-index: 2147483644;
+      opacity: 0;
+      filter: blur(0.2px);
+    }
+
+    #runePulse::before{
+      content:"";
+      position:absolute;
+      left: 50%;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      transform: translateX(-50%) scale(0.94);
+      background:
+        radial-gradient(closest-side at 50% 92%,
+          rgba(0, 255, 170, 0.00) 0%,
+          rgba(0, 255, 170, 0.10) 22%,
+          rgba(0, 255, 170, 0.16) 34%,
+          rgba(0, 255, 170, 0.08) 52%,
+          rgba(0, 255, 170, 0.00) 74%
+        );
+      opacity: 0.0;
+    }
+
+    .pulseStrong{
+      animation: pulseStrong 520ms ease-out forwards;
+    }
+    .pulseSoft{
+      animation: pulseSoft 420ms ease-out forwards;
+    }
+
+    @keyframes pulseStrong{
+      0%   { opacity: 0; }
+      12%  { opacity: 1; }
+      40%  { opacity: 0.85; }
+      100% { opacity: 0; }
+    }
+    @keyframes pulseSoft{
+      0%   { opacity: 0; }
+      16%  { opacity: 0.75; }
+      46%  { opacity: 0.60; }
+      100% { opacity: 0; }
+    }
+
+    /* Wrong-click vignette pulse (subtle cruelty) */
+    #wrongPulse{
+      position: fixed;
+      inset: 0;
+      z-index: 2147483643;
+      pointer-events:none;
+      opacity: 0;
+      background:
+        radial-gradient(circle at 50% 50%,
+          rgba(0,0,0,0.0) 0%,
+          rgba(0,0,0,0.0) 52%,
+          rgba(0,0,0,0.18) 72%,
+          rgba(0,0,0,0.28) 100%
+        );
+    }
+    .wrongRun{
+      animation: wrongPulse 240ms ease-out forwards;
+    }
+    @keyframes wrongPulse{
+      0%{ opacity: 0; }
+      35%{ opacity: 1; }
+      100%{ opacity: 0; }
+    }
+
+    /* Inventory (persistent; no extra controls) */
+    #inventory{
+      position: fixed;
+      left: 50%;
+      bottom: 14px;
+      transform: translateX(-50%);
+      z-index: 2147483645;
+      display:flex;
+      flex-direction: column;
+      align-items:center;
+      gap: 8px;
+      pointer-events: none;
+      user-select: none;
+    }
+    #invLabel{
       font-family: "Cinzel Decorative", serif;
-      letter-spacing: 0.14em;
-      font-weight: 700;
-      color: rgba(232,210,170,0.85);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-size: 10px;
+      color: rgba(255,255,255,0.40);
+      text-shadow: 0 0 18px rgba(0,0,0,0.65);
+      opacity: 0.95;
+    }
+    #invSlots{
+      display:flex;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.28);
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 18px 34px rgba(0,0,0,0.40);
+    }
+    .slot{
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255,255,255,0.10), rgba(0,0,0,0.12) 60%),
+        rgba(0,0,0,0.18);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color: rgba(255,255,255,0.58);
+      font-family: "Cormorant Garamond", serif;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 16px rgba(0,0,0,0.75);
+      position: relative;
+      overflow:hidden;
+    }
+    .slot.filled{
+      color: rgba(255,255,255,0.90);
+      border-color: rgba(255,255,255,0.22);
+      text-shadow: 0 0 14px rgba(120,0,0,0.28);
+    }
+    .slot img.invIcon{
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(0,0,0,0.65));
+      opacity: 0.95;
+      pointer-events:none;
+      user-select:none;
+    }
+    @media (max-width: 520px){
+      #invSlots{ gap: 8px; padding: 9px 10px; }
+      .slot{ width: 48px; height: 48px; border-radius: 13px; }
+      .slot img.invIcon{ width: 30px; height: 30px; }
     }
   </style>
 </head>
@@ -135,41 +315,302 @@
 <body>
   <div id="veil" aria-hidden="true"></div>
 
-  <div class="bg" id="bg" aria-hidden="true"></div>
-  <div class="overlay" id="overlay" aria-hidden="true"></div>
-  <div class="grain" id="grain" aria-hidden="true"></div>
+  <main class="hero" id="hero">
+    <div class="bgWrap" id="bgWrap" aria-hidden="true">
+      <img class="bgImg" id="bgImg" src="level8.jpg" alt="" />
+      <div class="overlay" id="overlay"></div>
+      <div class="grain" id="grain"></div>
 
-  <!-- Passive framing guides for testing ONLY -->
-  <div class="guides" aria-hidden="true">
-    <div class="safeBox"></div>
-    <div class="crossX"></div>
-    <div class="crossY"></div>
-  </div>
+      <!-- Door glow lives in the image space -->
+      <div id="doorGlow" aria-hidden="true"></div>
 
-  <div class="label">
-    <b>IMAGE FIT TEST</b><br>
-    Edit <code>--bg-pos-desktop</code> / <code>--bg-pos-mobile</code> in <code>:root</code>
+      <!-- Wither marks (we position them by JS, based on the binding zones) -->
+      <div class="wither" id="wither0" aria-hidden="true"></div>
+      <div class="wither" id="wither1" aria-hidden="true"></div>
+      <div class="wither" id="wither2" aria-hidden="true"></div>
+      <div class="wither" id="wither3" aria-hidden="true"></div>
+    </div>
+
+    <!-- Click layer (captures taps/clicks everywhere) -->
+    <div class="clickLayer" id="clickLayer" aria-label="Interact"></div>
+  </main>
+
+  <!-- Rune resonance FX -->
+  <div id="runePulse" aria-hidden="true"></div>
+  <div id="wrongPulse" aria-hidden="true"></div>
+
+  <!-- Inventory -->
+  <div id="inventory" aria-hidden="true">
+    <div id="invLabel">Inventory</div>
+    <div id="invSlots">
+      <div class="slot" id="slot0">—</div>
+      <div class="slot" id="slot1">—</div>
+      <div class="slot" id="slot2">—</div>
+    </div>
   </div>
 
   <script>
-    // Simple reveal to match Level 5 feel (no audio, no puzzle, no story yet)
+    /* =========================
+       🎒 Inventory (LOCKED) + ✅ REVEAL GATE
+    ========================== */
+    const INV_KEY = "ofs_inventory";
+    const INV_REVEAL_KEY = "ofs_inv_reveal_level";
+    const REQUIRED_REVEAL_LEVEL = 7;
+
+    function getRevealLevel(){
+      const n = parseInt(localStorage.getItem(INV_REVEAL_KEY) || "0", 10);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function loadInv(){
+      try{
+        const raw = localStorage.getItem(INV_KEY);
+        const parsed = raw ? JSON.parse(raw) : null;
+        if (Array.isArray(parsed) && parsed.length === 3) return parsed;
+      }catch(e){}
+      return [null, null, null];
+    }
+
+    function saveInv(inv){
+      try{ localStorage.setItem(INV_KEY, JSON.stringify(inv)); }catch(e){}
+    }
+
+    function asId(v){
+      return (v || "").toString().trim().toUpperCase();
+    }
+
+    function migrateInv(inv){
+      let changed = false;
+      const out = inv.map(it => {
+        if (!it) return it;
+        if (typeof it === "string"){
+          const s = asId(it);
+          if (s === "EMERALD RUNE" || s === "RUNE EMERALD" || s === "RUNE_EMERALD"){
+            changed = true;
+            return { id:"RUNE_EMERALD", img:"ui/rune-emerald.png", alt:"Emerald Rune" };
+          }
+        }
+        return it;
+      });
+      if (changed) saveInv(out);
+      return out;
+    }
+
+    function renderSlot(el, item, allowItems){
+      if (!el) return;
+
+      if (!allowItems){
+        el.classList.remove("filled");
+        el.innerHTML = "—";
+        return;
+      }
+
+      if (!item){
+        el.classList.remove("filled");
+        el.innerHTML = "—";
+        return;
+      }
+
+      if (typeof item === "object" && item.img){
+        el.innerHTML = `<img class="invIcon" src="${item.img}" alt="${String(item.alt || "Item").replace(/"/g,'&quot;')}" />`;
+        el.classList.add("filled");
+        return;
+      }
+
+      el.textContent = String(item).slice(0, 10);
+      el.classList.add("filled");
+    }
+
+    function renderInv(inv){
+      const allowItems = getRevealLevel() >= REQUIRED_REVEAL_LEVEL;
+      for (let i = 0; i < 3; i++){
+        const el = document.getElementById("slot" + i);
+        renderSlot(el, inv[i], allowItems);
+      }
+    }
+
+    const inv = migrateInv(loadInv());
+    renderInv(inv);
+
+    /* =========================
+       🎬 Visual reveal (Level 5 feel)
+    ========================== */
     const veil = document.getElementById("veil");
-    const bg = document.getElementById("bg");
+    const bgImg = document.getElementById("bgImg");
     const overlay = document.getElementById("overlay");
     const grain = document.getElementById("grain");
 
-    function start(){
+    function reveal(){
       setTimeout(() => veil.classList.add("hide"), 380);
       setTimeout(() => { try{ veil.remove(); }catch(e){} }, 1500);
 
       setTimeout(() => {
-        bg.classList.add("show");
+        bgImg.classList.add("show");
         overlay.classList.add("show");
         grain.classList.add("show");
       }, 420);
     }
+    window.addEventListener("pageshow", reveal);
 
-    window.addEventListener("pageshow", start);
+    /* =========================
+       🧩 Level 8 Mechanic Test:
+       4 Hidden Binding Zones + Rune Resonance Pulse
+    ========================== */
+
+    // ✅ You can tweak these later if needed (percent-of-viewport coords)
+    // We made the hit areas touch-friendly for mobile.
+    const BINDINGS = [
+      { id:"ivy_left",   x: 18.5, y: 53.0, r: 7.2 }, // left ivy knot
+      { id:"fountain",   x: 47.5, y: 62.5, r: 7.0 }, // fountain crack
+      { id:"lantern",    x: 70.0, y: 41.0, r: 6.6 }, // lantern anomaly
+      { id:"door_sigil", x: 52.0, y: 34.0, r: 7.4 }, // door frame mark
+    ];
+
+    // Slight cruelty: one decoy “almost right”
+    const DECOY = { id:"decoy", x: 33.0, y: 37.0, r: 6.2 };
+
+    const clickLayer = document.getElementById("clickLayer");
+    const runePulse = document.getElementById("runePulse");
+    const wrongPulse = document.getElementById("wrongPulse");
+    const doorGlow = document.getElementById("doorGlow");
+
+    const withers = [
+      document.getElementById("wither0"),
+      document.getElementById("wither1"),
+      document.getElementById("wither2"),
+      document.getElementById("wither3"),
+    ];
+
+    // Place wither marks at binding locations visually (same % coords)
+    function positionWithers(){
+      const wrap = document.getElementById("bgWrap");
+      if (!wrap) return;
+      const rect = wrap.getBoundingClientRect();
+      BINDINGS.forEach((b, i) => {
+        const el = withers[i];
+        if (!el) return;
+        el.style.left = (b.x) + "%";
+        el.style.top  = (b.y) + "%";
+      });
+      // door glow is already positioned by CSS; tweak in CSS if needed.
+    }
+    positionWithers();
+    window.addEventListener("resize", positionWithers);
+
+    const found = new Set();
+    let firstHit = true;
+
+    function distPct(ax, ay, bx, by){
+      const dx = ax - bx;
+      const dy = ay - by;
+      return Math.sqrt(dx*dx + dy*dy);
+    }
+
+    function pulseRune(strong){
+      // restart animation reliably
+      runePulse.classList.remove("pulseStrong","pulseSoft");
+      void runePulse.offsetWidth;
+      runePulse.classList.add(strong ? "pulseStrong" : "pulseSoft");
+    }
+
+    function wrongVignette(){
+      wrongPulse.classList.remove("wrongRun");
+      void wrongPulse.offsetWidth;
+      wrongPulse.classList.add("wrongRun");
+    }
+
+    function setDesatByProgress(progress){
+      // 0 → ~0.22 max (subtle but noticeable by 4/4)
+      const d = Math.min(0.22, progress * 0.055); // 4 * 0.055 = 0.22
+      document.documentElement.style.setProperty("--desat", d.toFixed(3));
+    }
+
+    function setDoorGlowByProgress(progress){
+      // ramp gently; full glow at 4/4
+      const t = Math.min(1, progress / 4);
+      doorGlow.style.opacity = (0.05 + t * 0.55).toFixed(3);
+    }
+
+    function activateBinding(index){
+      const b = BINDINGS[index];
+      if (!b) return;
+      if (found.has(b.id)) return;
+
+      found.add(b.id);
+
+      // Wither mark “dies” visibly
+      const w = withers[index];
+      if (w) w.classList.add("on");
+
+      const progress = found.size;
+
+      // Rune pulse (first hit clearly noticeable; then softer)
+      pulseRune(firstHit);
+      firstHit = false;
+
+      // Environmental weakening
+      setDesatByProgress(progress);
+      setDoorGlowByProgress(progress);
+
+      // Completion: door glow strong
+      if (progress >= 4){
+        doorGlow.style.opacity = "0.75";
+        // No auto-redirect yet (test page). We’ll wire transition later.
+      }
+    }
+
+    function maybeDecoyHit(px, py){
+      const d = distPct(px, py, DECOY.x, DECOY.y);
+      if (d <= DECOY.r){
+        // decoy: very faint pulse (soft) + wrong vignette
+        pulseRune(false);
+        wrongVignette();
+        return true;
+      }
+      return false;
+    }
+
+    function handleTap(clientX, clientY){
+      const vw = Math.max(1, window.innerWidth);
+      const vh = Math.max(1, window.innerHeight);
+
+      const px = (clientX / vw) * 100;
+      const py = (clientY / vh) * 100;
+
+      // already solved? still let visuals respond softly
+      if (found.size >= 4){
+        pulseRune(false);
+        return;
+      }
+
+      // Check bindings first
+      for (let i = 0; i < BINDINGS.length; i++){
+        const b = BINDINGS[i];
+        if (found.has(b.id)) continue;
+
+        const d = distPct(px, py, b.x, b.y);
+        if (d <= b.r){
+          activateBinding(i);
+          return;
+        }
+      }
+
+      // Decoy (slightly cruel)
+      if (maybeDecoyHit(px, py)) return;
+
+      // Wrong click (subtle)
+      wrongVignette();
+    }
+
+    clickLayer.addEventListener("pointerdown", (e) => {
+      // allow interaction anywhere, but ignore multi-touch chaos
+      if (e.isPrimary === false) return;
+      handleTap(e.clientX, e.clientY);
+    });
+
+    // Initialize door glow at 0 progress (very faint, like “sleeping”)
+    setDoorGlowByProgress(0);
+    setDesatByProgress(0);
   </script>
 </body>
 </html>
