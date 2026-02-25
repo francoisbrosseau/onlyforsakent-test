@@ -17,11 +17,11 @@
       --desat: 0; /* 0 → 0.22 */
 
       /* 🔧 Door FX placement (tune if needed) */
-      --door-top: 33.6%;
-      --door-w: min(360px, 46vw);
-      --door-h: min(520px, 62vh);
+      --door-top: 33.8%;
+      --door-w: min(420px, 48vw);
+      --door-h: min(560px, 66vh);
 
-      /* Glow strength */
+      /* glow strength */
       --emerald: 0,255,170;
     }
 
@@ -112,7 +112,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Wither marks for completed bindings */
+    /* Wither marks */
     .wither{
       position:absolute;
       width: 12vmin;
@@ -123,7 +123,6 @@
       transform: translate(-50%,-50%) scale(0.92);
       opacity: 0;
       pointer-events:none;
-      filter: blur(0.2px);
       background:
         radial-gradient(circle at 50% 50%,
           rgba(0,0,0,0.00) 0%,
@@ -141,9 +140,7 @@
     }
 
     /* =========================
-       🟢 DOOR ILLUMINATION (REAL SHAPE, NOT HALO)
-       - Door mask + outline + bloom
-       - 4 stages: left, right, arch, full
+       🟢 Door Vine Tracer FX (NO BLOCKS)
     ========================== */
     #doorFx{
       position:absolute;
@@ -156,171 +153,34 @@
       z-index: 4;
       mix-blend-mode: screen;
       filter: saturate(1.35);
-    }
-
-    /* Subtle “door silhouette” region (helps glow feel anchored) */
-    .doorSilhouette{
-      position:absolute;
-      left: 50%;
-      top: 58%;
-      width: 72%;
-      height: 74%;
-      transform: translate(-50%,-50%);
-      border-radius: 18px;
-      opacity: 0.0;
-      background:
-        radial-gradient(circle at 50% 55%,
-          rgba(0,0,0,0.00) 0%,
-          rgba(0,0,0,0.00) 45%,
-          rgba(0,0,0,0.22) 78%,
-          rgba(0,0,0,0.00) 100%
-        );
-      mix-blend-mode: multiply;
-      filter: blur(0.6px);
-      transition: opacity 700ms ease;
-      pointer-events:none;
-    }
-
-    /* Common piece base */
-    .doorPiece{
-      position:absolute;
-      inset: 0;
       opacity: 0;
-      transition: opacity 650ms ease, transform 850ms ease, filter 650ms ease;
-      transform: translateZ(0);
-      pointer-events:none;
+      transition: opacity 420ms ease;
     }
 
-    /* The actual door panel mask area */
-    .doorPanelMask{
-      position:absolute;
-      left: 50%;
-      top: 60%;
-      width: 72%;
-      height: 74%;
-      transform: translate(-50%,-50%);
-      border-radius: 18px;
-      overflow: hidden;
-      pointer-events:none;
-    }
+    /* show faintly after first progress so it feels “present” */
+    #doorFx.visible{ opacity: 1; }
 
-    /* Hard outline (makes it look like the door edges are lit) */
-    .doorOutline{
-      position:absolute;
-      inset: 0;
-      border-radius: 18px;
-      box-shadow:
-        0 0 0 1px rgba(var(--emerald), 0.18) inset,
-        0 0 18px rgba(var(--emerald), 0.10),
-        0 0 46px rgba(var(--emerald), 0.07);
+    .tracer{
       opacity: 0;
-      transition: opacity 650ms ease;
-      pointer-events:none;
+      transition: opacity 520ms ease;
+      filter: url(#glow);
     }
 
-    /* Panel glow texture: looks like lit veins/energy on wood/stone */
-    .panelGlow{
-      position:absolute;
-      inset: -8%;
-      background:
-        radial-gradient(circle at 30% 35%, rgba(var(--emerald),0.18), rgba(var(--emerald),0.00) 58%),
-        radial-gradient(circle at 70% 60%, rgba(var(--emerald),0.14), rgba(var(--emerald),0.00) 60%),
-        linear-gradient(180deg,
-          rgba(var(--emerald),0.04),
-          rgba(var(--emerald),0.10) 48%,
-          rgba(var(--emerald),0.03) 100%
-        );
-      filter: blur(1.4px);
-      opacity: 0.0;
-      transition: opacity 650ms ease;
-      pointer-events:none;
+    /* subtle alive flicker */
+    #doorFx.flicker .tracerOn{
+      animation: flicker 1.8s ease-in-out infinite;
+    }
+    @keyframes flicker{
+      0%{ opacity: 0.78; }
+      45%{ opacity: 0.92; }
+      62%{ opacity: 0.84; }
+      100%{ opacity: 0.90; }
     }
 
-    /* Left and right clipping for the door panels */
-    .clipLeft{
-      clip-path: polygon(0% 0%, 52% 0%, 48% 100%, 0% 100%);
-    }
-    .clipRight{
-      clip-path: polygon(48% 0%, 100% 0%, 100% 100%, 52% 100%);
-    }
+    .tracerOn{ opacity: 0.92; }
+    .tracerStrong{ opacity: 1; }
 
-    /* Arch mask area (above door) */
-    .archMask{
-      position:absolute;
-      left: 50%;
-      top: 21%;
-      width: 84%;
-      height: 44%;
-      transform: translate(-50%,-50%);
-      pointer-events:none;
-      overflow:hidden;
-      border-radius: 999px 999px 24px 24px;
-      clip-path: ellipse(50% 56% at 50% 56%);
-    }
-
-    .archGlow{
-      position:absolute;
-      inset: -12%;
-      background:
-        radial-gradient(closest-side at 50% 72%,
-          rgba(var(--emerald),0.00) 0%,
-          rgba(var(--emerald),0.22) 46%,
-          rgba(var(--emerald),0.06) 62%,
-          rgba(var(--emerald),0.00) 78%
-        ),
-        radial-gradient(circle at 50% 42%,
-          rgba(var(--emerald),0.10),
-          rgba(var(--emerald),0.00) 64%
-        );
-      filter: blur(1.8px);
-      opacity: 0.0;
-      transition: opacity 650ms ease;
-      pointer-events:none;
-    }
-
-    /* Extra bloom for “alive” final state */
-    .bloom{
-      position:absolute;
-      left: 50%;
-      top: 54%;
-      width: 86%;
-      height: 96%;
-      transform: translate(-50%,-50%);
-      border-radius: 26px;
-      background:
-        radial-gradient(circle at 50% 55%,
-          rgba(var(--emerald),0.00) 0%,
-          rgba(var(--emerald),0.12) 44%,
-          rgba(var(--emerald),0.06) 58%,
-          rgba(var(--emerald),0.00) 78%
-        );
-      filter: blur(9px);
-      opacity: 0;
-      transition: opacity 720ms ease;
-      pointer-events:none;
-    }
-
-    /* Stage controls (we toggle these) */
-    #doorLeft.on,
-    #doorRight.on,
-    #doorArch.on,
-    #doorFull.on{
-      opacity: 1;
-    }
-    #doorLeft.on .panelGlow,
-    #doorRight.on .panelGlow{ opacity: 1; }
-    #doorLeft.on .doorOutline,
-    #doorRight.on .doorOutline{ opacity: 1; }
-
-    #doorArch.on .archGlow{ opacity: 1; }
-
-    #doorFull.on .panelGlow{ opacity: 1; }
-    #doorFull.on .doorOutline{ opacity: 1; }
-    #doorFull.on .archGlow{ opacity: 1; }
-    #doorFull.on .bloom{ opacity: 1; }
-    #doorFull.on{ filter: saturate(1.6); }
-
-    /* Edge glow “invasion” (stronger) */
+    /* Edge glow “invasion” */
     #edgeGlow{
       position: fixed;
       inset: 0;
@@ -333,13 +193,13 @@
           rgba(0,255,170,0.00) 0%,
           rgba(0,255,170,0.00) 54%,
           rgba(0,255,170,0.16) 72%,
-          rgba(0,255,170,0.28) 100%
+          rgba(0,255,170,0.30) 100%
         );
       mix-blend-mode: screen;
-      filter: blur(0.6px) saturate(1.40);
+      filter: blur(0.6px) saturate(1.45);
     }
 
-    /* Cursor “scan ring” (stronger) */
+    /* Cursor scan ring */
     #scanRing{
       position: fixed;
       left: 0;
@@ -355,44 +215,43 @@
       transform: translate3d(0,0,0) scale(0.98);
       transition: opacity 110ms ease, transform 150ms ease, filter 110ms ease;
       mix-blend-mode: screen;
-      filter: blur(0.10px) saturate(1.30);
+      filter: blur(0.08px) saturate(1.35);
 
       background:
         radial-gradient(circle at 50% 50%,
           rgba(0,255,170,0.00) 0%,
           rgba(0,255,170,0.00) 42%,
-          rgba(0,255,170,0.20) 56%,
+          rgba(0,255,170,0.22) 56%,
           rgba(0,255,170,0.00) 70%
         );
 
       box-shadow:
-        0 0 0 1px rgba(0,255,170,0.12) inset,
-        0 0 36px rgba(0,255,170,0.10),
-        0 0 96px rgba(0,255,170,0.08);
+        0 0 0 1px rgba(0,255,170,0.14) inset,
+        0 0 44px rgba(0,255,170,0.12),
+        0 0 118px rgba(0,255,170,0.09);
     }
 
     #scanRing.on{
-      opacity: 0.64;
+      opacity: 0.66;
       transform: translate3d(0,0,0) scale(1);
     }
-
     #scanRing.weak{
       opacity: 0.34;
       box-shadow:
         0 0 0 1px rgba(0,255,170,0.06) inset,
-        0 0 20px rgba(0,255,170,0.05),
-        0 0 52px rgba(0,255,170,0.03);
+        0 0 22px rgba(0,255,170,0.05),
+        0 0 56px rgba(0,255,170,0.03);
     }
     #scanRing.strong{
-      opacity: 0.95;
+      opacity: 0.98;
       box-shadow:
-        0 0 0 1px rgba(0,255,170,0.16) inset,
-        0 0 54px rgba(0,255,170,0.13),
-        0 0 130px rgba(0,255,170,0.09);
-      filter: blur(0.06px) saturate(1.55);
+        0 0 0 1px rgba(0,255,170,0.18) inset,
+        0 0 62px rgba(0,255,170,0.14),
+        0 0 150px rgba(0,255,170,0.10);
+      filter: blur(0.05px) saturate(1.6);
     }
 
-    /* Wrong-click vignette pulse */
+    /* Wrong click pulse */
     #wrongPulse{
       position: fixed;
       inset: 0;
@@ -414,7 +273,7 @@
       100%{ opacity: 0; }
     }
 
-    /* Inventory (persistent; no extra controls) */
+    /* Inventory */
     #inventory{
       position: fixed;
       left: 50%;
@@ -496,45 +355,71 @@
       <div class="overlay" id="overlay"></div>
       <div class="grain" id="grain"></div>
 
-      <!-- Door FX (real shaped pieces) -->
-      <div id="doorFx" aria-hidden="true">
-        <div class="doorSilhouette" id="doorSil"></div>
+      <!-- Door Vine Tracer FX -->
+      <svg id="doorFx" viewBox="0 0 100 140" aria-hidden="true">
+        <defs>
+          <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="1.6" result="b"/>
+            <feColorMatrix in="b" type="matrix"
+              values="
+                1 0 0 0 0
+                0 1 0 0 0
+                0 0 1 0 0
+                0 0 0 14 -6" result="g"/>
+            <feMerge>
+              <feMergeNode in="g"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
 
-        <!-- Stage 1: left door -->
-        <div class="doorPiece" id="doorLeft">
-          <div class="doorPanelMask">
-            <div class="panelGlow clipLeft"></div>
-            <div class="doorOutline clipLeft"></div>
-          </div>
-        </div>
+          <linearGradient id="vineGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="rgba(0,255,170,0.05)"/>
+            <stop offset="0.45" stop-color="rgba(0,255,170,0.34)"/>
+            <stop offset="1" stop-color="rgba(0,255,170,0.06)"/>
+          </linearGradient>
+        </defs>
 
-        <!-- Stage 2: right door -->
-        <div class="doorPiece" id="doorRight">
-          <div class="doorPanelMask">
-            <div class="panelGlow clipRight"></div>
-            <div class="doorOutline clipRight"></div>
-          </div>
-        </div>
+        <!-- STAGE 1: LEFT vines -->
+        <g class="tracer" id="trLeft">
+          <path d="M22 120 C14 105, 14 86, 22 72 C30 58, 28 44, 18 30"
+                fill="none" stroke="url(#vineGrad)" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M26 114 C18 96, 22 84, 30 76 C38 68, 36 52, 28 38"
+                fill="none" stroke="rgba(0,255,170,0.28)" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M20 92 C16 86, 16 78, 22 72"
+                fill="none" stroke="rgba(0,255,170,0.22)" stroke-width="1.2" stroke-linecap="round"/>
+        </g>
 
-        <!-- Stage 3: arch -->
-        <div class="doorPiece" id="doorArch">
-          <div class="archMask">
-            <div class="archGlow"></div>
-          </div>
-        </div>
+        <!-- STAGE 2: RIGHT vines -->
+        <g class="tracer" id="trRight">
+          <path d="M78 120 C86 104, 86 86, 78 72 C70 58, 72 44, 82 30"
+                fill="none" stroke="url(#vineGrad)" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M74 114 C82 96, 78 84, 70 76 C62 68, 64 52, 72 38"
+                fill="none" stroke="rgba(0,255,170,0.28)" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M80 92 C84 86, 84 78, 78 72"
+                fill="none" stroke="rgba(0,255,170,0.22)" stroke-width="1.2" stroke-linecap="round"/>
+        </g>
 
-        <!-- Stage 4: full door + arch alive -->
-        <div class="doorPiece" id="doorFull">
-          <div class="bloom"></div>
-          <div class="doorPanelMask">
-            <div class="panelGlow"></div>
-            <div class="doorOutline"></div>
-          </div>
-          <div class="archMask">
-            <div class="archGlow"></div>
-          </div>
-        </div>
-      </div>
+        <!-- STAGE 3: ARCH vines -->
+        <g class="tracer" id="trArch">
+          <path d="M26 46 C30 24, 44 14, 50 14 C56 14, 70 24, 74 46"
+                fill="none" stroke="rgba(0,255,170,0.34)" stroke-width="2.6" stroke-linecap="round"/>
+          <path d="M30 46 C34 28, 44 22, 50 22 C56 22, 66 28, 70 46"
+                fill="none" stroke="rgba(0,255,170,0.18)" stroke-width="1.4" stroke-linecap="round"/>
+        </g>
+
+        <!-- STAGE 4: FULL door outline + extra veins -->
+        <g class="tracer" id="trFull">
+          <!-- Door outline (thin, strong) -->
+          <path d="M32 124 L32 56 C32 38, 40 28, 50 28 C60 28, 68 38, 68 56 L68 124"
+                fill="none" stroke="rgba(0,255,170,0.22)" stroke-width="1.8" stroke-linecap="round"/>
+          <!-- Center seam shimmer -->
+          <path d="M50 124 L50 32"
+                fill="none" stroke="rgba(0,255,170,0.18)" stroke-width="1.2" stroke-linecap="round"/>
+          <!-- Small top crest veins -->
+          <path d="M45 34 C48 30, 52 30, 55 34"
+                fill="none" stroke="rgba(0,255,170,0.22)" stroke-width="1.2" stroke-linecap="round"/>
+        </g>
+      </svg>
 
       <!-- Wither marks -->
       <div class="wither" id="wither0" aria-hidden="true"></div>
@@ -608,9 +493,11 @@
       if (changed) saveInv(out);
       return out;
     }
-    function renderSlot(el, item, allowItems){
-      if (!el) return;
-      if (!allowItems || !item){
+    function renderSlot(el, item){
+      if (!el){
+        return;
+      }
+      if (!item){
         el.classList.remove("filled");
         el.innerHTML = "—";
         return;
@@ -623,23 +510,17 @@
       el.textContent = String(item).slice(0, 10);
       el.classList.add("filled");
     }
-    function renderInv(inv){
-      const allowItems = getRevealLevel() >= REQUIRED_REVEAL_LEVEL;
-      for (let i = 0; i < 3; i++){
-        const el = document.getElementById("slot" + i);
-        renderSlot(el, inv[i], allowItems);
-      }
-    }
 
     if (getRevealLevel() < REQUIRED_REVEAL_LEVEL) setRevealLevel(REQUIRED_REVEAL_LEVEL);
 
     let inv = migrateInv(loadInv());
-    const hasAny = inv.some(Boolean);
-    if (!hasAny){
+    if (!inv.some(Boolean)){
       inv[0] = { id:"RUNE_EMERALD", img:"ui/rune-emerald.png", alt:"Emerald Rune" };
       saveInv(inv);
     }
-    renderInv(inv);
+    renderSlot(document.getElementById("slot0"), inv[0]);
+    renderSlot(document.getElementById("slot1"), inv[1]);
+    renderSlot(document.getElementById("slot2"), inv[2]);
 
     /* =========================
        🎬 Visual reveal (Level 5 feel)
@@ -663,11 +544,10 @@
 
     /* =========================
        🧩 Mechanic:
-       - Stronger proximity (ring + edge glow)
+       - Strong proximity (ring + edge glow)
        - Ordered 4 bindings
-       - Door lights in real pieces
+       - Door vine tracers light in 4 stages
     ========================== */
-
     const BINDINGS = [
       { id:"ivy_left",   x: 18.5, y: 53.0, r: 7.8 },
       { id:"fountain",   x: 47.5, y: 62.5, r: 7.6 },
@@ -683,11 +563,11 @@
     const scanRing = document.getElementById("scanRing");
     const wrongPulse = document.getElementById("wrongPulse");
 
-    const doorSil = document.getElementById("doorSil");
-    const doorLeft = document.getElementById("doorLeft");
-    const doorRight = document.getElementById("doorRight");
-    const doorArch = document.getElementById("doorArch");
-    const doorFull = document.getElementById("doorFull");
+    const doorFx = document.getElementById("doorFx");
+    const trLeft = document.getElementById("trLeft");
+    const trRight = document.getElementById("trRight");
+    const trArch = document.getElementById("trArch");
+    const trFull = document.getElementById("trFull");
 
     const withers = [
       document.getElementById("wither0"),
@@ -696,7 +576,7 @@
       document.getElementById("wither3"),
     ];
 
-    let nextIndex = 0; // ordered progress 0..4
+    let nextIndex = 0;
 
     function distPct(ax, ay, bx, by){
       const dx = ax - bx;
@@ -757,14 +637,23 @@
       return Math.max(0, Math.min(1, t));
     }
 
-    function updateDoor(progress){
-      // anchor silhouette gently after first bind
-      doorSil.style.opacity = (progress >= 1) ? "0.22" : "0";
+    function setTracer(el, on, strong){
+      if (!el) return;
+      el.classList.toggle("tracerOn", !!on);
+      el.classList.toggle("tracerStrong", !!strong);
+      el.style.opacity = on ? (strong ? "1" : "0.92") : "0";
+    }
 
-      doorLeft.classList.toggle("on", progress >= 1);
-      doorRight.classList.toggle("on", progress >= 2);
-      doorArch.classList.toggle("on", progress >= 3);
-      doorFull.classList.toggle("on", progress >= 4);
+    function updateDoor(progress){
+      // show container only after first bind (so it feels summoned)
+      if (progress >= 1){
+        doorFx.classList.add("visible","flicker");
+      }
+
+      setTracer(trLeft,  progress >= 1, progress >= 4);
+      setTracer(trRight, progress >= 2, progress >= 4);
+      setTracer(trArch,  progress >= 3, progress >= 4);
+      setTracer(trFull,  progress >= 4, true);
     }
 
     function updateProximity(clientX, clientY){
