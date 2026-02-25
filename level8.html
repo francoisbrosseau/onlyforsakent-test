@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ONLYFORSAKEN — Level 8 (Image Fit Test)</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      /* 🔧 TUNE THESE TWO FIRST (match Level 5 behavior) */
+      --bg-pos-desktop: center 42%;
+      --bg-pos-mobile:  center 54%;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; margin:0; background:#000; }
+
+    /* Fullscreen fixed cinematic background */
+    .bg{
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+
+      background-image: url("level8.jpg");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: var(--bg-pos-desktop);
+
+      /* Match Level 5 “golden” feel */
+      filter: brightness(1.14) contrast(1.16) saturate(1.05);
+      transform: scale(1.01);
+      opacity: 0;
+      transition: opacity 2200ms ease, transform 2800ms ease;
+      will-change: opacity, transform;
+    }
+    .bg.show{ opacity: 1; transform: scale(1); }
+
+    @media (max-width: 700px){
+      .bg{ background-position: var(--bg-pos-mobile); }
+    }
+
+    /* Light cinematic overlay to judge framing in-context */
+    .overlay{
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 50% 40%, rgba(0,0,0,0.06), rgba(0,0,0,0.52)),
+        linear-gradient(to bottom, rgba(0,0,0,0.14), rgba(0,0,0,0.62));
+      opacity: 0;
+      transition: opacity 2200ms ease;
+    }
+    .overlay.show{ opacity: 1; }
+
+    /* Grain (subtle) */
+    .grain{
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events:none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+      opacity: 0;
+      transition: opacity 2200ms ease;
+    }
+    .grain.show{ opacity: .10; }
+
+    /* Startup veil */
+    #veil{
+      position: fixed;
+      inset: 0;
+      background: #000;
+      opacity: 1;
+      z-index: 2147483646;
+      pointer-events:none;
+      transition: opacity 900ms ease;
+    }
+    #veil.hide{ opacity: 0; }
+
+    /* Safe-zone guides (no new controls; just passive lines for testing) */
+    .guides{
+      position: fixed;
+      inset: 0;
+      z-index: 3;
+      pointer-events:none;
+      opacity: 0.35;
+    }
+    .safeBox{
+      position:absolute;
+      left: 50%;
+      top: 50%;
+      width: min(820px, 92vw);
+      height: min(520px, 62vh);
+      transform: translate(-50%, -50%);
+      border: 1px dashed rgba(255,255,255,0.22);
+      border-radius: 18px;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.35) inset;
+    }
+    .crossX, .crossY{
+      position:absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255,255,255,0.14);
+    }
+    .crossX{ width: 68vw; height: 1px; }
+    .crossY{ width: 1px; height: 68vh; }
+
+    /* Tiny label (passive) */
+    .label{
+      position: fixed;
+      left: 18px;
+      top: 18px;
+      z-index: 4;
+      font-family: "Cormorant Garamond", serif;
+      color: rgba(255,255,255,0.65);
+      letter-spacing: 0.08em;
+      font-size: 14px;
+      text-shadow: 0 0 18px rgba(0,0,0,0.7);
+      user-select:none;
+      pointer-events:none;
+    }
+    .label b{
+      font-family: "Cinzel Decorative", serif;
+      letter-spacing: 0.14em;
+      font-weight: 700;
+      color: rgba(232,210,170,0.85);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="veil" aria-hidden="true"></div>
+
+  <div class="bg" id="bg" aria-hidden="true"></div>
+  <div class="overlay" id="overlay" aria-hidden="true"></div>
+  <div class="grain" id="grain" aria-hidden="true"></div>
+
+  <!-- Passive framing guides for testing ONLY -->
+  <div class="guides" aria-hidden="true">
+    <div class="safeBox"></div>
+    <div class="crossX"></div>
+    <div class="crossY"></div>
+  </div>
+
+  <div class="label">
+    <b>IMAGE FIT TEST</b><br>
+    Edit <code>--bg-pos-desktop</code> / <code>--bg-pos-mobile</code> in <code>:root</code>
+  </div>
+
+  <script>
+    // Simple reveal to match Level 5 feel (no audio, no puzzle, no story yet)
+    const veil = document.getElementById("veil");
+    const bg = document.getElementById("bg");
+    const overlay = document.getElementById("overlay");
+    const grain = document.getElementById("grain");
+
+    function start(){
+      setTimeout(() => veil.classList.add("hide"), 380);
+      setTimeout(() => { try{ veil.remove(); }catch(e){} }, 1500);
+
+      setTimeout(() => {
+        bg.classList.add("show");
+        overlay.classList.add("show");
+        grain.classList.add("show");
+      }, 420);
+    }
+
+    window.addEventListener("pageshow", start);
+  </script>
+</body>
+</html>
