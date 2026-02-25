@@ -15,8 +15,6 @@
 
       /* global image shift as bindings break */
       --desat: 0; /* 0 → 0.22 */
-
-      --shadow: rgba(0,0,0,0.72);
     }
 
     *{ box-sizing:border-box; }
@@ -133,103 +131,159 @@
       transform: translate(-50%,-50%) scale(1);
     }
 
-    /* Door glow (cinematic) */
-    #doorGlow{
-      position: absolute;
+    /* =========================
+       🟢 Door illumination (4 stages)
+       - Each layer is a “piece” that fades in.
+       - We do NOT add UI: it’s cinematic glow only.
+    ========================== */
+    #doorFx{
+      position:absolute;
       left: 50%;
       top: 34%;
-      width: min(320px, 46vw);
-      height: min(420px, 56vh);
+      width: min(360px, 52vw);
+      height: min(470px, 60vh);
       transform: translate(-50%,-50%);
-      border-radius: 26px;
       pointer-events:none;
-      opacity: 0;
-      transition: opacity 680ms ease;
-      background:
-        radial-gradient(circle at 50% 52%,
-          rgba(0,0,0,0.0) 0%,
-          rgba(0,0,0,0.0) 34%,
-          rgba(10, 255, 170, 0.10) 60%,
-          rgba(10, 255, 170, 0.00) 78%
-        );
-      filter: blur(1px) saturate(1.2);
+      z-index: 3;
+      filter: blur(0.5px) saturate(1.25);
       mix-blend-mode: screen;
     }
 
-    /* Edge glow “invasion” (proximity feedback) */
+    .doorPiece{
+      position:absolute;
+      inset:0;
+      border-radius: 28px;
+      opacity: 0;
+      transition: opacity 620ms ease;
+    }
+
+    /* Left side of door */
+    #doorLeft{
+      background:
+        radial-gradient(circle at 22% 55%,
+          rgba(0,255,170,0.00) 0%,
+          rgba(0,255,170,0.16) 42%,
+          rgba(0,255,170,0.00) 74%
+        ),
+        linear-gradient(90deg,
+          rgba(0,255,170,0.14),
+          rgba(0,255,170,0.00) 62%
+        );
+      clip-path: polygon(0% 0%, 54% 0%, 46% 100%, 0% 100%);
+    }
+
+    /* Right side */
+    #doorRight{
+      background:
+        radial-gradient(circle at 78% 55%,
+          rgba(0,255,170,0.00) 0%,
+          rgba(0,255,170,0.16) 42%,
+          rgba(0,255,170,0.00) 74%
+        ),
+        linear-gradient(270deg,
+          rgba(0,255,170,0.14),
+          rgba(0,255,170,0.00) 62%
+        );
+      clip-path: polygon(46% 0%, 100% 0%, 100% 100%, 54% 100%);
+    }
+
+    /* Arch / top curve glow */
+    #doorArch{
+      background:
+        radial-gradient(closest-side at 50% 18%,
+          rgba(0,255,170,0.00) 0%,
+          rgba(0,255,170,0.20) 48%,
+          rgba(0,255,170,0.00) 78%
+        );
+      clip-path: ellipse(52% 32% at 50% 18%);
+      filter: blur(0.8px);
+    }
+
+    /* Final full core glow */
+    #doorCore{
+      background:
+        radial-gradient(circle at 50% 52%,
+          rgba(0,255,170,0.00) 0%,
+          rgba(0,255,170,0.14) 44%,
+          rgba(0,255,170,0.10) 58%,
+          rgba(0,255,170,0.00) 78%
+        );
+      filter: blur(1px);
+    }
+
+    /* Edge glow “invasion” (stronger) */
     #edgeGlow{
       position: fixed;
       inset: 0;
       z-index: 2147483642;
       pointer-events:none;
       opacity: 0;
-      transition: opacity 80ms linear;
+      transition: opacity 70ms linear;
       background:
         radial-gradient(circle at 50% 50%,
           rgba(0,255,170,0.00) 0%,
-          rgba(0,255,170,0.00) 55%,
-          rgba(0,255,170,0.10) 72%,
-          rgba(0,255,170,0.18) 100%
+          rgba(0,255,170,0.00) 54%,
+          rgba(0,255,170,0.14) 72%,
+          rgba(0,255,170,0.24) 100%
         );
       mix-blend-mode: screen;
-      filter: blur(0.6px) saturate(1.2);
+      filter: blur(0.6px) saturate(1.35);
     }
 
-    /* Cursor “scan ring” (shows under pointer; also used for touch) */
+    /* Cursor “scan ring” (stronger) */
     #scanRing{
       position: fixed;
       left: 0;
       top: 0;
       z-index: 2147483644;
-      width: 120px;
-      height: 120px;
-      margin-left: -60px;
-      margin-top: -60px;
+      width: 140px;
+      height: 140px;
+      margin-left: -70px;
+      margin-top: -70px;
       border-radius: 999px;
       pointer-events:none;
       opacity: 0;
       transform: translate3d(0,0,0) scale(0.98);
-      transition: opacity 120ms ease, transform 160ms ease, filter 120ms ease;
+      transition: opacity 110ms ease, transform 150ms ease, filter 110ms ease;
       mix-blend-mode: screen;
-      filter: blur(0.2px) saturate(1.15);
+      filter: blur(0.15px) saturate(1.25);
 
       background:
         radial-gradient(circle at 50% 50%,
           rgba(0,255,170,0.00) 0%,
-          rgba(0,255,170,0.00) 46%,
-          rgba(0,255,170,0.14) 58%,
-          rgba(0,255,170,0.00) 72%
+          rgba(0,255,170,0.00) 44%,
+          rgba(0,255,170,0.18) 56%,
+          rgba(0,255,170,0.00) 70%
         );
 
       box-shadow:
-        0 0 0 1px rgba(0,255,170,0.08) inset,
-        0 0 24px rgba(0,255,170,0.06),
-        0 0 56px rgba(0,255,170,0.04);
+        0 0 0 1px rgba(0,255,170,0.10) inset,
+        0 0 28px rgba(0,255,170,0.08),
+        0 0 72px rgba(0,255,170,0.06);
     }
 
     #scanRing.on{
-      opacity: 0.55;
+      opacity: 0.62;
       transform: translate3d(0,0,0) scale(1);
     }
 
-    /* Strong vs weak resonance styling (order-based feedback) */
     #scanRing.weak{
-      opacity: 0.28;
+      opacity: 0.34;
       box-shadow:
-        0 0 0 1px rgba(0,255,170,0.05) inset,
-        0 0 16px rgba(0,255,170,0.035),
-        0 0 34px rgba(0,255,170,0.02);
+        0 0 0 1px rgba(0,255,170,0.06) inset,
+        0 0 18px rgba(0,255,170,0.05),
+        0 0 44px rgba(0,255,170,0.03);
     }
     #scanRing.strong{
-      opacity: 0.78;
+      opacity: 0.90;
       box-shadow:
-        0 0 0 1px rgba(0,255,170,0.12) inset,
-        0 0 34px rgba(0,255,170,0.08),
-        0 0 84px rgba(0,255,170,0.06);
-      filter: blur(0.1px) saturate(1.35);
+        0 0 0 1px rgba(0,255,170,0.14) inset,
+        0 0 44px rgba(0,255,170,0.11),
+        0 0 110px rgba(0,255,170,0.08);
+      filter: blur(0.08px) saturate(1.45);
     }
 
-    /* Wrong-click vignette pulse (subtle cruelty) */
+    /* Wrong-click vignette pulse */
     #wrongPulse{
       position: fixed;
       inset: 0;
@@ -244,9 +298,7 @@
           rgba(0,0,0,0.28) 100%
         );
     }
-    .wrongRun{
-      animation: wrongPulse 240ms ease-out forwards;
-    }
+    .wrongRun{ animation: wrongPulse 240ms ease-out forwards; }
     @keyframes wrongPulse{
       0%{ opacity: 0; }
       35%{ opacity: 1; }
@@ -336,8 +388,15 @@
       <div class="overlay" id="overlay"></div>
       <div class="grain" id="grain"></div>
 
-      <div id="doorGlow" aria-hidden="true"></div>
+      <!-- Door illumination pieces -->
+      <div id="doorFx" aria-hidden="true">
+        <div class="doorPiece" id="doorLeft"></div>
+        <div class="doorPiece" id="doorRight"></div>
+        <div class="doorPiece" id="doorArch"></div>
+        <div class="doorPiece" id="doorCore"></div>
+      </div>
 
+      <!-- Wither marks -->
       <div class="wither" id="wither0" aria-hidden="true"></div>
       <div class="wither" id="wither1" aria-hidden="true"></div>
       <div class="wither" id="wither2" aria-hidden="true"></div>
@@ -347,7 +406,6 @@
     <div class="clickLayer" id="clickLayer" aria-label="Interact"></div>
   </main>
 
-  <!-- Proximity FX -->
   <div id="edgeGlow" aria-hidden="true"></div>
   <div id="scanRing" aria-hidden="true"></div>
   <div id="wrongPulse" aria-hidden="true"></div>
@@ -365,8 +423,9 @@
   <script>
     /* =========================
        🎒 Inventory (LOCKED) + ✅ REVEAL GATE
-       NOTE: For this mechanic test ONLY, we auto-set reveal >= 7
-       and ensure the rune icon exists if inventory is empty.
+       For this mechanic test ONLY:
+       - force reveal >= 7
+       - ensure rune exists if inventory empty
     ========================== */
     const INV_KEY = "ofs_inventory";
     const INV_REVEAL_KEY = "ofs_inv_reveal_level";
@@ -379,7 +438,6 @@
     function setRevealLevel(n){
       try{ localStorage.setItem(INV_REVEAL_KEY, String(n)); }catch(e){}
     }
-
     function loadInv(){
       try{
         const raw = localStorage.getItem(INV_KEY);
@@ -410,32 +468,21 @@
       if (changed) saveInv(out);
       return out;
     }
-
     function renderSlot(el, item, allowItems){
       if (!el) return;
-
-      if (!allowItems){
+      if (!allowItems || !item){
         el.classList.remove("filled");
         el.innerHTML = "—";
         return;
       }
-
-      if (!item){
-        el.classList.remove("filled");
-        el.innerHTML = "—";
-        return;
-      }
-
       if (typeof item === "object" && item.img){
         el.innerHTML = `<img class="invIcon" src="${item.img}" alt="${String(item.alt || "Item").replace(/"/g,'&quot;')}" />`;
         el.classList.add("filled");
         return;
       }
-
       el.textContent = String(item).slice(0, 10);
       el.classList.add("filled");
     }
-
     function renderInv(inv){
       const allowItems = getRevealLevel() >= REQUIRED_REVEAL_LEVEL;
       for (let i = 0; i < 3; i++){
@@ -444,12 +491,9 @@
       }
     }
 
-    // Ensure reveal is enabled for Level 8 tests
     if (getRevealLevel() < REQUIRED_REVEAL_LEVEL) setRevealLevel(REQUIRED_REVEAL_LEVEL);
 
     let inv = migrateInv(loadInv());
-
-    // Ensure rune exists (test convenience; no UI controls)
     const hasAny = inv.some(Boolean);
     if (!hasAny){
       inv[0] = { id:"RUNE_EMERALD", img:"ui/rune-emerald.png", alt:"Emerald Rune" };
@@ -479,29 +523,33 @@
 
     /* =========================
        🧩 Level 8 Mechanic Test:
-       - PROXIMITY SCAN RING
-       - EDGE GREEN INVASION
-       - ORDERED 4 BINDINGS (slightly cruel but fair)
+       - STRONGER PROXIMITY SCAN
+       - EDGE GLOW STRONGER
+       - ORDERED 4 BINDINGS
+       - DOOR ILLUMINATES IN 4 PIECES
     ========================== */
 
-    // Tweakable binding map (viewport %). We will fine-tune after you test.
+    // ✅ 4 bindings (locked)
     const BINDINGS = [
-      { id:"ivy_left",   x: 18.5, y: 53.0, r: 7.6 },
-      { id:"fountain",   x: 47.5, y: 62.5, r: 7.4 },
-      { id:"lantern",    x: 70.0, y: 41.0, r: 7.0 },
-      { id:"door_sigil", x: 52.0, y: 34.0, r: 7.8 },
+      { id:"ivy_left",   x: 18.5, y: 53.0, r: 7.8 },
+      { id:"fountain",   x: 47.5, y: 62.5, r: 7.6 },
+      { id:"lantern",    x: 70.0, y: 41.0, r: 7.2 },
+      { id:"door_sigil", x: 52.0, y: 34.0, r: 8.0 },
     ];
 
-    // Detection radius beyond the binding (for the “getting warmer” effect).
-    // We compute a soft proximity window around the NEXT binding.
-    const SOFT_RADIUS_MULT = 2.05;   // how far the rune can “feel” it
-    const WEAK_RADIUS_MULT = 1.55;   // out-of-order faint tease
+    // Proximity windows
+    const SOFT_RADIUS_MULT = 2.25;  // stronger “getting warmer”
+    const WEAK_RADIUS_MULT = 1.70;  // tease near wrong ones
 
     const clickLayer = document.getElementById("clickLayer");
     const edgeGlow = document.getElementById("edgeGlow");
     const scanRing = document.getElementById("scanRing");
     const wrongPulse = document.getElementById("wrongPulse");
-    const doorGlow = document.getElementById("doorGlow");
+
+    const doorLeft = document.getElementById("doorLeft");
+    const doorRight = document.getElementById("doorRight");
+    const doorArch = document.getElementById("doorArch");
+    const doorCore = document.getElementById("doorCore");
 
     const withers = [
       document.getElementById("wither0"),
@@ -530,19 +578,13 @@
       document.documentElement.style.setProperty("--desat", d.toFixed(3));
     }
 
-    function setDoorGlowByProgress(progress){
-      const t = Math.min(1, progress / 4);
-      doorGlow.style.opacity = (0.02 + t * 0.60).toFixed(3);
-      if (progress >= 4) doorGlow.style.opacity = "0.78";
-    }
-
     function setEdgeGlow(intensity){
-      // intensity 0..1
+      // stronger overall: map 0..1 → 0..0.78-ish opacity feel
       const v = Math.max(0, Math.min(1, intensity));
-      edgeGlow.style.opacity = (v * 0.55).toFixed(3);
+      edgeGlow.style.opacity = (v * 0.78).toFixed(3);
     }
 
-    function setRingState(state){ // "off" | "weak" | "strong"
+    function setRingState(state){
       scanRing.classList.remove("on","weak","strong");
       if (state === "off") return;
       scanRing.classList.add("on");
@@ -562,17 +604,12 @@
     positionWithers();
     window.addEventListener("resize", positionWithers);
 
-    // Convert client coords -> viewport % coords
     function toPct(clientX, clientY){
       const vw = Math.max(1, window.innerWidth);
       const vh = Math.max(1, window.innerHeight);
-      return {
-        px: (clientX / vw) * 100,
-        py: (clientY / vh) * 100
-      };
+      return { px: (clientX / vw) * 100, py: (clientY / vh) * 100 };
     }
 
-    // Update scan ring position
     function moveRing(clientX, clientY){
       scanRing.style.left = clientX + "px";
       scanRing.style.top  = clientY + "px";
@@ -580,26 +617,40 @@
 
     function proximityForBinding(binding, px, py, mult){
       const d = distPct(px, py, binding.x, binding.y);
-      const softR = binding.r * mult;      // “feel it” radius
-      const t = 1 - (d / softR);           // closer = higher
+      const softR = binding.r * mult;
+      const t = 1 - (d / softR);
       return Math.max(0, Math.min(1, t));
+    }
+
+    // Door pieces per progress:
+    // 1 -> left, 2 -> right, 3 -> arch, 4 -> full core
+    function updateDoorPieces(progress){
+      doorLeft.style.opacity  = (progress >= 1) ? "0.55" : "0";
+      doorRight.style.opacity = (progress >= 2) ? "0.55" : "0";
+      doorArch.style.opacity  = (progress >= 3) ? "0.62" : "0";
+
+      if (progress >= 4){
+        doorCore.style.opacity = "0.85";
+        doorLeft.style.opacity  = "0.70";
+        doorRight.style.opacity = "0.70";
+        doorArch.style.opacity  = "0.78";
+      } else {
+        doorCore.style.opacity = "0";
+      }
     }
 
     function updateProximity(clientX, clientY){
       if (nextIndex >= 4){
         setRingState("strong");
-        setEdgeGlow(0.35);
+        setEdgeGlow(0.42);
         return;
       }
 
       const { px, py } = toPct(clientX, clientY);
-
       const nextB = BINDINGS[nextIndex];
 
-      // Strong signal comes ONLY from the next binding in order
       const strongT = proximityForBinding(nextB, px, py, SOFT_RADIUS_MULT);
 
-      // Weak signal: if you wander near any OTHER binding (tease cruelty)
       let weakT = 0;
       for (let i = 0; i < BINDINGS.length; i++){
         if (i === nextIndex) continue;
@@ -607,50 +658,48 @@
         weakT = Math.max(weakT, t);
       }
 
-      if (strongT > 0.06){
+      if (strongT > 0.05){
         setRingState("strong");
-        setEdgeGlow(Math.max(0.12, strongT));
+        // stronger + more responsive: keep some minimum so it “invades” sooner
+        setEdgeGlow(Math.max(0.18, strongT));
       } else if (weakT > 0.08){
         setRingState("weak");
-        setEdgeGlow(Math.min(0.18, weakT * 0.55));
+        setEdgeGlow(Math.min(0.24, weakT * 0.75));
       } else {
         setRingState("off");
         setEdgeGlow(0);
       }
     }
 
-    // Activation attempt (click)
     function tryActivate(clientX, clientY){
       if (nextIndex >= 4) return;
 
       const { px, py } = toPct(clientX, clientY);
       const nextB = BINDINGS[nextIndex];
-
       const d = distPct(px, py, nextB.x, nextB.y);
 
-      // Must be within the actual binding radius to “break” it
       if (d <= nextB.r){
-        // Break it
         const w = withers[nextIndex];
         if (w) w.classList.add("on");
 
         nextIndex++;
 
         setDesatByProgress(nextIndex);
-        setDoorGlowByProgress(nextIndex);
+        updateDoorPieces(nextIndex);
 
-        // After a successful break, we keep the ring strong for a beat
+        // Keep strong feel after success
         setRingState("strong");
-        setEdgeGlow(Math.max(0.18, 0.32 - (nextIndex * 0.04)));
+        setEdgeGlow(0.30);
+
         return;
       }
 
-      // Slightly cruel: if they click while getting a WEAK tease, give wrong pulse
       wrongVignette();
     }
 
-    // Desktop: show ring when moving mouse
+    // Desktop ring follows mouse
     let ringVisible = false;
+
     clickLayer.addEventListener("pointermove", (e) => {
       if (e.pointerType === "mouse"){
         ringVisible = true;
@@ -659,13 +708,13 @@
       }
     });
 
-    // Touch: show ring on finger contact (follows finger)
+    // Touch: ring appears and follows finger
     clickLayer.addEventListener("pointerdown", (e) => {
       if (e.isPrimary === false) return;
 
       ringVisible = true;
       moveRing(e.clientX, e.clientY);
-      scanRing.classList.add("on"); // make it appear immediately on touch
+      scanRing.classList.add("on");
       updateProximity(e.clientX, e.clientY);
 
       tryActivate(e.clientX, e.clientY);
@@ -680,7 +729,6 @@
     });
 
     clickLayer.addEventListener("pointerup", (e) => {
-      // Touch: fade ring after release (keep desktop visible)
       if (e.pointerType !== "mouse"){
         ringVisible = false;
         setRingState("off");
@@ -688,10 +736,10 @@
       }
     });
 
-    // Initialize
-    setDoorGlowByProgress(0);
+    // Init
     setDesatByProgress(0);
     setEdgeGlow(0);
+    updateDoorPieces(0);
   </script>
 </body>
 </html>
