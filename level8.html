@@ -15,6 +15,14 @@
 
       /* global image shift as bindings break */
       --desat: 0; /* 0 → 0.22 */
+
+      /* 🔧 Door FX placement (tune if needed) */
+      --door-top: 33.6%;
+      --door-w: min(360px, 46vw);
+      --door-h: min(520px, 62vh);
+
+      /* Glow strength */
+      --emerald: 0,255,170;
     }
 
     *{ box-sizing:border-box; }
@@ -99,7 +107,7 @@
     .clickLayer{
       position: fixed;
       inset: 0;
-      z-index: 4;
+      z-index: 6;
       cursor: default;
       -webkit-tap-highlight-color: transparent;
     }
@@ -125,6 +133,7 @@
         );
       mix-blend-mode: multiply;
       transition: opacity 520ms ease, transform 900ms ease;
+      z-index: 5;
     }
     .wither.on{
       opacity: 0.92;
@@ -132,84 +141,184 @@
     }
 
     /* =========================
-       🟢 Door illumination (4 stages)
-       - Each layer is a “piece” that fades in.
-       - We do NOT add UI: it’s cinematic glow only.
+       🟢 DOOR ILLUMINATION (REAL SHAPE, NOT HALO)
+       - Door mask + outline + bloom
+       - 4 stages: left, right, arch, full
     ========================== */
     #doorFx{
       position:absolute;
       left: 50%;
-      top: 34%;
-      width: min(360px, 52vw);
-      height: min(470px, 60vh);
+      top: var(--door-top);
+      width: var(--door-w);
+      height: var(--door-h);
       transform: translate(-50%,-50%);
       pointer-events:none;
-      z-index: 3;
-      filter: blur(0.5px) saturate(1.25);
+      z-index: 4;
       mix-blend-mode: screen;
+      filter: saturate(1.35);
     }
 
+    /* Subtle “door silhouette” region (helps glow feel anchored) */
+    .doorSilhouette{
+      position:absolute;
+      left: 50%;
+      top: 58%;
+      width: 72%;
+      height: 74%;
+      transform: translate(-50%,-50%);
+      border-radius: 18px;
+      opacity: 0.0;
+      background:
+        radial-gradient(circle at 50% 55%,
+          rgba(0,0,0,0.00) 0%,
+          rgba(0,0,0,0.00) 45%,
+          rgba(0,0,0,0.22) 78%,
+          rgba(0,0,0,0.00) 100%
+        );
+      mix-blend-mode: multiply;
+      filter: blur(0.6px);
+      transition: opacity 700ms ease;
+      pointer-events:none;
+    }
+
+    /* Common piece base */
     .doorPiece{
       position:absolute;
-      inset:0;
-      border-radius: 28px;
+      inset: 0;
       opacity: 0;
-      transition: opacity 620ms ease;
+      transition: opacity 650ms ease, transform 850ms ease, filter 650ms ease;
+      transform: translateZ(0);
+      pointer-events:none;
     }
 
-    /* Left side of door */
-    #doorLeft{
+    /* The actual door panel mask area */
+    .doorPanelMask{
+      position:absolute;
+      left: 50%;
+      top: 60%;
+      width: 72%;
+      height: 74%;
+      transform: translate(-50%,-50%);
+      border-radius: 18px;
+      overflow: hidden;
+      pointer-events:none;
+    }
+
+    /* Hard outline (makes it look like the door edges are lit) */
+    .doorOutline{
+      position:absolute;
+      inset: 0;
+      border-radius: 18px;
+      box-shadow:
+        0 0 0 1px rgba(var(--emerald), 0.18) inset,
+        0 0 18px rgba(var(--emerald), 0.10),
+        0 0 46px rgba(var(--emerald), 0.07);
+      opacity: 0;
+      transition: opacity 650ms ease;
+      pointer-events:none;
+    }
+
+    /* Panel glow texture: looks like lit veins/energy on wood/stone */
+    .panelGlow{
+      position:absolute;
+      inset: -8%;
       background:
-        radial-gradient(circle at 22% 55%,
-          rgba(0,255,170,0.00) 0%,
-          rgba(0,255,170,0.16) 42%,
-          rgba(0,255,170,0.00) 74%
+        radial-gradient(circle at 30% 35%, rgba(var(--emerald),0.18), rgba(var(--emerald),0.00) 58%),
+        radial-gradient(circle at 70% 60%, rgba(var(--emerald),0.14), rgba(var(--emerald),0.00) 60%),
+        linear-gradient(180deg,
+          rgba(var(--emerald),0.04),
+          rgba(var(--emerald),0.10) 48%,
+          rgba(var(--emerald),0.03) 100%
+        );
+      filter: blur(1.4px);
+      opacity: 0.0;
+      transition: opacity 650ms ease;
+      pointer-events:none;
+    }
+
+    /* Left and right clipping for the door panels */
+    .clipLeft{
+      clip-path: polygon(0% 0%, 52% 0%, 48% 100%, 0% 100%);
+    }
+    .clipRight{
+      clip-path: polygon(48% 0%, 100% 0%, 100% 100%, 52% 100%);
+    }
+
+    /* Arch mask area (above door) */
+    .archMask{
+      position:absolute;
+      left: 50%;
+      top: 21%;
+      width: 84%;
+      height: 44%;
+      transform: translate(-50%,-50%);
+      pointer-events:none;
+      overflow:hidden;
+      border-radius: 999px 999px 24px 24px;
+      clip-path: ellipse(50% 56% at 50% 56%);
+    }
+
+    .archGlow{
+      position:absolute;
+      inset: -12%;
+      background:
+        radial-gradient(closest-side at 50% 72%,
+          rgba(var(--emerald),0.00) 0%,
+          rgba(var(--emerald),0.22) 46%,
+          rgba(var(--emerald),0.06) 62%,
+          rgba(var(--emerald),0.00) 78%
         ),
-        linear-gradient(90deg,
-          rgba(0,255,170,0.14),
-          rgba(0,255,170,0.00) 62%
+        radial-gradient(circle at 50% 42%,
+          rgba(var(--emerald),0.10),
+          rgba(var(--emerald),0.00) 64%
         );
-      clip-path: polygon(0% 0%, 54% 0%, 46% 100%, 0% 100%);
+      filter: blur(1.8px);
+      opacity: 0.0;
+      transition: opacity 650ms ease;
+      pointer-events:none;
     }
 
-    /* Right side */
-    #doorRight{
+    /* Extra bloom for “alive” final state */
+    .bloom{
+      position:absolute;
+      left: 50%;
+      top: 54%;
+      width: 86%;
+      height: 96%;
+      transform: translate(-50%,-50%);
+      border-radius: 26px;
       background:
-        radial-gradient(circle at 78% 55%,
-          rgba(0,255,170,0.00) 0%,
-          rgba(0,255,170,0.16) 42%,
-          rgba(0,255,170,0.00) 74%
-        ),
-        linear-gradient(270deg,
-          rgba(0,255,170,0.14),
-          rgba(0,255,170,0.00) 62%
+        radial-gradient(circle at 50% 55%,
+          rgba(var(--emerald),0.00) 0%,
+          rgba(var(--emerald),0.12) 44%,
+          rgba(var(--emerald),0.06) 58%,
+          rgba(var(--emerald),0.00) 78%
         );
-      clip-path: polygon(46% 0%, 100% 0%, 100% 100%, 54% 100%);
+      filter: blur(9px);
+      opacity: 0;
+      transition: opacity 720ms ease;
+      pointer-events:none;
     }
 
-    /* Arch / top curve glow */
-    #doorArch{
-      background:
-        radial-gradient(closest-side at 50% 18%,
-          rgba(0,255,170,0.00) 0%,
-          rgba(0,255,170,0.20) 48%,
-          rgba(0,255,170,0.00) 78%
-        );
-      clip-path: ellipse(52% 32% at 50% 18%);
-      filter: blur(0.8px);
+    /* Stage controls (we toggle these) */
+    #doorLeft.on,
+    #doorRight.on,
+    #doorArch.on,
+    #doorFull.on{
+      opacity: 1;
     }
+    #doorLeft.on .panelGlow,
+    #doorRight.on .panelGlow{ opacity: 1; }
+    #doorLeft.on .doorOutline,
+    #doorRight.on .doorOutline{ opacity: 1; }
 
-    /* Final full core glow */
-    #doorCore{
-      background:
-        radial-gradient(circle at 50% 52%,
-          rgba(0,255,170,0.00) 0%,
-          rgba(0,255,170,0.14) 44%,
-          rgba(0,255,170,0.10) 58%,
-          rgba(0,255,170,0.00) 78%
-        );
-      filter: blur(1px);
-    }
+    #doorArch.on .archGlow{ opacity: 1; }
+
+    #doorFull.on .panelGlow{ opacity: 1; }
+    #doorFull.on .doorOutline{ opacity: 1; }
+    #doorFull.on .archGlow{ opacity: 1; }
+    #doorFull.on .bloom{ opacity: 1; }
+    #doorFull.on{ filter: saturate(1.6); }
 
     /* Edge glow “invasion” (stronger) */
     #edgeGlow{
@@ -223,11 +332,11 @@
         radial-gradient(circle at 50% 50%,
           rgba(0,255,170,0.00) 0%,
           rgba(0,255,170,0.00) 54%,
-          rgba(0,255,170,0.14) 72%,
-          rgba(0,255,170,0.24) 100%
+          rgba(0,255,170,0.16) 72%,
+          rgba(0,255,170,0.28) 100%
         );
       mix-blend-mode: screen;
-      filter: blur(0.6px) saturate(1.35);
+      filter: blur(0.6px) saturate(1.40);
     }
 
     /* Cursor “scan ring” (stronger) */
@@ -236,34 +345,34 @@
       left: 0;
       top: 0;
       z-index: 2147483644;
-      width: 140px;
-      height: 140px;
-      margin-left: -70px;
-      margin-top: -70px;
+      width: 150px;
+      height: 150px;
+      margin-left: -75px;
+      margin-top: -75px;
       border-radius: 999px;
       pointer-events:none;
       opacity: 0;
       transform: translate3d(0,0,0) scale(0.98);
       transition: opacity 110ms ease, transform 150ms ease, filter 110ms ease;
       mix-blend-mode: screen;
-      filter: blur(0.15px) saturate(1.25);
+      filter: blur(0.10px) saturate(1.30);
 
       background:
         radial-gradient(circle at 50% 50%,
           rgba(0,255,170,0.00) 0%,
-          rgba(0,255,170,0.00) 44%,
-          rgba(0,255,170,0.18) 56%,
+          rgba(0,255,170,0.00) 42%,
+          rgba(0,255,170,0.20) 56%,
           rgba(0,255,170,0.00) 70%
         );
 
       box-shadow:
-        0 0 0 1px rgba(0,255,170,0.10) inset,
-        0 0 28px rgba(0,255,170,0.08),
-        0 0 72px rgba(0,255,170,0.06);
+        0 0 0 1px rgba(0,255,170,0.12) inset,
+        0 0 36px rgba(0,255,170,0.10),
+        0 0 96px rgba(0,255,170,0.08);
     }
 
     #scanRing.on{
-      opacity: 0.62;
+      opacity: 0.64;
       transform: translate3d(0,0,0) scale(1);
     }
 
@@ -271,16 +380,16 @@
       opacity: 0.34;
       box-shadow:
         0 0 0 1px rgba(0,255,170,0.06) inset,
-        0 0 18px rgba(0,255,170,0.05),
-        0 0 44px rgba(0,255,170,0.03);
+        0 0 20px rgba(0,255,170,0.05),
+        0 0 52px rgba(0,255,170,0.03);
     }
     #scanRing.strong{
-      opacity: 0.90;
+      opacity: 0.95;
       box-shadow:
-        0 0 0 1px rgba(0,255,170,0.14) inset,
-        0 0 44px rgba(0,255,170,0.11),
-        0 0 110px rgba(0,255,170,0.08);
-      filter: blur(0.08px) saturate(1.45);
+        0 0 0 1px rgba(0,255,170,0.16) inset,
+        0 0 54px rgba(0,255,170,0.13),
+        0 0 130px rgba(0,255,170,0.09);
+      filter: blur(0.06px) saturate(1.55);
     }
 
     /* Wrong-click vignette pulse */
@@ -360,7 +469,6 @@
     .slot.filled{
       color: rgba(255,255,255,0.90);
       border-color: rgba(255,255,255,0.22);
-      text-shadow: 0 0 14px rgba(120,0,0,0.28);
     }
     .slot img.invIcon{
       width: 34px;
@@ -388,12 +496,44 @@
       <div class="overlay" id="overlay"></div>
       <div class="grain" id="grain"></div>
 
-      <!-- Door illumination pieces -->
+      <!-- Door FX (real shaped pieces) -->
       <div id="doorFx" aria-hidden="true">
-        <div class="doorPiece" id="doorLeft"></div>
-        <div class="doorPiece" id="doorRight"></div>
-        <div class="doorPiece" id="doorArch"></div>
-        <div class="doorPiece" id="doorCore"></div>
+        <div class="doorSilhouette" id="doorSil"></div>
+
+        <!-- Stage 1: left door -->
+        <div class="doorPiece" id="doorLeft">
+          <div class="doorPanelMask">
+            <div class="panelGlow clipLeft"></div>
+            <div class="doorOutline clipLeft"></div>
+          </div>
+        </div>
+
+        <!-- Stage 2: right door -->
+        <div class="doorPiece" id="doorRight">
+          <div class="doorPanelMask">
+            <div class="panelGlow clipRight"></div>
+            <div class="doorOutline clipRight"></div>
+          </div>
+        </div>
+
+        <!-- Stage 3: arch -->
+        <div class="doorPiece" id="doorArch">
+          <div class="archMask">
+            <div class="archGlow"></div>
+          </div>
+        </div>
+
+        <!-- Stage 4: full door + arch alive -->
+        <div class="doorPiece" id="doorFull">
+          <div class="bloom"></div>
+          <div class="doorPanelMask">
+            <div class="panelGlow"></div>
+            <div class="doorOutline"></div>
+          </div>
+          <div class="archMask">
+            <div class="archGlow"></div>
+          </div>
+        </div>
       </div>
 
       <!-- Wither marks -->
@@ -522,14 +662,12 @@
     window.addEventListener("pageshow", reveal);
 
     /* =========================
-       🧩 Level 8 Mechanic Test:
-       - STRONGER PROXIMITY SCAN
-       - EDGE GLOW STRONGER
-       - ORDERED 4 BINDINGS
-       - DOOR ILLUMINATES IN 4 PIECES
+       🧩 Mechanic:
+       - Stronger proximity (ring + edge glow)
+       - Ordered 4 bindings
+       - Door lights in real pieces
     ========================== */
 
-    // ✅ 4 bindings (locked)
     const BINDINGS = [
       { id:"ivy_left",   x: 18.5, y: 53.0, r: 7.8 },
       { id:"fountain",   x: 47.5, y: 62.5, r: 7.6 },
@@ -537,19 +675,19 @@
       { id:"door_sigil", x: 52.0, y: 34.0, r: 8.0 },
     ];
 
-    // Proximity windows
-    const SOFT_RADIUS_MULT = 2.25;  // stronger “getting warmer”
-    const WEAK_RADIUS_MULT = 1.70;  // tease near wrong ones
+    const SOFT_RADIUS_MULT = 2.35;
+    const WEAK_RADIUS_MULT = 1.75;
 
     const clickLayer = document.getElementById("clickLayer");
     const edgeGlow = document.getElementById("edgeGlow");
     const scanRing = document.getElementById("scanRing");
     const wrongPulse = document.getElementById("wrongPulse");
 
+    const doorSil = document.getElementById("doorSil");
     const doorLeft = document.getElementById("doorLeft");
     const doorRight = document.getElementById("doorRight");
     const doorArch = document.getElementById("doorArch");
-    const doorCore = document.getElementById("doorCore");
+    const doorFull = document.getElementById("doorFull");
 
     const withers = [
       document.getElementById("wither0"),
@@ -558,8 +696,7 @@
       document.getElementById("wither3"),
     ];
 
-    // Progress in ORDER (0 -> 4)
-    let nextIndex = 0;
+    let nextIndex = 0; // ordered progress 0..4
 
     function distPct(ax, ay, bx, by){
       const dx = ax - bx;
@@ -579,9 +716,8 @@
     }
 
     function setEdgeGlow(intensity){
-      // stronger overall: map 0..1 → 0..0.78-ish opacity feel
       const v = Math.max(0, Math.min(1, intensity));
-      edgeGlow.style.opacity = (v * 0.78).toFixed(3);
+      edgeGlow.style.opacity = (v * 0.82).toFixed(3);
     }
 
     function setRingState(state){
@@ -592,7 +728,6 @@
       if (state === "strong") scanRing.classList.add("strong");
     }
 
-    // Place wither marks at binding locations visually
     function positionWithers(){
       BINDINGS.forEach((b, i) => {
         const el = withers[i];
@@ -622,27 +757,20 @@
       return Math.max(0, Math.min(1, t));
     }
 
-    // Door pieces per progress:
-    // 1 -> left, 2 -> right, 3 -> arch, 4 -> full core
-    function updateDoorPieces(progress){
-      doorLeft.style.opacity  = (progress >= 1) ? "0.55" : "0";
-      doorRight.style.opacity = (progress >= 2) ? "0.55" : "0";
-      doorArch.style.opacity  = (progress >= 3) ? "0.62" : "0";
+    function updateDoor(progress){
+      // anchor silhouette gently after first bind
+      doorSil.style.opacity = (progress >= 1) ? "0.22" : "0";
 
-      if (progress >= 4){
-        doorCore.style.opacity = "0.85";
-        doorLeft.style.opacity  = "0.70";
-        doorRight.style.opacity = "0.70";
-        doorArch.style.opacity  = "0.78";
-      } else {
-        doorCore.style.opacity = "0";
-      }
+      doorLeft.classList.toggle("on", progress >= 1);
+      doorRight.classList.toggle("on", progress >= 2);
+      doorArch.classList.toggle("on", progress >= 3);
+      doorFull.classList.toggle("on", progress >= 4);
     }
 
     function updateProximity(clientX, clientY){
       if (nextIndex >= 4){
         setRingState("strong");
-        setEdgeGlow(0.42);
+        setEdgeGlow(0.46);
         return;
       }
 
@@ -660,11 +788,10 @@
 
       if (strongT > 0.05){
         setRingState("strong");
-        // stronger + more responsive: keep some minimum so it “invades” sooner
-        setEdgeGlow(Math.max(0.18, strongT));
+        setEdgeGlow(Math.max(0.22, strongT));
       } else if (weakT > 0.08){
         setRingState("weak");
-        setEdgeGlow(Math.min(0.24, weakT * 0.75));
+        setEdgeGlow(Math.min(0.26, weakT * 0.78));
       } else {
         setRingState("off");
         setEdgeGlow(0);
@@ -685,19 +812,17 @@
         nextIndex++;
 
         setDesatByProgress(nextIndex);
-        updateDoorPieces(nextIndex);
+        updateDoor(nextIndex);
 
-        // Keep strong feel after success
         setRingState("strong");
-        setEdgeGlow(0.30);
-
+        setEdgeGlow(0.34);
         return;
       }
 
       wrongVignette();
     }
 
-    // Desktop ring follows mouse
+    // Desktop: ring follows mouse
     let ringVisible = false;
 
     clickLayer.addEventListener("pointermove", (e) => {
@@ -739,7 +864,7 @@
     // Init
     setDesatByProgress(0);
     setEdgeGlow(0);
-    updateDoorPieces(0);
+    updateDoor(0);
   </script>
 </body>
 </html>
