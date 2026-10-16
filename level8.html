@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ONLYFORSAKEN — Level 8 (Mechanic Test)</title>
+  <title>ONLYFORSAKEN — Level 8 — The Garden of Vows</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
 
@@ -144,44 +144,12 @@
       transform: translate(-50%,-50%) scale(1);
     }
 
-    /* =========================
-       🟢 DOOR RUNIC SIGILS (PRECISE, NOT DINGY)
-    ========================== */
-    #doorFx{
-      position:absolute;
-      left: var(--door-left);
-      top: var(--door-top);
-      width: var(--door-w);
-      height: var(--door-h);
-      transform: translate(-50%,-50%);
-      pointer-events:none;
-      z-index: 4;
-      mix-blend-mode: screen;
-      filter: saturate(1.35);
-      opacity: 0;
-      transition: opacity 380ms ease;
-    }
-    #doorFx.visible{ opacity: 1; }
-
-    .sigilGroup{
-      opacity: 0;
-      transition: opacity 520ms ease;
-      filter: url(#ofsGlow);
-    }
-    .sigilOn{ opacity: 0.88; }
-    .sigilStrong{ opacity: 1; }
-
-    /* subtle alive shimmer — very light */
-    #doorFx.flicker .sigilOn{
-      animation: ofsFlicker 2.2s ease-in-out infinite;
-    }
-    @keyframes ofsFlicker{
-      0%{ opacity: 0.80; }
-      45%{ opacity: 0.92; }
-      62%{ opacity: 0.86; }
-      100%{ opacity: 0.90; }
-    }
-
+    /* Runic projections — within the existing door anchor; never change golden BG. */
+    #doorFx{position:absolute;left:var(--door-left);top:var(--door-top);width:var(--door-w);height:var(--door-h);transform:translate(-50%,-50%);pointer-events:none;z-index:4;opacity:0;transition:opacity .6s;filter:drop-shadow(0 0 9px rgba(0,255,170,.8))}
+    #doorFx.visible{opacity:1}
+    .runeMark{position:absolute;font-family:serif;font-size:clamp(24px,3.3vw,54px);color:#7fffd0;text-shadow:0 0 8px #00ffae,0 0 22px #00b977;opacity:0;transition:opacity 1.1s ease}
+    #gLeft{left:29%;top:52%}#gRight{right:29%;top:52%}#gArch{left:47%;top:13%}#gFull{left:47%;top:44%;font-size:clamp(35px,4vw,68px)}
+    .runeMark.sigilOn{opacity:.85} .runeMark.sigilStrong{opacity:1}
     /* Edge glow invasion */
     #edgeGlow{
       position: fixed;
@@ -338,6 +306,19 @@
       .slot{ width: 48px; height: 48px; border-radius: 13px; }
       .slot img.invIcon{ width: 30px; height: 30px; }
     }
+    /* Level 8 cinematic interface — controls float above interaction layer */
+    #story{position:fixed;z-index:20;top:9vh;left:50%;transform:translateX(-50%);width:min(820px,88vw);text-align:center;color:#f0e8d7;pointer-events:none;text-shadow:0 2px 14px #000,0 0 24px #000;transition:opacity .6s}
+    #story h1,#seal h2{font:700 clamp(19px,2.2vw,30px) "Cinzel Decorative",serif;letter-spacing:.08em;color:#e7d6ad}
+    #storyLines{font:400 clamp(20px,2.1vw,24px)/1.75 "Cormorant Garamond",serif;letter-spacing:.04em}
+    .fogLine{display:block;opacity:0;clip-path:inset(0 100% 0 0);transition:clip-path 5.8s linear,opacity 1.8s ease}
+    .fogLine.visible{opacity:1;clip-path:inset(0 0 0 0)}
+    #controls{position:fixed;z-index:30;top:18px;right:18px;display:flex;gap:10px}
+    #controls button,#unseal{cursor:pointer;background:linear-gradient(135deg,#211e19,#080b0a);border:1px solid #857451;border-radius:4px;color:#e8d6aa;padding:12px 16px;font:700 11px "Cinzel Decorative",serif;letter-spacing:.1em;box-shadow:inset 0 0 14px #66533330,0 5px 25px #000a}
+    #controls button:hover,#unseal:hover{border-color:#cbb477;box-shadow:0 0 18px #ae905044}
+    #seal{position:fixed;z-index:40;left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,90vw);padding:26px;text-align:center;color:#eee0c5;background:#070907e8;border:1px solid #827049;box-shadow:0 0 80px #000;border-radius:8px;font:24px "Cormorant Garamond",serif}
+    #seal[hidden]{display:none}
+    #seal input{width:100%;padding:12px;margin:8px 0 18px;background:#111a14;border:1px solid #88744e;color:#fff;text-align:center;font:20px "Cormorant Garamond",serif}
+    @media(max-width:700px){#story{top:14vh;width:90vw}#controls{right:8px;top:8px;gap:6px}#controls button{font-size:9px;padding:10px}#storyLines{font-size:20px}#doorFx{width:var(--door-w)}}
   </style>
 </head>
 
@@ -350,88 +331,8 @@
       <div class="overlay" id="overlay"></div>
       <div class="grain" id="grain"></div>
 
-      <!-- RUNIC DOOR FX (centered on portal/door) -->
-      <svg id="doorFx" viewBox="0 0 100 140" aria-hidden="true">
-        <defs>
-          <!-- glow is tuned to feel “carved light”, not neon UI -->
-          <filter id="ofsGlow" x="-70%" y="-70%" width="240%" height="240%">
-            <feGaussianBlur stdDeviation="1.1" result="b"/>
-            <feColorMatrix in="b" type="matrix"
-              values="
-                1 0 0 0 0
-                0 1 0 0 0
-                0 0 1 0 0
-                0 0 0 16 -7" result="g"/>
-            <feMerge>
-              <feMergeNode in="g"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-
-        <!-- STAGE 1: LEFT PANEL RUNES -->
-        <g class="sigilGroup" id="gLeft" stroke="rgba(0,255,170,0.28)" stroke-width="1.35" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <!-- three small “carved” glyphs -->
-          <path d="M28 92 l8 -10 l8 10" />
-          <path d="M28 92 l16 0" />
-          <circle cx="36" cy="78" r="2.2" stroke="rgba(0,255,170,0.22)" />
-
-          <path d="M30 106 l12 0" />
-          <path d="M36 98 l0 16" />
-          <path d="M32 102 l8 8" stroke="rgba(0,255,170,0.18)" />
-
-          <path d="M26 62 l10 0 l0 10 l-10 0 z" stroke="rgba(0,255,170,0.20)"/>
-          <path d="M31 62 l0 10" stroke="rgba(0,255,170,0.14)"/>
-        </g>
-
-        <!-- STAGE 2: RIGHT PANEL RUNES -->
-        <g class="sigilGroup" id="gRight" stroke="rgba(0,255,170,0.28)" stroke-width="1.35" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M72 92 l-8 -10 l-8 10" />
-          <path d="M56 92 l16 0" />
-          <circle cx="64" cy="78" r="2.2" stroke="rgba(0,255,170,0.22)" />
-
-          <path d="M58 106 l12 0" />
-          <path d="M64 98 l0 16" />
-          <path d="M68 102 l-8 8" stroke="rgba(0,255,170,0.18)" />
-
-          <path d="M74 62 l-10 0 l0 10 l10 0 z" stroke="rgba(0,255,170,0.20)"/>
-          <path d="M69 62 l0 10" stroke="rgba(0,255,170,0.14)"/>
-        </g>
-
-        <!-- STAGE 3: ARCH RUNES (ON THE PORTAL) -->
-        <g class="sigilGroup" id="gArch" stroke="rgba(0,255,170,0.30)" stroke-width="1.45" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <!-- arch ring segments -->
-          <path d="M34 46 C38 28, 46 22, 50 22 C54 22, 62 28, 66 46" />
-          <path d="M38 46 C41 33, 46 30, 50 30 C54 30, 59 33, 62 46" stroke="rgba(0,255,170,0.18)"/>
-
-          <!-- small crown glyph -->
-          <path d="M50 18 l-6 8 l6 -4 l6 4 z" stroke="rgba(0,255,170,0.22)"/>
-          <path d="M46 26 l8 0" stroke="rgba(0,255,170,0.16)"/>
-        </g>
-
-        <!-- STAGE 4: FULL DOOR “UNSEAL” STATE (OUTLINE + EXTRA SIGILS) -->
-        <g class="sigilGroup" id="gFull" stroke="rgba(0,255,170,0.26)" stroke-width="1.55" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <!-- Door outline (thin, strong) -->
-          <path d="M32 122 L32 58 C32 40, 40 28, 50 28 C60 28, 68 40, 68 58 L68 122" />
-          <!-- Center seam -->
-          <path d="M50 122 L50 32" stroke="rgba(0,255,170,0.18)" />
-
-          <!-- small “seal” runes down the seam -->
-          <circle cx="50" cy="54" r="2.3" />
-          <path d="M46 62 l8 0" />
-          <path d="M50 58 l0 8" stroke="rgba(0,255,170,0.18)"/>
-
-          <circle cx="50" cy="82" r="2.1" stroke="rgba(0,255,170,0.20)"/>
-          <path d="M46 90 l8 0" stroke="rgba(0,255,170,0.16)"/>
-
-          <!-- extra corner sigils -->
-          <path d="M36 116 l8 -6 l8 6" stroke="rgba(0,255,170,0.18)"/>
-          <path d="M64 116 l-8 -6 l-8 6" stroke="rgba(0,255,170,0.18)"/>
-
-          <!-- reinforce arch ring -->
-          <path d="M30 48 C34 24, 46 14, 50 14 C54 14, 66 24, 70 48" stroke="rgba(0,255,170,0.22)"/>
-        </g>
-      </svg>
+      <!-- Four staged emerald seals; golden background fit remains untouched -->
+      <div id="doorFx" aria-hidden="true"><span class="runeMark" id="gLeft">ᛟ</span><span class="runeMark" id="gRight">ᚷ</span><span class="runeMark" id="gArch">ᛉ</span><span class="runeMark" id="gFull">◇</span></div>
 
       <!-- Wither marks -->
       <div class="wither" id="wither0" aria-hidden="true"></div>
@@ -440,7 +341,10 @@
       <div class="wither" id="wither3" aria-hidden="true"></div>
     </div>
 
-    <div class="clickLayer" id="clickLayer" aria-label="Interact"></div>
+    <div class="clickLayer" id="clickLayer" aria-label="Search the garden for bindings"></div>
+    <section id="story" aria-live="polite"><h1>The Garden of Vows</h1><div id="storyLines"></div></section>
+    <nav id="controls" aria-label="Room controls"><button id="textToggle" type="button">HIDE WORDS</button><button id="muteToggle" type="button">SOUND ON</button></nav>
+    <section id="seal" hidden><h2>The Last Vow</h2><p>Four bindings have yielded. Speak the vow that remains.</p><input id="answer" autocomplete="off" maxlength="24" aria-label="The final vow" placeholder="THE VOW"><button id="unseal" type="button">UNSEAL</button><p id="sealMessage" aria-live="polite"></p></section>
   </main>
 
   <div id="edgeGlow" aria-hidden="true"></div>
@@ -519,13 +423,11 @@
       el.classList.add("filled");
     }
 
-    if (getRevealLevel() < REQUIRED_REVEAL_LEVEL) setRevealLevel(REQUIRED_REVEAL_LEVEL);
+    
 
     let inv = migrateInv(loadInv());
-    if (!inv.some(Boolean)){
-      inv[0] = { id:"RUNE_EMERALD", img:"ui/rune-emerald.png", alt:"Emerald Rune" };
-      saveInv(inv);
-    }
+    
+    document.getElementById("inventory").style.display = getRevealLevel() >= 7 ? "flex" : "none";
     renderSlot(document.getElementById("slot0"), inv[0]);
     renderSlot(document.getElementById("slot1"), inv[1]);
     renderSlot(document.getElementById("slot2"), inv[2]);
@@ -714,6 +616,7 @@
 
         setRingState("strong");
         setEdgeGlow(0.34);
+        if(nextIndex===4){setTimeout(()=>{document.getElementById("seal").hidden=false;},1800);}
         return;
       }
 
@@ -763,6 +666,29 @@
     setDesatByProgress(0);
     setEdgeGlow(0);
     updateDoor(0);
+    // Story and controls; pacing follows the locked 74-second cinematic floor.
+    const lines=[
+      "Beyond the passage, a garden waits beneath a sky that has forgotten dawn.",
+      "The fountain still runs, though no living hand tends its waters.",
+      "Vines embrace the ancient stones like fingers refusing to release a memory.",
+      "A faint emerald pulse moves through the roots and disappears beneath the path.",
+      "Four promises were buried here. Four bindings keep the door asleep.",
+      "The rune you carry is warm. Something in this place recognizes it.",
+      "Search where the garden remembers. Wake each binding in its appointed order.",
+      "And do not mistake the silence beyond the doors for peace."
+    ];
+    const lineHost=document.getElementById("storyLines");
+    lines.forEach((line,i)=>{const el=document.createElement("span");el.className="fogLine";el.textContent=line;lineHost.appendChild(el);setTimeout(()=>el.classList.add("visible"),1350+i*9200);});
+    let hiddenText=false;
+    document.getElementById("textToggle").onclick=()=>{hiddenText=!hiddenText;document.getElementById("story").style.opacity=hiddenText?"0":"1";document.getElementById("textToggle").textContent=hiddenText?"SHOW WORDS":"HIDE WORDS";};
+    const muteKey="ofs_mute";let muted=localStorage.getItem(muteKey)==="1";
+    const ambience=new Audio("audio/level8-ambience.mp3");ambience.loop=true;ambience.volume=.38;
+    const muteButton=document.getElementById("muteToggle");
+    function syncAudio(){muteButton.textContent=muted?"SOUND OFF":"SOUND ON";ambience.muted=muted;if(muted)ambience.pause();else ambience.play().catch(()=>{});localStorage.setItem(muteKey,muted?"1":"0");}
+    muteButton.onclick=()=>{muted=!muted;syncAudio();};
+    muteButton.textContent=muted?"SOUND OFF":"SOUND ON";
+    document.addEventListener("pointerdown",()=>{if(!muted&&ambience.paused)ambience.play().catch(()=>{});},{once:true});
+    document.getElementById("unseal").onclick=()=>{const value=document.getElementById("answer").value.trim().toUpperCase();const msg=document.getElementById("sealMessage");if(value==="VOW"){msg.textContent="The seal remembers. The passage beyond awaits.";setTimeout(()=>{location.href="level9.html";},2200);}else{msg.textContent="The stone rejects your words.";}}
   </script>
 </body>
 </html>
