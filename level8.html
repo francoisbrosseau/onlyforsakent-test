@@ -306,6 +306,12 @@
       .slot{ width: 48px; height: 48px; border-radius: 13px; }
       .slot img.invIcon{ width: 30px; height: 30px; }
     }
+    #puzzleCard{position:fixed;z-index:25;left:50%;bottom:clamp(92px,13vh,140px);transform:translateX(-50%);width:min(510px,92vw);padding:19px 24px;background:linear-gradient(145deg,#0d120ff0,#070907ed);border:1px solid #86704d;box-shadow:0 15px 60px #000d,0 0 30px #004a302a;text-align:center;color:#e6d9c2;font:22px/1.4 "Cormorant Garamond",serif}
+    #puzzleCard[hidden]{display:none}#puzzleHeading{font:700 15px "Cinzel Decorative",serif;color:#d8c18b}#puzzleChoices{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+    #puzzleChoices button{cursor:pointer;background:#14221a;border:1px solid #6c876c;color:#d8ebd8;padding:11px 14px;font:600 17px "Cormorant Garamond",serif;min-width:90px}
+    #puzzleChoices button:hover{background:#264a34}#puzzleFeedback{font-size:18px;color:#a8e3bc;min-height:22px;margin:10px 0 0}
+    #puzzleStatus{position:fixed;z-index:19;bottom:18px;left:18px;color:#d9c79b;font:700 10px "Cinzel Decorative",serif;letter-spacing:.14em;text-shadow:0 2px 10px #000}
+    @media(max-width:700px){#puzzleCard{bottom:105px;padding:14px}#puzzleStatus{bottom:98px;left:12px}}
     /* Level 8 cinematic interface — controls float above interaction layer */
     #story{position:fixed;z-index:20;top:9vh;left:50%;transform:translateX(-50%);width:min(820px,88vw);text-align:center;color:#f0e8d7;pointer-events:none;text-shadow:0 2px 14px #000,0 0 24px #000;transition:opacity .6s}
     #story h1,#seal h2{font:700 clamp(19px,2.2vw,30px) "Cinzel Decorative",serif;letter-spacing:.08em;color:#e7d6ad}
@@ -341,7 +347,9 @@
       <div class="wither" id="wither3" aria-hidden="true"></div>
     </div>
 
-    <div class="clickLayer" id="clickLayer" aria-label="Search the garden for bindings"></div>
+    <div class="clickLayer" id="clickLayer" aria-label="Investigate the garden"></div>
+    <div id="puzzleCard" hidden aria-live="polite"><div id="puzzleHeading"></div><p id="puzzleClue"></p><div id="puzzleChoices"></div><p id="puzzleFeedback"></p></div>
+    <div id="puzzleStatus" aria-live="polite">I · THE FOUNTAIN</div>
     <section id="story" aria-live="polite"><h1>The Garden of Vows</h1><div id="storyLines"></div></section>
     <nav id="controls" aria-label="Room controls"><button id="textToggle" type="button">HIDE WORDS</button><button id="muteToggle" type="button">SOUND ON</button></nav>
     <section id="seal" hidden><h2>The Last Vow</h2><p>Four bindings have yielded. Speak the vow that remains.</p><input id="answer" autocomplete="off" maxlength="24" aria-label="The final vow" placeholder="THE VOW"><button id="unseal" type="button">UNSEAL</button><p id="sealMessage" aria-live="polite"></p></section>
@@ -451,221 +459,30 @@
     }
     window.addEventListener("pageshow", reveal);
 
-    /* =========================
-       🧩 Mechanic:
-       - Strong proximity (ring + edge glow)
-       - Ordered 4 bindings
-       - Door runes light in 4 stages
-    ========================== */
-
-    const BINDINGS = [
-      { id:"ivy_left",   x: 18.5, y: 53.0, r: 7.8 },
-      { id:"fountain",   x: 47.5, y: 62.5, r: 7.6 },
-      { id:"lantern",    x: 70.0, y: 41.0, r: 7.2 },
-      { id:"door_sigil", x: 52.0, y: 34.0, r: 8.0 },
+    /* Four Vows — observable, deterministic puzzle. No cursor-proximity guessing. */
+    const clickLayer=document.getElementById("clickLayer");
+    const doorFx=document.getElementById("doorFx");
+    const seals=["gLeft","gRight","gArch","gFull"].map(id=>document.getElementById(id));
+    const status=document.getElementById("puzzleStatus");
+    const card=document.getElementById("puzzleCard");
+    const heading=document.getElementById("puzzleHeading");
+    const clue=document.getElementById("puzzleClue");
+    const choices=document.getElementById("puzzleChoices");
+    const feedback=document.getElementById("puzzleFeedback");
+    const stages=[
+      {name:"THE FOUNTAIN",target:{x:47.5,y:62.5,r:12},title:"I · The Vow of Sorrow",clue:"Beneath the flowing water, an inscription reads: 'I am born of loss, yet I cannot be drowned.' What endured?",options:["Sorrow","Fire","Silence"],answer:"Sorrow"},
+      {name:"THE IVY",target:{x:18.5,y:53,r:13},title:"II · The Vow of Devotion",clue:"A vine encircles a weathered name. 'Though stone breaks and seasons die, I shall never ...' Complete the vow.",options:["Forget","Return","Rule"],answer:"Forget"},
+      {name:"THE LANTERN",target:{x:70,y:41,r:13},title:"III · The Vow of Sacrifice",clue:"The lantern burns in three beats: long, short, long. Its inscription names what the flame consumes. Choose the matching sequence.",options:["Long · Short · Long","Short · Long · Long","Long · Long · Short"],answer:"Long · Short · Long"},
+      {name:"THE DOOR",target:{x:52,y:34,r:14},title:"IV · The Vow of Eternity",clue:"The arch bears three words: SORROW · FORGET · FLAME. Beneath them: 'What survives them all?' Choose the final binding.",options:["Eternity","Mercy","Oblivion"],answer:"Eternity"}
     ];
-
-    const SOFT_RADIUS_MULT = 2.35;
-    const WEAK_RADIUS_MULT = 1.75;
-
-    const clickLayer = document.getElementById("clickLayer");
-    const edgeGlow = document.getElementById("edgeGlow");
-    const scanRing = document.getElementById("scanRing");
-    const wrongPulse = document.getElementById("wrongPulse");
-
-    const doorFx = document.getElementById("doorFx");
-    const gLeft = document.getElementById("gLeft");
-    const gRight = document.getElementById("gRight");
-    const gArch = document.getElementById("gArch");
-    const gFull = document.getElementById("gFull");
-
-    const withers = [
-      document.getElementById("wither0"),
-      document.getElementById("wither1"),
-      document.getElementById("wither2"),
-      document.getElementById("wither3"),
-    ];
-
-    let nextIndex = 0;
-
-    function distPct(ax, ay, bx, by){
-      const dx = ax - bx;
-      const dy = ay - by;
-      return Math.sqrt(dx*dx + dy*dy);
-    }
-
-    function wrongVignette(){
-      wrongPulse.classList.remove("wrongRun");
-      void wrongPulse.offsetWidth;
-      wrongPulse.classList.add("wrongRun");
-    }
-
-    function setDesatByProgress(progress){
-      const d = Math.min(0.22, progress * 0.055);
-      document.documentElement.style.setProperty("--desat", d.toFixed(3));
-    }
-
-    function setEdgeGlow(intensity){
-      const v = Math.max(0, Math.min(1, intensity));
-      edgeGlow.style.opacity = (v * 0.82).toFixed(3);
-    }
-
-    function setRingState(state){
-      scanRing.classList.remove("on","weak","strong");
-      if (state === "off") return;
-      scanRing.classList.add("on");
-      if (state === "weak") scanRing.classList.add("weak");
-      if (state === "strong") scanRing.classList.add("strong");
-    }
-
-    function positionWithers(){
-      BINDINGS.forEach((b, i) => {
-        const el = withers[i];
-        if (!el) return;
-        el.style.left = (b.x) + "%";
-        el.style.top  = (b.y) + "%";
-      });
-    }
-    positionWithers();
-    window.addEventListener("resize", positionWithers);
-
-    function toPct(clientX, clientY){
-      const vw = Math.max(1, window.innerWidth);
-      const vh = Math.max(1, window.innerHeight);
-      return { px: (clientX / vw) * 100, py: (clientY / vh) * 100 };
-    }
-
-    function moveRing(clientX, clientY){
-      scanRing.style.left = clientX + "px";
-      scanRing.style.top  = clientY + "px";
-    }
-
-    function proximityForBinding(binding, px, py, mult){
-      const d = distPct(px, py, binding.x, binding.y);
-      const softR = binding.r * mult;
-      const t = 1 - (d / softR);
-      return Math.max(0, Math.min(1, t));
-    }
-
-    function setSigil(el, on, strong){
-      if (!el) return;
-      el.classList.toggle("sigilOn", !!on);
-      el.classList.toggle("sigilStrong", !!strong);
-      el.style.opacity = on ? (strong ? "1" : "0.88") : "0";
-    }
-
-    function updateDoor(progress){
-      if (progress >= 1){
-        doorFx.classList.add("visible","flicker");
-      } else {
-        doorFx.classList.remove("visible","flicker");
-      }
-
-      setSigil(gLeft,  progress >= 1, progress >= 4);
-      setSigil(gRight, progress >= 2, progress >= 4);
-      setSigil(gArch,  progress >= 3, progress >= 4);
-      setSigil(gFull,  progress >= 4, true);
-    }
-
-    function updateProximity(clientX, clientY){
-      if (nextIndex >= 4){
-        setRingState("strong");
-        setEdgeGlow(0.46);
-        return;
-      }
-
-      const { px, py } = toPct(clientX, clientY);
-      const nextB = BINDINGS[nextIndex];
-
-      const strongT = proximityForBinding(nextB, px, py, SOFT_RADIUS_MULT);
-
-      let weakT = 0;
-      for (let i = 0; i < BINDINGS.length; i++){
-        if (i === nextIndex) continue;
-        const t = proximityForBinding(BINDINGS[i], px, py, WEAK_RADIUS_MULT);
-        weakT = Math.max(weakT, t);
-      }
-
-      if (strongT > 0.05){
-        setRingState("strong");
-        setEdgeGlow(Math.max(0.22, strongT));
-      } else if (weakT > 0.08){
-        setRingState("weak");
-        setEdgeGlow(Math.min(0.26, weakT * 0.78));
-      } else {
-        setRingState("off");
-        setEdgeGlow(0);
-      }
-    }
-
-    function tryActivate(clientX, clientY){
-      if (nextIndex >= 4) return;
-
-      const { px, py } = toPct(clientX, clientY);
-      const nextB = BINDINGS[nextIndex];
-      const d = distPct(px, py, nextB.x, nextB.y);
-
-      if (d <= nextB.r){
-        const w = withers[nextIndex];
-        if (w) w.classList.add("on");
-
-        nextIndex++;
-
-        setDesatByProgress(nextIndex);
-        updateDoor(nextIndex);
-
-        setRingState("strong");
-        setEdgeGlow(0.34);
-        if(nextIndex===4){setTimeout(()=>{document.getElementById("seal").hidden=false;},1800);}
-        return;
-      }
-
-      wrongVignette();
-    }
-
-    // Desktop: ring follows mouse
-    let ringVisible = false;
-
-    clickLayer.addEventListener("pointermove", (e) => {
-      if (e.pointerType === "mouse"){
-        ringVisible = true;
-        moveRing(e.clientX, e.clientY);
-        updateProximity(e.clientX, e.clientY);
-      }
-    });
-
-    // Touch: ring appears and follows finger
-    clickLayer.addEventListener("pointerdown", (e) => {
-      if (e.isPrimary === false) return;
-
-      ringVisible = true;
-      moveRing(e.clientX, e.clientY);
-      scanRing.classList.add("on");
-      updateProximity(e.clientX, e.clientY);
-
-      tryActivate(e.clientX, e.clientY);
-    });
-
-    clickLayer.addEventListener("pointermove", (e) => {
-      if (!ringVisible) return;
-      if (e.pointerType !== "mouse"){
-        moveRing(e.clientX, e.clientY);
-        updateProximity(e.clientX, e.clientY);
-      }
-    });
-
-    clickLayer.addEventListener("pointerup", (e) => {
-      if (e.pointerType !== "mouse"){
-        ringVisible = false;
-        setRingState("off");
-        setEdgeGlow(0);
-      }
-    });
-
-    // Init
-    setDesatByProgress(0);
-    setEdgeGlow(0);
-    updateDoor(0);
+    let stage=0,locked=false;
+    function updateStatus(){status.textContent=stage<4?["I","II","III","IV"][stage]+" · "+stages[stage].name:"FOUR VOWS AWAKENED";}
+    function updateDoor(){doorFx.classList.toggle("visible",stage>0);seals.forEach((el,i)=>{el.classList.toggle("sigilOn",stage>i);el.classList.toggle("sigilStrong",stage===4&&stage>i);});}
+    function showStage(){const data=stages[stage];heading.textContent=data.title;clue.textContent=data.clue;feedback.textContent="";choices.replaceChildren();data.options.forEach(option=>{const btn=document.createElement("button");btn.type="button";btn.textContent=option;btn.onclick=()=>solve(option);choices.appendChild(btn);});card.hidden=false;}
+    function solve(value){if(locked)return;const data=stages[stage];if(value!==data.answer){feedback.textContent="The garden falls silent. Read the inscription again.";return;}locked=true;feedback.textContent="The emerald rune answers. A seal awakens.";stage++;updateDoor();updateStatus();setTimeout(()=>{card.hidden=true;locked=false;if(stage===4){document.getElementById("seal").hidden=false;document.getElementById("story").style.opacity="0";}},1400);}
+    function hitTarget(x,y){const target=stages[stage].target;const dx=(x-target.x)/target.r,dy=(y-target.y)/target.r;return dx*dx+dy*dy<=1;}
+    clickLayer.addEventListener("pointerdown",e=>{if(stage>=4||locked||!card.hidden)return;const x=e.clientX/window.innerWidth*100,y=e.clientY/window.innerHeight*100;if(hitTarget(x,y))showStage();});
+    updateDoor();updateStatus();
     // Story and controls; pacing follows the locked 74-second cinematic floor.
     const lines=[
       "Beyond the passage, a garden waits beneath a sky that has forgotten dawn.",
@@ -674,7 +491,7 @@
       "A faint emerald pulse moves through the roots and disappears beneath the path.",
       "Four promises were buried here. Four bindings keep the door asleep.",
       "The rune you carry is warm. Something in this place recognizes it.",
-      "Search where the garden remembers. Wake each binding in its appointed order.",
+      "Seek first the water, then the ivy, then the lantern, and finally the ancient door.",
       "And do not mistake the silence beyond the doors for peace."
     ];
     const lineHost=document.getElementById("storyLines");
@@ -688,7 +505,7 @@
     muteButton.onclick=()=>{muted=!muted;syncAudio();};
     muteButton.textContent=muted?"SOUND OFF":"SOUND ON";
     document.addEventListener("pointerdown",()=>{if(!muted&&ambience.paused)ambience.play().catch(()=>{});},{once:true});
-    document.getElementById("unseal").onclick=()=>{const value=document.getElementById("answer").value.trim().toUpperCase();const msg=document.getElementById("sealMessage");if(value==="VOW"){msg.textContent="The seal remembers. The passage beyond awaits.";setTimeout(()=>{location.href="level9.html";},2200);}else{msg.textContent="The stone rejects your words.";}}
+    document.getElementById("unseal").onclick=()=>{const value=document.getElementById("answer").value.trim().toUpperCase();const msg=document.getElementById("sealMessage");if(value==="ETERNITY"){msg.textContent="The seal remembers. The passage beyond awaits.";setTimeout(()=>{location.href="level9.html";},2200);}else{msg.textContent="The stone rejects your words.";}}
   </script>
 </body>
 </html>
