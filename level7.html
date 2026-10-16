@@ -597,8 +597,8 @@
 
     const CURRENT_LEVEL = 7;
 
-    /* ✅ DEV MODE (your request): reload resets Level 7 */
-    const TEST_RESET_ON_RELOAD = true;
+    /* Production: keep the claimed emerald across reloads. */
+    const TEST_RESET_ON_RELOAD = false;
 
     const INV_KEY = "ofs_inventory";
     const REVEAL_KEY = "ofs_inv_reveal_level";
@@ -779,8 +779,20 @@
     btn.addEventListener("click", check);
     pw.addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
 
+    function restoreClaimedRune(){
+      revealRune();
+      msg.textContent = "The emerald is already yours. The garden waits.";
+      if (takeBtn){ takeBtn.textContent = "RUNE CLAIMED"; takeBtn.disabled = true; }
+      if (nextBtn) nextBtn.style.display = "inline-block";
+    }
+
+    function hasEmerald(items){
+      return items.some(item => item && normalize(typeof item === "object" ? item.id : item).replace(/ /g, "_") === EMERALD_RUNE.id);
+    }
+
     function takeRune(){
       const inv = migrateInv(loadInv());
+      if (hasEmerald(inv)){ restoreClaimedRune(); return; }
       const empty = inv.findIndex(x => !x);
       if (empty === -1){
         msg.textContent = "Your inventory is full.";
@@ -818,6 +830,8 @@
     if (TEST_RESET_ON_RELOAD){
       // run after first paint
       setTimeout(resetForTesting, 0);
+    } else if (hasEmerald(initial)){
+      restoreClaimedRune();
     }
 
     /* =========================

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ONLYFORSAKEN — Level 8 — The Garden of Vows</title>
+  <title>ONLYFORSAKEN — Level 8 — The Garden of Four Vows</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
 
@@ -325,196 +325,164 @@
     #seal[hidden]{display:none}
     #seal input{width:100%;padding:12px;margin:8px 0 18px;background:#111a14;border:1px solid #88744e;color:#fff;text-align:center;font:20px "Cormorant Garamond",serif}
     @media(max-width:700px){#story{top:14vh;width:90vw}#controls{right:8px;top:8px;gap:6px}#controls button{font-size:9px;padding:10px}#storyLines{font-size:20px}#doorFx{width:var(--door-w)}}
+
+    /* Garden artifacts: all geometry follows the unchanged cover-fitted image. */
+    button,input{font:inherit}button{touch-action:manipulation}button:focus-visible,input:focus-visible{outline:2px solid #a4e5bf;outline-offset:5px}
+    [hidden]{display:none!important}.grain{pointer-events:none}
+    #doorFx{width:clamp(74px,10vw,135px);height:auto;aspect-ratio:1;transform:translate(-50%,-50%);filter:drop-shadow(0 0 6px #37b58680)}
+    #doorFx svg{width:100%;height:100%;overflow:visible;color:#7bdbac;fill:none;stroke:currentColor;stroke-width:.8}
+    .sealPart{opacity:.08;transition:opacity 1.6s,filter 1.6s}.sealPart.awake{opacity:.85}#doorFx.complete{filter:drop-shadow(0 0 12px #67ffc799)}
+    .site{position:fixed;z-index:7;transform:translate(-50%,-50%);width:clamp(48px,7vw,90px);height:clamp(48px,7vw,90px);border:1px solid #a6ca9a25;border-radius:50%;color:#b5d5b5;background:radial-gradient(circle,#5ba77b20,transparent 65%);cursor:pointer;box-shadow:0 0 25px #7fb79d0a;transition:opacity 1s,box-shadow .3s}
+    .site span{display:block;font:700 10px "Cinzel Decorative",serif;text-shadow:0 2px 8px #000;background:#060b08b0;padding:5px 7px;position:absolute;top:100%;left:50%;transform:translateX(-50%);white-space:nowrap;border:1px solid #96866544}
+    .site:disabled{opacity:0;pointer-events:none}.site:hover,.site:focus-visible{box-shadow:0 0 28px #8ad5a955;border-color:#b8d8b1}
+    .site.solved{opacity:.45}.site.solved:disabled{opacity:.22}.site::before{content:'✧';font-size:26px;text-shadow:0 0 12px #8ebd9e}
+    #story{top:12vh;max-height:68dvh;overflow-y:auto;pointer-events:auto;scrollbar-width:thin;scrollbar-color:#806747 #060908}
+    #story h1{font-size:clamp(21px,2.6vw,34px)}#story[data-hidden=true]{opacity:0;pointer-events:none}
+    .fogLine{margin-bottom:.45em}#storyLines{text-align:left}
+    #controls{z-index:45}#controls button{min-height:44px;border-radius:50% 50% 6px 6px;padding:14px;background:radial-gradient(ellipse at top,#66513933,transparent),linear-gradient(135deg,#201c18,#060908);border:1px solid #94805d;letter-spacing:.12em}
+    #muteToggle{min-width:116px}#soundNotice{position:fixed;z-index:18;right:20px;top:82px;max-width:220px;text-align:right;font:16px/1.3 "Cormorant Garamond",serif;color:#c3b797;text-shadow:0 2px 8px #000;pointer-events:none}
+    #puzzleStatus{bottom:auto;top:24px;left:20px;max-width:40vw;font-size:10px;line-height:1.7}
+    #puzzleCard,#seal{z-index:35;top:50%;bottom:auto;transform:translate(-50%,-50%);max-height:calc(100dvh - 190px);overflow-y:auto;width:min(560px,92vw);padding:28px 30px;border:1px solid #92794e;border-radius:2px;background:repeating-linear-gradient(112deg,#ffffff02 0 1px,transparent 1px 6px),radial-gradient(ellipse at top,#24402d50,transparent 70%),linear-gradient(135deg,#171b17fa,#080b09fc);box-shadow:0 24px 80px #000e,inset 0 0 0 5px #050806,inset 0 0 0 6px #8c744b55;color:#e1d2b6;text-align:center;font:22px/1.45 "Cormorant Garamond",serif}
+    #puzzleCard::before,#seal::before{content:'◆';display:block;color:#87524a;font-size:15px;letter-spacing:.2em;margin-bottom:12px}
+    #puzzleHeading{margin:0;font:700 clamp(14px,2vw,19px)/1.5 "Cinzel Decorative",serif;color:#d2b889;letter-spacing:.08em}
+    #puzzleClue{margin:12px 0}#artifact{padding:18px;margin:14px 0;border-block:1px solid #7b704750;background:linear-gradient(135deg,#c5b18c12,#846d3c0b);color:#d8c9a8;font-size:20px;letter-spacing:.04em}
+    #artifact p{margin:0 0 .2em}#puzzleChoices{display:block}#puzzleFeedback{min-height:1.4em;font-size:19px;margin-bottom:0}
+    #puzzleChoices input,#seal input{width:100%;padding:12px;background:#030806b0;border:1px solid #867149;color:#f4e6cb;font:22px "Cormorant Garamond",serif;text-align:center;letter-spacing:.08em;margin:8px 0}
+    #puzzleChoices button,#unseal{min-height:44px;background:linear-gradient(135deg,#28332a,#0b100c);border:1px solid #8e7b51;border-radius:2px;color:#dfcda4;padding:10px 16px;font:700 12px/1.6 "Cinzel Decorative",serif;cursor:pointer;margin:5px}
+    #puzzleChoices button:hover{background:#304836}#puzzleChoices button:disabled{opacity:.35;cursor:default}
+    #artifactLedger{font:18px/1.65 "Cormorant Garamond",serif;color:#bacaaf;border-top:1px solid #89764f55;margin-top:16px;padding-top:12px}
+    #artifactLedger:empty{display:none}.sequence{min-height:30px;letter-spacing:.22em;color:#a8d8b5}
+    #flame{display:block;width:26px;height:48px;margin:4px auto 12px;border-radius:60% 30% 50% 50%;transform:rotate(8deg);background:#687b5455;box-shadow:0 0 12px #84c29115;transition:background .12s,box-shadow .12s}
+    #flame.lit{background:#d9f2ba;box-shadow:0 0 24px #bbff96,0 0 50px #8fd58155}
+    #inventory{z-index:30}#invSlots{border-radius:4px;border-color:#7f6c4755;background:#080c08c0}.slot{border-radius:2px;border-color:#8a795344}
+    #seal h2{font-size:21px}#seal p{font-size:21px}#completion{color:#bdd3b7;font:21px/1.6 "Cormorant Garamond",serif}
+    @media(max-width:700px){#story{top:18vh;max-height:62dvh}#puzzleStatus{top:70px;left:12px;max-width:90vw}#soundNotice{top:100px;right:12px}#puzzleCard,#seal{padding:20px;max-height:calc(100dvh - 200px)}#puzzleClue{font-size:20px}#artifact{padding:12px;font-size:19px}#controls button{font-size:10px}#doorFx{width:clamp(78px,20vw,115px)}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important}.fogLine{transition:opacity 1.8s ease,clip-path 5.8s linear}}
   </style>
 </head>
-
 <body>
-  <div id="veil" aria-hidden="true"></div>
-
-  <main class="hero" id="hero">
-    <div class="bgWrap" id="bgWrap" aria-hidden="true">
-      <img class="bgImg" id="bgImg" src="level8.jpg" alt="" />
-      <div class="overlay" id="overlay"></div>
-      <div class="grain" id="grain"></div>
-
-      <!-- Four staged emerald seals; golden background fit remains untouched -->
-      <div id="doorFx" aria-hidden="true"><div id="carvedSeal"><span id="gLeft">ᛟ</span><span id="gRight">ᚷ</span><span id="gArch">ᛉ</span><span id="gFull">◆</span></div></div>
-
-      <!-- Wither marks -->
-      <div class="wither" id="wither0" aria-hidden="true"></div>
-      <div class="wither" id="wither1" aria-hidden="true"></div>
-      <div class="wither" id="wither2" aria-hidden="true"></div>
-      <div class="wither" id="wither3" aria-hidden="true"></div>
-    </div>
-
-    <div class="clickLayer" id="clickLayer" aria-label="Investigate the garden"></div>
-    <div id="puzzleCard" hidden aria-live="polite"><div id="puzzleHeading"></div><p id="puzzleClue"></p><div id="puzzleChoices"></div><p id="puzzleFeedback"></p></div>
-    <div id="puzzleStatus" aria-live="polite">I · THE FOUNTAIN</div>
-    <section id="story" aria-live="polite"><h1>The Garden of Vows</h1><div id="storyLines"></div></section>
-    <nav id="controls" aria-label="Room controls"><button id="textToggle" type="button">HIDE WORDS</button><button id="muteToggle" type="button">SOUND ON</button></nav>
-    <section id="seal" hidden><h2>The Last Vow</h2><p>Four bindings have yielded. Speak the vow that remains.</p><input id="answer" autocomplete="off" maxlength="24" aria-label="The final vow" placeholder="THE VOW"><button id="unseal" type="button">UNSEAL</button><p id="sealMessage" aria-live="polite"></p></section>
-  </main>
-
-  <div id="edgeGlow" aria-hidden="true"></div>
-  <div id="scanRing" aria-hidden="true"></div>
-  <div id="wrongPulse" aria-hidden="true"></div>
-
-  <!-- Inventory -->
-  <div id="inventory" aria-hidden="true">
-    <div id="invLabel">Inventory</div>
-    <div id="invSlots">
-      <div class="slot" id="slot0">—</div>
-      <div class="slot" id="slot1">—</div>
-      <div class="slot" id="slot2">—</div>
-    </div>
+<div id="veil" aria-hidden="true"></div>
+<main class="hero" id="hero">
+  <div class="bgWrap" aria-hidden="true">
+    <img class="bgImg" id="bgImg" src="level8.jpg" alt="" fetchpriority="high">
+    <div class="overlay" id="overlay"></div><div class="grain" id="grain"></div>
+    <div id="doorFx"><svg viewBox="0 0 120 120" aria-hidden="true">
+      <circle cx="60" cy="60" r="53"/><circle cx="60" cy="60" r="45" stroke-dasharray="1 5"/>
+      <g class="sealPart" id="sealPart0"><path d="M60 7L113 60L60 113L7 60Z"/><text x="60" y="30" text-anchor="middle" fill="currentColor" stroke="none" font-size="17">ᛟ</text></g>
+      <g class="sealPart" id="sealPart1"><path d="M23 23L97 97M97 23L23 97"/><text x="92" y="65" text-anchor="middle" fill="currentColor" stroke="none" font-size="17">ᚷ</text></g>
+      <g class="sealPart" id="sealPart2"><circle cx="60" cy="60" r="28"/><text x="60" y="102" text-anchor="middle" fill="currentColor" stroke="none" font-size="17">ᛉ</text></g>
+      <g class="sealPart" id="sealPart3"><path d="M60 42L78 60L60 78L42 60Z"/><text x="27" y="65" text-anchor="middle" fill="currentColor" stroke="none" font-size="16">◆</text></g>
+    </svg></div>
   </div>
-
-  <script>
-    /* =========================
-       🎒 Inventory (LOCKED) + ✅ REVEAL GATE
-       For this mechanic test ONLY:
-       - force reveal >= 7
-       - ensure rune exists if inventory empty
-    ========================== */
-    const INV_KEY = "ofs_inventory";
-    const INV_REVEAL_KEY = "ofs_inv_reveal_level";
-    const REQUIRED_REVEAL_LEVEL = 7;
-
-    function getRevealLevel(){
-      const n = parseInt(localStorage.getItem(INV_REVEAL_KEY) || "0", 10);
-      return Number.isFinite(n) ? n : 0;
-    }
-    function setRevealLevel(n){
-      try{ localStorage.setItem(INV_REVEAL_KEY, String(n)); }catch(e){}
-    }
-    function loadInv(){
-      try{
-        const raw = localStorage.getItem(INV_KEY);
-        const parsed = raw ? JSON.parse(raw) : null;
-        if (Array.isArray(parsed) && parsed.length === 3) return parsed;
-      }catch(e){}
-      return [null, null, null];
-    }
-    function saveInv(inv){
-      try{ localStorage.setItem(INV_KEY, JSON.stringify(inv)); }catch(e){}
-    }
-    function asId(v){ return (v || "").toString().trim().toUpperCase(); }
-    function migrateInv(inv){
-      let changed = false;
-      const out = inv.map(it => {
-        if (!it) return it;
-        if (typeof it === "string"){
-          const s = asId(it);
-          if (s === "EMERALD RUNE" || s === "RUNE EMERALD" || s === "RUNE_EMERALD"){
-            changed = true;
-            return { id:"RUNE_EMERALD", img:"ui/rune-emerald.png", alt:"Emerald Rune" };
-          }
-        }
-        return it;
-      });
-      if (changed) saveInv(out);
-      return out;
-    }
-    function renderSlot(el, item){
-      if (!el) return;
-      if (!item){
-        el.classList.remove("filled");
-        el.innerHTML = "—";
-        return;
-      }
-      if (typeof item === "object" && item.img){
-        el.innerHTML = `<img class="invIcon" src="${item.img}" alt="${String(item.alt || "Item").replace(/"/g,'&quot;')}" />`;
-        el.classList.add("filled");
-        return;
-      }
-      el.textContent = String(item).slice(0, 10);
-      el.classList.add("filled");
-    }
-
-    
-
-    let inv = migrateInv(loadInv());
-    
-    document.getElementById("inventory").style.display = getRevealLevel() >= 7 ? "flex" : "none";
-    renderSlot(document.getElementById("slot0"), inv[0]);
-    renderSlot(document.getElementById("slot1"), inv[1]);
-    renderSlot(document.getElementById("slot2"), inv[2]);
-
-    /* =========================
-       🎬 Visual reveal (Level 5 feel)
-    ========================== */
-    const veil = document.getElementById("veil");
-    const bgImg = document.getElementById("bgImg");
-    const overlay = document.getElementById("overlay");
-    const grain = document.getElementById("grain");
-
-    function reveal(){
-      setTimeout(() => veil.classList.add("hide"), 380);
-      setTimeout(() => { try{ veil.remove(); }catch(e){} }, 1500);
-      setTimeout(() => {
-        bgImg.classList.add("show");
-        overlay.classList.add("show");
-        grain.classList.add("show");
-      }, 420);
-    }
-    window.addEventListener("pageshow", reveal);
-
-    /* Four Vows — observable, deterministic puzzle. No cursor-proximity guessing. */
-    const clickLayer=document.getElementById("clickLayer");
-    const doorFx=document.getElementById("doorFx");
-    const seals=["gLeft","gRight","gArch","gFull"].map(id=>document.getElementById(id));
-    const status=document.getElementById("puzzleStatus");
-    const card=document.getElementById("puzzleCard");
-    const heading=document.getElementById("puzzleHeading");
-    const clue=document.getElementById("puzzleClue");
-    const choices=document.getElementById("puzzleChoices");
-    const feedback=document.getElementById("puzzleFeedback");
-    const stages=[
-      {name:"THE FOUNTAIN",target:{x:47.5,y:62.5,r:12},title:"I · The Vow of Sorrow",clue:"Beneath the flowing water, an inscription reads: 'I am born of loss, yet I cannot be drowned.' What endured?",options:["Sorrow","Fire","Silence"],answer:"Sorrow"},
-      {name:"THE IVY",target:{x:18.5,y:53,r:13},title:"II · The Vow of Devotion",clue:"A vine encircles a weathered name. 'Though stone breaks and seasons die, I shall never ...' Complete the vow.",options:["Forget","Return","Rule"],answer:"Forget"},
-      {name:"THE LANTERN",target:{x:70,y:41,r:13},title:"III · The Vow of Sacrifice",clue:"The lantern burns in three beats: long, short, long. Its inscription names what the flame consumes. Choose the matching sequence.",options:["Long · Short · Long","Short · Long · Long","Long · Long · Short"],answer:"Long · Short · Long"},
-      {name:"THE DOOR",target:{x:52,y:34,r:14},title:"IV · The Vow of Eternity",clue:"The arch bears three words: SORROW · FORGET · FLAME. Beneath them: 'What survives them all?' Choose the final binding.",options:["Eternity","Mercy","Oblivion"],answer:"Eternity"}
-    ];
-    let stage=0,locked=false,failures=0;
-    function updateStatus(){status.textContent=stage<4?["I","II","III","IV"][stage]+" · "+stages[stage].name:"FOUR VOWS AWAKENED";}
-    function updateDoor(){doorFx.classList.toggle("visible",stage>0);seals.forEach((el,i)=>{el.classList.toggle("sigilOn",stage>i);el.classList.toggle("sigilStrong",stage===4&&stage>i);});}
-    function showStage(){const data=stages[stage];heading.textContent=data.title;clue.textContent=data.clue;feedback.textContent="";choices.replaceChildren();data.options.forEach(option=>{const btn=document.createElement("button");btn.type="button";btn.textContent=option;btn.onclick=()=>solve(option);choices.appendChild(btn);});card.hidden=false;}
-    function solve(value){if(locked)return;const data=stages[stage];if(value!==data.answer){failures++;feedback.textContent=failures<2?"The stone rejects that interpretation.": "A vow is not guessed. Return to the inscription and consider its meaning.";locked=true;setTimeout(()=>{card.hidden=true;locked=false;},1100);return;}failures=0;locked=true;feedback.textContent="The emerald rune answers. A seal awakens.";stage++;updateDoor();updateStatus();setTimeout(()=>{card.hidden=true;locked=false;if(stage===4){document.getElementById("seal").hidden=false;document.getElementById("story").style.opacity="0";}},1400);}
-    function hitTarget(x,y){const target=stages[stage].target;const dx=(x-target.x)/target.r,dy=(y-target.y)/target.r;return dx*dx+dy*dy<=1;}
-    clickLayer.addEventListener("pointerdown",e=>{if(stage>=4||locked||!card.hidden)return;const x=e.clientX/window.innerWidth*100,y=e.clientY/window.innerHeight*100;if(hitTarget(x,y))showStage();});
-    updateDoor();updateStatus();
-    // Story and controls; pacing follows the locked 74-second cinematic floor.
-    const lines=[
-      "Beyond the passage, a garden waits beneath a sky that has forgotten dawn.",
-      "The fountain still runs, though no living hand tends its waters.",
-      "Vines embrace the ancient stones like fingers refusing to release a memory.",
-      "A faint emerald pulse moves through the roots and disappears beneath the path.",
-      "Four promises were buried here. Four bindings keep the door asleep.",
-      "The rune you carry is warm. Something in this place recognizes it.",
-      "Seek first the water, then the ivy, then the lantern, and finally the ancient door.",
-      "And do not mistake the silence beyond the doors for peace."
-    ];
-    const lineHost=document.getElementById("storyLines");
-    lines.forEach((line,i)=>{const el=document.createElement("span");el.className="fogLine";el.textContent=line;lineHost.appendChild(el);setTimeout(()=>el.classList.add("visible"),1350+i*9200);});
-    let hiddenText=false;
-    document.getElementById("textToggle").onclick=()=>{hiddenText=!hiddenText;document.getElementById("story").style.opacity=hiddenText?"0":"1";document.getElementById("textToggle").textContent=hiddenText?"SHOW WORDS":"HIDE WORDS";};
-    const muteKey="ofs_mute";let muted=localStorage.getItem(muteKey)==="1";
-    const ambience=new Audio("audio/level8-ambience.mp3");ambience.loop=true;ambience.volume=.38;
-    const muteButton=document.getElementById("muteToggle");
-    function syncAudio(){muteButton.textContent=muted?"SOUND OFF":"SOUND ON";ambience.muted=muted;if(muted)ambience.pause();else ambience.play().catch(()=>{});localStorage.setItem(muteKey,muted?"1":"0");}
-    // Browser narration is a temporary fallback until a matching Mordain recording exists.
-    const narration=[
-      "You have come farther than I dared hope. This garden was once a sanctuary.",
-      "Its waters remember every tear, and its roots remember every promise.",
-      "Listen closely. There are four vows bound to this place.",
-      "Follow the water, the ivy, the lantern, and the door. I shall be waiting."
-    ];
-    let narrationStarted=false;
-    function speakMordain(){if(narrationStarted||muted||!("speechSynthesis" in window))return;narrationStarted=true;const u=new SpeechSynthesisUtterance(narration.join(" "));u.lang="en-GB";u.rate=.78;u.pitch=.65;u.volume=.85;const voices=speechSynthesis.getVoices();u.voice=voices.find(v=>/en-GB/i.test(v.lang)&&/male|daniel|george/i.test(v.name))||voices.find(v=>/en-GB/i.test(v.lang))||null;speechSynthesis.speak(u);}
-    muteButton.onclick=()=>{muted=!muted;syncAudio();if(muted&&"speechSynthesis" in window)speechSynthesis.cancel();else speakMordain();};
-    muteButton.textContent=muted?"SOUND OFF":"SOUND ON";
-    document.addEventListener("pointerdown",()=>{if(!muted){if(ambience.paused)ambience.play().catch(()=>{});speakMordain();}},{once:true});
-    document.getElementById("unseal").onclick=()=>{const value=document.getElementById("answer").value.trim().toUpperCase();const msg=document.getElementById("sealMessage");if(value==="ETERNITY"){msg.textContent="The seal remembers. The passage beyond awaits.";setTimeout(()=>{location.href="level9.html";},2200);}else{msg.textContent="The stone rejects your words.";}}
-  </script>
+  <div id="sites" aria-label="Garden artifacts">
+    <button type="button" class="site" id="site0" aria-label="Examine the fountain" disabled><span>Fountain</span></button>
+    <button type="button" class="site" id="site1" aria-label="Examine the ivy" disabled><span>Ivy</span></button>
+    <button type="button" class="site" id="site2" aria-label="Examine the lantern" disabled><span>Lantern</span></button>
+    <button type="button" class="site" id="site3" aria-label="Examine the ancient door" disabled><span>Door</span></button>
+  </div>
+  <section id="story"><h1>The Garden of Four Vows</h1><div id="storyLines"></div></section>
+  <nav id="controls" aria-label="Room controls"><button id="textToggle" type="button" aria-pressed="false">HIDE WORDS</button><button id="muteToggle" type="button" aria-pressed="false">SOUND ON</button></nav>
+  <p id="soundNotice" role="status"></p><div id="puzzleStatus" role="status">THE GARDEN REMEMBERS</div>
+  <section id="puzzleCard" hidden aria-labelledby="puzzleHeading" role="dialog" aria-modal="true" tabindex="-1"><h2 id="puzzleHeading"></h2><p id="puzzleClue"></p><div id="artifact"></div><form id="puzzleChoices"></form><p id="puzzleFeedback" role="status"></p><div id="artifactLedger"></div></section>
+  <section id="seal" hidden role="dialog" aria-modal="true" aria-labelledby="sealTitle" tabindex="-1"><h2 id="sealTitle">The Last Vow</h2><p id="sealClue">Join the four fragments in the order carved into the seal.</p><form id="sealForm"><input id="answer" autocomplete="off" spellcheck="false" maxlength="24" aria-label="The final vow" placeholder="WHISPER THE VOW"><button id="unseal" type="submit">UNSEAL</button></form><p id="sealMessage" role="status"></p><div id="completion" hidden></div></section>
+</main>
+<div id="inventory" hidden><div id="invLabel">Inventory</div><div id="invSlots"><div class="slot" id="slot0">—</div><div class="slot" id="slot1">—</div><div class="slot" id="slot2">—</div></div></div>
+<audio id="ambience" src="audio/level8-ambience.mp3" preload="auto" loop playsinline></audio>
+<!-- Activated only after the approved Mordain recording has been uploaded. -->
+<audio id="mordainVoice" data-src="audio/mordain-level8.mp3" preload="auto" playsinline></audio>
+<script>
+"use strict";
+// ONLYFORSAKEN: no item creation, no inventory reset, no synthetic voice.
+const $=id=>document.getElementById(id);
+const storage={get(key,fallback=null){try{return localStorage.getItem(key)??fallback}catch{return fallback}},set(key,value){try{localStorage.setItem(key,value)}catch{}}};
+const NARRATION_READY=false;
+const MIN_TOTAL=74,MIN_LINE_DUR=5.8,MIN_GAP=1.15,START_DELAY=1.35;
+const storyLines=[
+"Beyond the passage, a garden waits beneath a sky that has forgotten dawn.",
+"The fountain still runs, though no living hand tends its waters.",
+"Vines embrace the ancient stones like fingers refusing to release a memory.",
+"A faint emerald pulse moves through the roots and disappears beneath the path.",
+"Four promises were buried here. Four bindings keep the door asleep.",
+"The rune you carry is warm. Something in this place recognizes it.",
+"Seek first the water, then the ivy, then the lantern, and finally the ancient door.",
+"And do not mistake the silence beyond the doors for peace."
+];
+let cinematicStart=performance.now(),cinematicDuration=MIN_TOTAL*1000,cinematicDone=false,hiddenText=false;
+const lineEls=storyLines.map(text=>{const el=document.createElement('span');el.className='fogLine';el.textContent=text;$('storyLines').append(el);return el});
+// An actual 74-second minimum: the final line cannot finish before the floor.
+function updateCinematic(){
+  if(cinematicDone)return;
+  const elapsed=performance.now()-cinematicStart;
+  const available=cinematicDuration/1000-START_DELAY;
+  const lineDuration=Math.max(MIN_LINE_DUR,(available-MIN_GAP*(lineEls.length-1))/lineEls.length);
+  const stride=lineDuration+MIN_GAP;
+  lineEls.forEach((el,i)=>{el.style.transitionDuration=`${lineDuration}s, 1.8s`;if(elapsed>=(START_DELAY+i*stride)*1000)el.classList.add('visible')});
+  if(elapsed>=cinematicDuration){cinematicDone=true;$('puzzleStatus').textContent='I · SEEK THE FOUNTAIN';setStoryHidden(true);updateSites();if(completed)showSeal()}
+}
+function setStoryHidden(value){hiddenText=value;$('story').dataset.hidden=String(value);$('textToggle').textContent=value?'SHOW WORDS':'HIDE WORDS';$('textToggle').setAttribute('aria-pressed',String(value))}
+$('textToggle').onclick=()=>setStoryHidden(!hiddenText);
+setTimeout(()=>{$('veil').classList.add('hide');$('bgImg').classList.add('show');$('overlay').classList.add('show');$('grain').classList.add('show')},420);
+setTimeout(()=>$('veil').remove(),1600);
+setInterval(updateCinematic,100);
+// Geometry in normalized SOURCE IMAGE coordinates, preserving cover and object-position.
+const anchors=[{x:.244,y:.72},{x:.372,y:.57},{x:.603,y:.406},{x:.49,y:.48}];
+function imagePoint(point){const im=$('bgImg'),rect=im.getBoundingClientRect();const scale=Math.max(rect.width/(im.naturalWidth||1536),rect.height/(im.naturalHeight||1024));const w=(im.naturalWidth||1536)*scale,h=(im.naturalHeight||1024)*scale;const py=matchMedia('(max-width:700px)').matches?.54:.42;return {x:rect.left+(rect.width-w)*.5+point.x*w,y:rect.top+(rect.height-h)*py+point.y*h}}
+function placeArtifacts(){anchors.forEach((point,i)=>{const p=imagePoint(point),el=$('site'+i);el.style.left=Math.max(32,Math.min(innerWidth-32,p.x))+'px';el.style.top=Math.max(135,Math.min(innerHeight-140,p.y))+'px'});const door=imagePoint(anchors[3]);$('doorFx').style.left=door.x+'px';$('doorFx').style.top=door.y+'px'}
+$('bgImg').addEventListener('load',placeArtifacts);window.addEventListener('resize',placeArtifacts);window.visualViewport?.addEventListener('resize',placeArtifacts);placeArtifacts();
+// Inventory is read-only here; string and object items remain compatible with Level 7.
+function renderInventory(){let inv;try{inv=JSON.parse(storage.get('ofs_inventory','null'))}catch{};if(!Array.isArray(inv)||inv.length!==3)inv=[null,null,null];$('inventory').hidden=Number(storage.get('ofs_inv_reveal_level','0'))<7;inv.forEach((item,i)=>{const slot=$('slot'+i);slot.replaceChildren();slot.classList.toggle('filled',!!item);if(!item){slot.textContent='—';return}const rune=typeof item==='string'&&/^(EMERALD RUNE|RUNE EMERALD|RUNE_EMERALD)$/i.test(item);const path=rune?'ui/rune-emerald.png':item.img;if(typeof path==='string'&&/^ui\/[a-z0-9_.-]+\.(png|webp|jpg)$/i.test(path)){const img=document.createElement('img');img.className='invIcon';img.src=path;img.alt=String(item.alt||'Emerald Rune');slot.append(img)}else slot.textContent=typeof item==='string'?item:String(item.alt||item.id||'Relic')})}
+renderInventory();
+// Two-track audio: synchronous play attempts preserve Android user activation.
+const voice=$('mordainVoice'),amb=$('ambience'),muteButton=$('muteToggle');
+let muted=storage.get('ofs_mute')==='1',voiceEnded=false,voiceActive=false,duckFrame=0,everPlayed=false;
+amb.volume=.32;voice.volume=.86;if(NARRATION_READY)voice.src=voice.dataset.src;
+function fadeAmb(target,duration=1800){cancelAnimationFrame(duckFrame);const start=amb.volume,t=performance.now();function step(now){const f=Math.min(1,(now-t)/duration);amb.volume=start+(target-start)*f;if(f<1)duckFrame=requestAnimationFrame(step)}duckFrame=requestAnimationFrame(step)}
+function syncMute(){voice.muted=amb.muted=muted;muteButton.textContent=muted?'SOUND OFF':'SOUND ON';muteButton.setAttribute('aria-pressed',String(muted));muteButton.setAttribute('aria-label',muted?'Unmute narration and ambience':'Mute narration and ambience');if(muted){voice.pause();amb.pause();$('soundNotice').textContent=''}}
+function tryAudio(){if(muted||document.hidden)return;amb.play().then(()=>{everPlayed=true;if(!NARRATION_READY)$('soundNotice').textContent=''}).catch(()=>{$('soundNotice').textContent='Touch the garden to awaken its sound.'});if(NARRATION_READY&&!voiceEnded)voice.play().then(()=>{everPlayed=true;$('soundNotice').textContent=''}).catch(()=>{$('soundNotice').textContent='Touch the garden to hear Mordain.'})}
+voice.addEventListener('playing',()=>{voiceActive=true;fadeAmb(.09,650)});
+voice.addEventListener('pause',()=>{voiceActive=false;fadeAmb(.32)});
+voice.addEventListener('ended',()=>{voiceEnded=true;voiceActive=false;fadeAmb(.32,3200)});
+voice.addEventListener('error',()=>{voiceActive=false;fadeAmb(.32);$('soundNotice').textContent='Mordain’s recording could not be loaded.'});
+voice.addEventListener('loadedmetadata',()=>{if(Number.isFinite(voice.duration))cinematicDuration=Math.max(cinematicDuration,(voice.duration+START_DELAY+2)*1000)});
+muteButton.onclick=()=>{muted=!muted;storage.set('ofs_mute',muted?'1':'0');syncMute();if(!muted)tryAudio()};
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('#muteToggle'))tryAudio()},true);
+document.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')tryAudio()},true);
+document.addEventListener('visibilitychange',()=>{if(document.hidden){voice.pause();amb.pause()}else if(everPlayed)tryAudio()});
+window.addEventListener('pagehide',()=>{voice.pause();amb.pause()});
+window.addEventListener('pageshow',()=>{placeArtifacts();tryAudio()});syncMute();
+// Progress uses its own key, never the three inventory slots.
+const progressKey='ofs_garden_vows_v1';
+let saved;try{saved=JSON.parse(storage.get(progressKey,'null'))}catch{}
+let stage=Number.isInteger(saved?.stage)&&saved.stage>=0&&saved.stage<=4?saved.stage:0;
+let completed=saved?.completed===true&&stage===4;
+const names=['THE FOUNTAIN','THE IVY','THE LANTERN','THE DOOR'];
+const records=[['ᛟ','III','NI','Sorrow'],['ᚷ','I','ET','Devotion'],['ᛉ','IV','TY','Sacrifice'],['◆','II','ER','Eternity']];
+const card=$('puzzleCard'),clue=$('puzzleClue'),artifact=$('artifact'),form=$('puzzleChoices'),feedback=$('puzzleFeedback');
+let focusedSite=null,panelTimers=[],panelEpoch=0;
+function persist(){storage.set(progressKey,JSON.stringify({stage,completed}))}
+function updateSites(){for(let i=0;i<4;i++){const site=$('site'+i);site.disabled=!cinematicDone||i>stage||completed;site.classList.toggle('solved',i<stage);$('sealPart'+i).classList.toggle('awake',i<stage)}$('doorFx').classList.toggle('visible',stage>0);$('doorFx').classList.toggle('complete',stage===4);if(cinematicDone)$('puzzleStatus').textContent=completed?'THE FOUR VOWS · UNSEALED':stage<4?['I','II','III','IV'][stage]+' · '+names[stage]:'FOUR VOWS AWAKENED'}
+function ledger(){return records.slice(0,stage).map(r=>`${r[0]} · ${r[1]} · ${r[2]} — ${r[3]}`).join('   /   ')}
+function clearPanel(){panelEpoch++;panelTimers.forEach(clearTimeout);panelTimers=[];form.replaceChildren();artifact.replaceChildren();feedback.textContent=''}
+function later(fn,ms){panelTimers.push(setTimeout(fn,ms))}
+function button(text,fn){const b=document.createElement('button');b.type='button';b.textContent=text;b.onclick=fn;form.append(b);return b}
+function showSeal(){card.hidden=true;$('seal').hidden=false;$('seal').focus();if(completed){renderCompletion();return}$('answer').focus();$('sealClue').textContent='Read I → II → III → IV. Join the fragments: '+ledger()}
+function solve(){feedback.textContent='The binding yields. '+records[stage].join(' · ');stage++;persist();updateSites();$('artifactLedger').textContent=ledger();for(const b of form.querySelectorAll('button,input'))b.disabled=true;later(()=>{card.hidden=true;clearPanel();if(stage===4)showSeal();else $('site'+stage).focus()},2200)}
+function textPuzzle(check){const input=document.createElement('input');input.autocomplete='off';input.spellcheck=false;input.maxLength=24;input.setAttribute('aria-label','Read the inscription and enter its hidden word');form.append(input);const submit=document.createElement('button');submit.type='submit';submit.textContent='OFFER THE WORD';form.append(submit);form.onsubmit=e=>{e.preventDefault();if(check(input.value.trim().toUpperCase()))solve();else feedback.textContent='The water holds still. Read the beginning of each carved line.'};input.focus()}
+function openStage(i){if(!cinematicDone||i>stage||completed)return;focusedSite=$('site'+i);clearPanel();card.hidden=false;card.focus();$('artifactLedger').textContent=ledger();setStoryHidden(true);$('puzzleHeading').textContent=['I · The Vow of Sorrow','II · The Vow of Devotion','III · The Vow of Sacrifice','IV · The Vow of Eternity'][i];if(i<stage){clue.textContent='The stone remembers your offering.';artifact.textContent=records[i].join(' · ');return}
+ if(i===0){clue.textContent='Six lines survive beneath the water. “At every beginning, grief leaves its name.” Read what the stone conceals.';['Silent are the hands that tended me.','Only the water keeps their shape.','Roses drink where footsteps ended.','Roots take hold of empty rooms.','Old names sink beneath the lilies.','We remain, who cannot follow.'].forEach(t=>{const p=document.createElement('p');p.textContent=t;artifact.append(p)});textPuzzle(v=>v==='SORROW')}
+ if(i===1){clue.textContent='Restore the vine’s four carvings from first to last. Each may be placed only once. Touch your last carving to lift it.';artifact.textContent='The bloom follows the thorn. The leaf must follow the root, yet precede the thorn. Nothing grows before the root.';let sequence=[];const output=document.createElement('p');output.className='sequence';output.setAttribute('aria-live','polite');form.append(output);const glyphs=['BLOOM','THORN','ROOT','LEAF'];const buttons=glyphs.map(word=>button(word,()=>{if(sequence.includes(word)){if(sequence.at(-1)===word)sequence.pop()}else sequence.push(word);paint();if(sequence.length===4){if(sequence.join(',')==='ROOT,LEAF,THORN,BLOOM')solve();else{feedback.textContent='The vine twists shut. The inscriptions describe one unbroken order.';sequence=[];paint()}}}));function paint(){output.textContent=sequence.join(' → ');buttons.forEach((b,n)=>b.disabled=sequence.includes(glyphs[n])&&sequence.at(-1)!==glyphs[n])}}
+ if(i===2){clue.textContent='Watch the lantern’s five breaths. When it dims, return their lengths in the same order. Touch the lantern to watch again.';const flame=document.createElement('span');flame.id='flame';flame.setAttribute('aria-hidden','true');artifact.append(flame);const label=document.createElement('p');label.setAttribute('aria-live','polite');artifact.append(label);const watch=document.createElement('button');watch.type='button';watch.setAttribute('aria-label','Watch the lantern sequence again');watch.textContent='✧';watch.style.cssText='background:transparent;border:0;color:#c9d4ac;font-size:30px;min-height:44px;cursor:pointer';artifact.append(watch);let input=[],watching=false;const output=document.createElement('p');output.className='sequence';form.append(output);const keys=[button('SHORT ·',()=>enter('S')),button('LONG ━',()=>enter('L'))];function enter(value){if(watching)return;input.push(value);output.textContent=input.map(v=>v==='L'?'━':'·').join(' ');if(input.length===5){if(input.join('')==='LSSLS')solve();else{feedback.textContent='The flame recoils. Watch its breathing once more.';input=[];output.textContent='';watchSequence()}}}function watchSequence(){panelTimers.forEach(clearTimeout);panelTimers=[];input=[];output.textContent='';watching=true;watch.disabled=true;keys.forEach(k=>k.disabled=true);let t=700;['L','S','S','L','S'].forEach(v=>{later(()=>{flame.classList.add('lit');label.textContent=v==='L'?'An enduring breath…':'A fleeting breath.'},t);t+=v==='L'?1300:380;later(()=>{flame.classList.remove('lit');label.textContent='…'},t);t+=600});later(()=>{watching=false;watch.disabled=false;keys.forEach(k=>k.disabled=false);label.textContent='The lantern awaits your answer.'},t)}watch.onclick=watchSequence;watchSequence()}
+ if(i===3){clue.textContent='The door offers a fourth fragment: ◆ · II · ER. Set the four marks in the order of their carved numerals. Touch the last placed mark to lift it.';artifact.textContent=ledger()+'   /   ◆ · II · ER';let sequence=[];const output=document.createElement('p');output.className='sequence';form.append(output);const glyphs=['ᛉ','◆','ᛟ','ᚷ'];const keys=glyphs.map(g=>button(g,()=>{if(sequence.includes(g)){if(sequence.at(-1)===g)sequence.pop()}else sequence.push(g);paint();if(sequence.length===4){if(sequence.join('')==='ᚷ◆ᛟᛉ')solve();else{feedback.textContent='The rings refuse each other. Each fragment bears its place.';sequence=[];paint()}}}));function paint(){output.textContent=sequence.join(' → ');keys.forEach((b,n)=>b.disabled=sequence.includes(glyphs[n])&&sequence.at(-1)!==glyphs[n])}}
+}
+for(let i=0;i<4;i++)$('site'+i).onclick=()=>stage===4&&i===3?showSeal():openStage(i);
+// Outside touch / Escape closes artifacts; no additional interface controls.
+function closePanel(){if(!card.hidden){clearPanel();card.hidden=true;focusedSite?.focus()}else if(!$('seal').hidden&&!completed){$('seal').hidden=true;$('site3').focus()}}
+document.addEventListener('pointerdown',e=>{if(!card.hidden&&!e.target.closest('#puzzleCard,#controls,.site'))closePanel()});
+document.addEventListener('keydown',e=>{const panel=!card.hidden?card:!$('seal').hidden?$('seal'):null;if(!panel)return;if(e.key==='Escape'){closePanel();return}if(e.key==='Tab'){const nodes=[...panel.querySelectorAll('button:not(:disabled),input:not(:disabled)')].filter(el=>!el.closest('[hidden]'));if(!nodes.length){e.preventDefault();panel.focus();return}const first=nodes[0],last=nodes.at(-1);if(e.shiftKey&&(document.activeElement===first||document.activeElement===panel)){e.preventDefault();last.focus()}else if(!e.shiftKey&&(document.activeElement===last||!panel.contains(document.activeElement))){e.preventDefault();first.focus()}}});
+function renderCompletion(){$('sealForm').hidden=true;$('sealMessage').textContent='The seal remembers.';$('completion').hidden=false;$('completion').textContent='The garden falls silent. Beyond the unbound doors, a single footstep answers yours. This chapter is complete. Your passage is remembered.'}
+$('sealForm').onsubmit=e=>{e.preventDefault();if($('answer').value.trim().toUpperCase()!=='ETERNITY'){$('sealMessage').textContent='Four fragments. One vow. Follow the carved numerals.';return}completed=true;persist();updateSites();renderCompletion()};
+window.addEventListener('storage',e=>{if(e.key==='ofs_mute'){muted=storage.get('ofs_mute')==='1';syncMute();if(!muted)tryAudio()}if(e.key==='ofs_inventory'||e.key==='ofs_inv_reveal_level')renderInventory()});
+updateSites();
+</script>
 </body>
 </html>

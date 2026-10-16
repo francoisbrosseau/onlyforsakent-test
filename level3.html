@@ -696,10 +696,10 @@
         const voiceDur = (isFinite(voice.duration) && voice.duration > 2) ? voice.duration : 0;
 
         // Slightly slower than before (not drastic)
-        const MIN_TOTAL    = 58;
-        const MIN_LINE_DUR = 4.8;
-        const MIN_GAP      = 1.00;
-        const START_DELAY  = 1.20;
+        const MIN_TOTAL    = 74;
+        const MIN_LINE_DUR = 5.8;
+        const MIN_GAP      = 1.15;
+        const START_DELAY  = 1.35;
 
         const n = revealLines.length;
         const total = Math.max(MIN_TOTAL, voiceDur ? (voiceDur * 1.08) : 0);
