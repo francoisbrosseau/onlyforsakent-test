@@ -553,8 +553,8 @@
           el.dataset.sx = (5 + Math.random() * 90).toFixed(2);
           el.dataset.sy = (8 + Math.random() * 84).toFixed(2);
         }
-        el.style.left = (rect.left + (parseFloat(el.dataset.sx) / 100) * rect.width) + "px";
-        el.style.top  = (rect.top  + (parseFloat(el.dataset.sy) / 100) * rect.height) + "px";
+        el.style.left = hx + "px";
+        el.style.top  = hy + "px";
 
         if (dist <= RADIUS) el.classList.add("on");
         else el.classList.remove("on");
