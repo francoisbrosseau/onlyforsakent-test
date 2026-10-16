@@ -148,7 +148,7 @@
     #doorFx{position:absolute;left:var(--door-left);top:var(--door-top);width:var(--door-w);height:var(--door-h);transform:translate(-50%,-50%);pointer-events:none;z-index:4;opacity:0;transition:opacity .6s;filter:drop-shadow(0 0 9px rgba(0,255,170,.8))}
     #doorFx.visible{opacity:1}
     .runeMark{position:absolute;font-family:serif;font-size:clamp(24px,3.3vw,54px);color:#7fffd0;text-shadow:0 0 8px #00ffae,0 0 22px #00b977;opacity:0;transition:opacity 1.1s ease}
-    #gLeft{left:29%;top:52%}#gRight{right:29%;top:52%}#gArch{left:47%;top:13%}#gFull{left:47%;top:44%;font-size:clamp(35px,4vw,68px)}
+    #carvedSeal{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:clamp(64px,8vw,105px);height:clamp(64px,8vw,105px);border:1px solid #50d69b55;border-radius:50%;background:radial-gradient(circle,#053b2750,transparent 70%);box-shadow:0 0 20px #00a96b22}#carvedSeal .runeMark,#carvedSeal span{position:absolute;font-size:clamp(18px,2vw,28px);color:#80ffbb;text-shadow:0 0 10px #0f8;opacity:0;transition:opacity .9s}#gLeft{left:15%;top:36%}#gRight{right:15%;top:36%}#gArch{left:42%;top:5%}#gFull{left:43%;bottom:0%}
     .runeMark.sigilOn{opacity:.85} .runeMark.sigilStrong{opacity:1}
     /* Edge glow invasion */
     #edgeGlow{
@@ -338,7 +338,7 @@
       <div class="grain" id="grain"></div>
 
       <!-- Four staged emerald seals; golden background fit remains untouched -->
-      <div id="doorFx" aria-hidden="true"><span class="runeMark" id="gLeft">ᛟ</span><span class="runeMark" id="gRight">ᚷ</span><span class="runeMark" id="gArch">ᛉ</span><span class="runeMark" id="gFull">◇</span></div>
+      <div id="doorFx" aria-hidden="true"><div id="carvedSeal"><span id="gLeft">ᛟ</span><span id="gRight">ᚷ</span><span id="gArch">ᛉ</span><span id="gFull">◆</span></div></div>
 
       <!-- Wither marks -->
       <div class="wither" id="wither0" aria-hidden="true"></div>
@@ -475,11 +475,11 @@
       {name:"THE LANTERN",target:{x:70,y:41,r:13},title:"III · The Vow of Sacrifice",clue:"The lantern burns in three beats: long, short, long. Its inscription names what the flame consumes. Choose the matching sequence.",options:["Long · Short · Long","Short · Long · Long","Long · Long · Short"],answer:"Long · Short · Long"},
       {name:"THE DOOR",target:{x:52,y:34,r:14},title:"IV · The Vow of Eternity",clue:"The arch bears three words: SORROW · FORGET · FLAME. Beneath them: 'What survives them all?' Choose the final binding.",options:["Eternity","Mercy","Oblivion"],answer:"Eternity"}
     ];
-    let stage=0,locked=false;
+    let stage=0,locked=false,failures=0;
     function updateStatus(){status.textContent=stage<4?["I","II","III","IV"][stage]+" · "+stages[stage].name:"FOUR VOWS AWAKENED";}
     function updateDoor(){doorFx.classList.toggle("visible",stage>0);seals.forEach((el,i)=>{el.classList.toggle("sigilOn",stage>i);el.classList.toggle("sigilStrong",stage===4&&stage>i);});}
     function showStage(){const data=stages[stage];heading.textContent=data.title;clue.textContent=data.clue;feedback.textContent="";choices.replaceChildren();data.options.forEach(option=>{const btn=document.createElement("button");btn.type="button";btn.textContent=option;btn.onclick=()=>solve(option);choices.appendChild(btn);});card.hidden=false;}
-    function solve(value){if(locked)return;const data=stages[stage];if(value!==data.answer){feedback.textContent="The garden falls silent. Read the inscription again.";return;}locked=true;feedback.textContent="The emerald rune answers. A seal awakens.";stage++;updateDoor();updateStatus();setTimeout(()=>{card.hidden=true;locked=false;if(stage===4){document.getElementById("seal").hidden=false;document.getElementById("story").style.opacity="0";}},1400);}
+    function solve(value){if(locked)return;const data=stages[stage];if(value!==data.answer){failures++;feedback.textContent=failures<2?"The stone rejects that interpretation.": "A vow is not guessed. Return to the inscription and consider its meaning.";locked=true;setTimeout(()=>{card.hidden=true;locked=false;},1100);return;}failures=0;locked=true;feedback.textContent="The emerald rune answers. A seal awakens.";stage++;updateDoor();updateStatus();setTimeout(()=>{card.hidden=true;locked=false;if(stage===4){document.getElementById("seal").hidden=false;document.getElementById("story").style.opacity="0";}},1400);}
     function hitTarget(x,y){const target=stages[stage].target;const dx=(x-target.x)/target.r,dy=(y-target.y)/target.r;return dx*dx+dy*dy<=1;}
     clickLayer.addEventListener("pointerdown",e=>{if(stage>=4||locked||!card.hidden)return;const x=e.clientX/window.innerWidth*100,y=e.clientY/window.innerHeight*100;if(hitTarget(x,y))showStage();});
     updateDoor();updateStatus();
@@ -502,9 +502,18 @@
     const ambience=new Audio("audio/level8-ambience.mp3");ambience.loop=true;ambience.volume=.38;
     const muteButton=document.getElementById("muteToggle");
     function syncAudio(){muteButton.textContent=muted?"SOUND OFF":"SOUND ON";ambience.muted=muted;if(muted)ambience.pause();else ambience.play().catch(()=>{});localStorage.setItem(muteKey,muted?"1":"0");}
-    muteButton.onclick=()=>{muted=!muted;syncAudio();};
+    // Browser narration is a temporary fallback until a matching Mordain recording exists.
+    const narration=[
+      "You have come farther than I dared hope. This garden was once a sanctuary.",
+      "Its waters remember every tear, and its roots remember every promise.",
+      "Listen closely. There are four vows bound to this place.",
+      "Follow the water, the ivy, the lantern, and the door. I shall be waiting."
+    ];
+    let narrationStarted=false;
+    function speakMordain(){if(narrationStarted||muted||!("speechSynthesis" in window))return;narrationStarted=true;const u=new SpeechSynthesisUtterance(narration.join(" "));u.lang="en-GB";u.rate=.78;u.pitch=.65;u.volume=.85;const voices=speechSynthesis.getVoices();u.voice=voices.find(v=>/en-GB/i.test(v.lang)&&/male|daniel|george/i.test(v.name))||voices.find(v=>/en-GB/i.test(v.lang))||null;speechSynthesis.speak(u);}
+    muteButton.onclick=()=>{muted=!muted;syncAudio();if(muted&&"speechSynthesis" in window)speechSynthesis.cancel();else speakMordain();};
     muteButton.textContent=muted?"SOUND OFF":"SOUND ON";
-    document.addEventListener("pointerdown",()=>{if(!muted&&ambience.paused)ambience.play().catch(()=>{});},{once:true});
+    document.addEventListener("pointerdown",()=>{if(!muted){if(ambience.paused)ambience.play().catch(()=>{});speakMordain();}},{once:true});
     document.getElementById("unseal").onclick=()=>{const value=document.getElementById("answer").value.trim().toUpperCase();const msg=document.getElementById("sealMessage");if(value==="ETERNITY"){msg.textContent="The seal remembers. The passage beyond awaits.";setTimeout(()=>{location.href="level9.html";},2200);}else{msg.textContent="The stone rejects your words.";}}
   </script>
 </body>
