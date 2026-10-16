@@ -357,6 +357,23 @@
     #inventory{z-index:30}#invSlots{border-radius:4px;border-color:#7f6c4755;background:#080c08c0}.slot{border-radius:2px;border-color:#8a795344}
     #seal h2{font-size:21px}#seal p{font-size:21px}#completion{color:#bdd3b7;font:21px/1.6 "Cormorant Garamond",serif}
     @media(max-width:700px){#story{top:18vh;max-height:62dvh}#puzzleStatus{top:70px;left:12px;max-width:90vw}#soundNotice{top:100px;right:12px}#puzzleCard,#seal{padding:20px;max-height:calc(100dvh - 200px)}#puzzleClue{font-size:20px}#artifact{padding:12px;font-size:19px}#controls button{font-size:10px}#doorFx{width:clamp(78px,20vw,115px)}}
+    /* Mobile puzzle ergonomics: keep clues, actions and seal reachable on short screens. */
+    @media(max-width:700px){
+      #puzzleCard,#seal{top:50%;width:min(560px,94vw);max-height:calc(100dvh - 112px);padding:16px 18px;overscroll-behavior:contain}
+      #puzzleCard{scrollbar-width:thin}
+      #puzzleHeading{font-size:clamp(13px,3.5vw,17px)}
+      #puzzleClue{font-size:19px;line-height:1.35}
+      #artifact{font-size:18px;line-height:1.35;margin:9px 0;padding:10px}
+      #puzzleChoices button{min-height:48px;min-width:74px;margin:4px;padding:10px}
+      #puzzleChoices input,#seal input{font-size:20px;min-height:48px}
+      #artifactLedger{font-size:16px;overflow-wrap:anywhere}
+      #inventory{bottom:max(7px,env(safe-area-inset-bottom))}
+    }
+    @media(max-width:700px) and (max-height:650px){
+      #puzzleCard,#seal{top:48%;max-height:calc(100dvh - 75px)}
+      #puzzleStatus{font-size:9px;top:55px}
+      #story{top:16vh}
+    }
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important}.fogLine{transition:opacity 1.8s ease,clip-path 5.8s linear}}
   </style>
 </head>
@@ -462,7 +479,7 @@ let focusedSite=null,panelTimers=[],panelEpoch=0;
 function persist(){storage.set(progressKey,JSON.stringify({stage,completed}))}
 function updateSites(){for(let i=0;i<4;i++){const site=$('site'+i);site.disabled=!cinematicDone||i>stage||completed;site.classList.toggle('solved',i<stage);$('sealPart'+i).classList.toggle('awake',i<stage)}$('doorFx').classList.toggle('visible',stage>0);$('doorFx').classList.toggle('complete',stage===4);if(cinematicDone)$('puzzleStatus').textContent=completed?'THE FOUR VOWS · UNSEALED':stage<4?['I','II','III','IV'][stage]+' · '+names[stage]:'FOUR VOWS AWAKENED'}
 function ledger(){return records.slice(0,stage).map(r=>`${r[0]} · ${r[1]} · ${r[2]} — ${r[3]}`).join('   /   ')}
-function clearPanel(){panelEpoch++;panelTimers.forEach(clearTimeout);panelTimers=[];form.replaceChildren();artifact.replaceChildren();feedback.textContent=''}
+function clearPanel(){panelEpoch++;panelTimers.forEach(clearTimeout);panelTimers=[];form.onsubmit=null;form.replaceChildren();artifact.replaceChildren();feedback.textContent=''}
 function later(fn,ms){panelTimers.push(setTimeout(fn,ms))}
 function button(text,fn){const b=document.createElement('button');b.type='button';b.textContent=text;b.onclick=fn;form.append(b);return b}
 function showSeal(){card.hidden=true;$('seal').hidden=false;$('seal').focus();if(completed){renderCompletion();return}$('answer').focus();$('sealClue').textContent='Read I → II → III → IV. Join the fragments: '+ledger()}
