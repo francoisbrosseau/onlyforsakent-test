@@ -318,7 +318,7 @@
     #storyLines{font:400 clamp(20px,2.1vw,24px)/1.75 "Cormorant Garamond",serif;letter-spacing:.04em}
     .fogLine{display:block;opacity:0;clip-path:inset(0 100% 0 0);transition:clip-path 5.8s linear,opacity 1.8s ease}
     .fogLine.visible{opacity:1;clip-path:inset(0 0 0 0)}
-    .fogLine.past{opacity:0!important;transition:none!important;pointer-events:none}
+    .fogLine.past{display:none!important;opacity:0!important;clip-path:inset(0 100% 0 0)!important;transition:none!important;pointer-events:none}
     #controls{position:fixed;z-index:30;top:18px;right:18px;display:flex;gap:10px}
     #controls button,#unseal{cursor:pointer;background:linear-gradient(135deg,#211e19,#080b0a);border:1px solid #857451;border-radius:4px;color:#e8d6aa;padding:12px 16px;font:700 11px "Cinzel Decorative",serif;letter-spacing:.1em;box-shadow:inset 0 0 14px #66533330,0 5px 25px #000a}
     #controls button:hover,#unseal:hover{border-color:#cbb477;box-shadow:0 0 18px #ae905044}
@@ -333,10 +333,10 @@
     #doorFx{width:clamp(74px,10vw,135px);height:auto;aspect-ratio:1;transform:translate(-50%,-50%);filter:drop-shadow(0 0 6px #37b58680)}
     #doorFx svg{width:100%;height:100%;overflow:visible;color:#7bdbac;fill:none;stroke:currentColor;stroke-width:.8}
     .sealPart{opacity:.08;transition:opacity 1.6s,filter 1.6s}.sealPart.awake{opacity:.85}#doorFx.complete{filter:drop-shadow(0 0 12px #67ffc799)}
-    .site{position:fixed;z-index:7;transform:translate(-50%,-50%);width:clamp(48px,7vw,90px);height:clamp(48px,7vw,90px);border:1px solid #a6ca9a25;border-radius:50%;color:#b5d5b5;background:radial-gradient(circle,#5ba77b20,transparent 65%);cursor:pointer;box-shadow:0 0 25px #7fb79d0a;transition:opacity 1s,box-shadow .3s}
-    .site span{display:block;font:700 10px "Cinzel Decorative",serif;text-shadow:0 2px 8px #000;background:#060b08b0;padding:5px 7px;position:absolute;top:100%;left:50%;transform:translateX(-50%);white-space:nowrap;border:1px solid #96866544}
-    .site:disabled{opacity:0;pointer-events:none}.site:hover,.site:focus-visible{box-shadow:0 0 28px #8ad5a955;border-color:#b8d8b1}
-    .site.solved{opacity:.45}.site.solved:disabled{opacity:.22}.site::before{content:'✧';font-size:26px;text-shadow:0 0 12px #8ebd9e}
+    .site{position:fixed;z-index:7;transform:translate(-50%,-50%);width:clamp(92px,15vw,150px);height:clamp(92px,15vw,150px);border:0;border-radius:50%;color:transparent;background:transparent;cursor:pointer;box-shadow:none;transition:opacity 1s}
+    .site span{display:none;font:700 10px "Cinzel Decorative",serif;text-shadow:0 2px 8px #000;background:#060b08b0;padding:5px 7px;position:absolute;top:100%;left:50%;transform:translateX(-50%);white-space:nowrap;border:1px solid #96866544}
+    .site:disabled{opacity:0;pointer-events:none}.site:hover{box-shadow:none}.site:focus-visible{outline:2px solid #8ad5a9;outline-offset:-6px}
+    .site.solved{opacity:.25}.site.solved:disabled{opacity:.22}.site::before{content:'';display:none}
     #story{top:12vh;max-height:68dvh;overflow-y:auto;pointer-events:auto;scrollbar-width:thin;scrollbar-color:#806747 #060908}
     #story h1{font-size:clamp(21px,2.6vw,34px)}#story[data-hidden=true]{opacity:0;pointer-events:none}
     #storyLines{position:relative;min-height:175px;text-align:center}.fogLine{position:absolute;inset:0;display:block;margin:0;text-align:center}
@@ -422,7 +422,7 @@ const storyLines=[
 "A faint emerald pulse moves through the roots and disappears beneath the path.",
 "Four promises were buried here. Four bindings keep the door asleep.",
 "The rune you carry is warm. Something in this place recognizes it.",
-"Seek first the water, then the ivy, then the lantern, and finally the ancient door.",
+"Where grief gathers, a promise waits beneath the surface.",
 "And do not mistake the silence beyond the doors for peace."
 ];
 let cinematicStart=performance.now(),cinematicDuration=MIN_TOTAL*1000,cinematicDone=false,hiddenText=false;
@@ -434,8 +434,8 @@ function updateCinematic(){
   const available=cinematicDuration/1000-START_DELAY;
   const lineDuration=Math.max(MIN_LINE_DUR,(available-MIN_GAP*(lineEls.length-1))/lineEls.length);
   const stride=lineDuration+MIN_GAP;
-  lineEls.forEach((el,i)=>{el.style.transitionDuration=`${lineDuration}s, 1.8s`;const start=(START_DELAY+i*stride)*1000;if(elapsed>=start)el.classList.add('visible');if(i<lineEls.length-1&&elapsed>=(START_DELAY+(i+1)*stride)*1000)el.classList.add('past')});
-  if(elapsed>=cinematicDuration){cinematicDone=true;$('puzzleStatus').textContent='I · SEEK THE FOUNTAIN';setStoryHidden(true);updateSites();if(completed)showSeal()}
+  lineEls.forEach((el,i)=>{el.style.transitionDuration=`${lineDuration}s, 1.8s`;const start=(START_DELAY+i*stride)*1000;if(elapsed>=start&&elapsed<start+stride*1000)el.classList.add('visible');if(i<lineEls.length-1&&elapsed>=(START_DELAY+(i+1)*stride)*1000)el.classList.add('past')});
+  if(elapsed>=cinematicDuration){cinematicDone=true;$('puzzleStatus').textContent='THE GARDEN REMEMBERS';setStoryHidden(true);updateSites();if(completed)showSeal()}
 }
 function setStoryHidden(value){hiddenText=value;$('story').dataset.hidden=String(value);$('textToggle').textContent=value?'SHOW WORDS':'HIDE WORDS';$('textToggle').setAttribute('aria-pressed',String(value))}
 $('textToggle').onclick=()=>setStoryHidden(!hiddenText);
@@ -478,7 +478,7 @@ const records=[['ᛟ','III','NI','Sorrow'],['ᚷ','I','ET','Devotion'],['ᛉ','I
 const card=$('puzzleCard'),clue=$('puzzleClue'),artifact=$('artifact'),form=$('puzzleChoices'),feedback=$('puzzleFeedback');
 let focusedSite=null,panelTimers=[],panelEpoch=0;
 function persist(){storage.set(progressKey,JSON.stringify({stage,completed}))}
-function updateSites(){for(let i=0;i<4;i++){const site=$('site'+i);site.disabled=i>stage||completed;site.classList.toggle('solved',i<stage);$('sealPart'+i).classList.toggle('awake',i<stage)}$('doorFx').classList.toggle('visible',stage>0);$('doorFx').classList.toggle('complete',stage===4);$('puzzleStatus').textContent=completed?'THE FOUR VOWS · UNSEALED':stage<4?['I','II','III','IV'][stage]+' · '+names[stage]+' · TOUCH TO EXAMINE':'FOUR VOWS AWAKENED'}
+function updateSites(){for(let i=0;i<4;i++){const site=$('site'+i);site.disabled=i>stage||completed;site.classList.toggle('solved',i<stage);$('sealPart'+i).classList.toggle('awake',i<stage)}$('doorFx').classList.toggle('visible',stage>0);$('doorFx').classList.toggle('complete',stage===4);$('puzzleStatus').textContent=completed?'THE FOUR VOWS · UNSEALED':stage<4?['I','II','III','IV'][stage]+' · A VOW REMAINS':'FOUR VOWS AWAKENED'}
 function ledger(){return records.slice(0,stage).map(r=>`${r[0]} · ${r[1]} · ${r[2]} — ${r[3]}`).join('   /   ')}
 function clearPanel(){panelEpoch++;panelTimers.forEach(clearTimeout);panelTimers=[];form.onsubmit=null;form.replaceChildren();artifact.replaceChildren();feedback.textContent=''}
 function later(fn,ms){panelTimers.push(setTimeout(fn,ms))}
@@ -493,13 +493,6 @@ function openStage(i){if(i>stage||completed)return;focusedSite=$('site'+i);clear
  if(i===3){clue.textContent='The door offers a fourth fragment: ◆ · II · ER. Set the four marks in the order of their carved numerals. Touch the last placed mark to lift it.';artifact.textContent=ledger()+'   /   ◆ · II · ER';let sequence=[];const output=document.createElement('p');output.className='sequence';form.append(output);const glyphs=['ᛉ','◆','ᛟ','ᚷ'];const keys=glyphs.map(g=>button(g,()=>{if(sequence.includes(g)){if(sequence.at(-1)===g)sequence.pop()}else sequence.push(g);paint();if(sequence.length===4){if(sequence.join('')==='ᚷ◆ᛟᛉ')solve();else{feedback.textContent='The rings refuse each other. Each fragment bears its place.';sequence=[];paint()}}}));function paint(){output.textContent=sequence.join(' → ');keys.forEach((b,n)=>b.disabled=sequence.includes(glyphs[n])&&sequence.at(-1)!==glyphs[n])}}
 }
 for(let i=0;i<4;i++)$('site'+i).onclick=()=>stage===4&&i===3?showSeal():openStage(i);
-// Touching the garden opens the next vow; no hidden hotspot hunting required.
-document.addEventListener('pointerup',e=>{
-  if(e.target.closest('button,input,form,#controls,#puzzleCard,#seal,#inventory'))return;
-  if(!card.hidden||!$('seal').hidden)return;
-  if(stage<4&&!completed)openStage(stage);
-  else if(stage===4)showSeal();
-},true);
 // Outside touch / Escape closes artifacts; no additional interface controls.
 function closePanel(){if(!card.hidden){clearPanel();card.hidden=true;focusedSite?.focus()}else if(!$('seal').hidden&&!completed){$('seal').hidden=true;$('site3').focus()}}
 document.addEventListener('pointerdown',e=>{if(!card.hidden&&!e.target.closest('#puzzleCard,#controls,.site'))closePanel()});
